@@ -1,0 +1,227 @@
+# File: config/visualization/color_schemes/copernicus.yaml
+# Copernicus Land Cover color scheme (UN LCCS standard)
+type: categorical
+name: "Copernicus Land Cover"
+description: "UN Land Cover Classification System colors for Copernicus data"
+
+colors:
+  0: "#000000"    # No Data
+  10: "#ffff64"   # Cropland
+  20: "#aaf0f0"   # Forest
+  30: "#dcf064"   # Grassland
+  40: "#c8c8c8"   # Shrubland
+  50: "#006400"   # Wetlands
+  60: "#ffb432"   # Settlement
+  70: "#ffc85a"   # Bare/sparse vegetation
+  80: "#0064c8"   # Water bodies
+  90: "#ffffff"   # Snow/ice
+
+labels:
+  0: "No Data"
+  10: "Cropland"
+  20: "Forest"
+  30: "Grassland"
+  40: "Shrubland"
+  50: "Wetlands"
+  60: "Settlement"
+  70: "Bare/sparse vegetation"
+  80: "Water bodies"
+  90: "Snow/ice"
+
+# Visualization preferences
+show_legend: true
+legend_title: "Land Cover Classes"
+
+---
+
+# File: config/visualization/color_schemes/odiac.yaml
+# ODIAC emissions color scheme
+type: continuous
+name: "ODIAC CO2 Emissions"
+description: "Color scheme for ODIAC fossil fuel emission data"
+
+colormap: "plasma"
+classification: "log"
+units: "tonnes CO2/year/km²"
+
+# Preferred visualization settings
+show_colorbar: true
+colorbar_label: "CO2 Emissions (tonnes/year/km²)"
+alpha: 0.85
+
+---
+
+# File: config/visualization/color_schemes/pm25.yaml
+# PM2.5 concentration color scheme
+type: continuous
+name: "PM2.5 Concentration"
+description: "Color scheme for particulate matter 2.5 data"
+
+colormap: "plasma"
+classification: "log"
+units: "μg/m³"
+
+# Value ranges for context
+ranges:
+  good: [0, 12]
+  moderate: [12, 35.5]
+  unhealthy_sensitive: [35.5, 55.5]
+  unhealthy: [55.5, 150.5]
+  very_unhealthy: [150.5, 250.5]
+  hazardous: [250.5, 500]
+
+# Visualization preferences
+show_colorbar: true
+colorbar_label: "PM2.5 Concentration (μg/m³)"
+alpha: 0.85
+
+---
+
+# File: config/visualization/color_schemes/temperature.yaml
+# Land Surface Temperature color scheme
+type: continuous
+name: "Land Surface Temperature"
+description: "Color scheme for temperature data"
+
+colormap: "RdYlBu_r"  # Red-Yellow-Blue reversed
+classification: "quantile"
+units: "°C"
+
+# Temperature ranges (Celsius)
+ranges:
+  cold: [-50, 0]
+  cool: [0, 15]
+  moderate: [15, 25]
+  warm: [25, 35]
+  hot: [35, 50]
+
+# Visualization preferences
+show_colorbar: true
+colorbar_label: "Temperature (°C)"
+alpha: 0.85
+
+---
+
+# File: config/visualization/color_schemes/ndvi.yaml
+# NDVI vegetation index color scheme
+type: continuous
+name: "NDVI Vegetation Index"
+description: "Color scheme for Normalized Difference Vegetation Index"
+
+colormap: "RdYlGn"  # Red-Yellow-Green
+classification: "equal_interval"
+units: "NDVI"
+
+# NDVI value ranges
+ranges:
+  no_vegetation: [-1, 0]
+  sparse_vegetation: [0, 0.2]
+  moderate_vegetation: [0.2, 0.4]
+  dense_vegetation: [0.4, 0.6]
+  very_dense_vegetation: [0.6, 1]
+
+# Value bounds
+value_min: -1
+value_max: 1
+
+# Visualization preferences
+show_colorbar: true
+colorbar_label: "NDVI"
+alpha: 0.85
+
+---
+
+# File: config/visualization/color_schemes/elevation.yaml
+# Elevation/topography color scheme
+type: continuous
+name: "Elevation"
+description: "Color scheme for digital elevation models"
+
+colormap: "terrain"
+classification: "equal_interval"
+units: "m"
+
+# Elevation ranges for context
+ranges:
+  sea_level: [0, 0]
+  lowlands: [0, 200]
+  hills: [200, 500]
+  mountains: [500, 2000]
+  high_mountains: [2000, 5000]
+
+# Visualization preferences
+show_colorbar: true
+colorbar_label: "Elevation (m)"
+alpha: 0.85
+
+---
+
+# File: config/visualization/color_schemes/africa_polis.yaml
+# AFRICAPOLIS urban data color scheme
+type: categorical
+name: "AFRICAPOLIS Urban Areas"
+description: "Color scheme for AFRICAPOLIS urban classification"
+
+colors:
+  0: "#ffffff"    # No urban area
+  1: "#ffffcc"    # Low density urban
+  2: "#fed976"    # Medium-low density urban
+  3: "#fd8d3c"    # Medium density urban
+  4: "#e31a1c"    # High density urban
+  5: "#800026"    # Very high density urban
+
+labels:
+  0: "Non-urban"
+  1: "Low density"
+  2: "Medium-low density"
+  3: "Medium density"
+  4: "High density"
+  5: "Very high density"
+
+# Visualization preferences
+show_legend: true
+legend_title: "Urban Density"
+alpha: 0.8
+
+---
+
+# File: config/visualization/color_schemes/generic.yaml
+# Generic/default color scheme for unknown datasets
+type: continuous
+name: "Generic Data"
+description: "Default color scheme for unrecognized datasets"
+
+colormap: "viridis"
+classification: "jenks"
+units: "value"
+
+# Visualization preferences
+show_colorbar: true
+colorbar_label: "Value"
+alpha: 0.85
+
+---
+
+# File: config/visualization/color_schemes/precipitation.yaml
+# Precipitation color scheme
+type: continuous
+name: "Precipitation"
+description: "Color scheme for rainfall/precipitation data"
+
+colormap: "Blues"
+classification: "quantile"
+units: "mm"
+
+# Precipitation ranges
+ranges:
+  drought: [0, 10]
+  low: [10, 50]
+  moderate: [50, 150]
+  high: [150, 300]
+  very_high: [300, 500]
+  extreme: [500, 1000]
+
+# Visualization preferences
+show_colorbar: true
+colorbar_label: "Precipitation (mm)"
+alpha: 0.85

@@ -1,0 +1,2 @@
+[console_scripts]
+geoworkflow = geoworkflow.cli.main:main

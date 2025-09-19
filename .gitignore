@@ -1,0 +1,10 @@
+*.DS_Store
+*.zip
+*.tif
+*.tiff
+*.aux.xml
+*.geojson
+*.pyc
+*.pdf
+*.log
+/data/*
