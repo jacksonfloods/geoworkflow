@@ -60,6 +60,26 @@ class NoDataDetectionMethod(str, Enum):
     COMMON_VALUES = "common_values"
     STATISTICAL = "statistical"
 
+class OpenBuildingsDataset(str, Enum):
+    """Open Buildings dataset versions."""
+    V3 = "v3"
+    TEMPORAL_V1 = "temporal_v1"  # For future enhancement
+
+
+class BuildingExportFormat(str, Enum):
+    """Export formats for building data."""
+    GEOJSON = "geojson"
+    SHAPEFILE = "shapefile"
+    CSV = "csv"
+
+
+class EarthEngineAuthMethod(str, Enum):
+    """Earth Engine authentication methods."""
+    SERVICE_ACCOUNT = "service_account"
+    USER_CREDENTIALS = "user_credentials"
+    DEFAULT = "default"
+
+
 class AOIConfig(BaseConfig):
     """Configuration for Area of Interest operations."""
     
@@ -384,3 +404,186 @@ class WorkflowConfig(BaseConfig):
             config_dict = yaml.safe_load(f)
         
         return cls(**config_dict)
+    
+class OpenBuildingsExtractionConfig(BaseConfig):
+    """Configuration for Open Buildings dataset extraction via Earth Engine."""
+    
+    # Required inputs (user must provide)
+    aoi_file: Path = Field(..., description="Area of Interest boundary file")
+    output_dir: Path = Field(..., description="Output directory for extracted buildings")
+    
+    # Authentication (flexible options for academic teams)
+    service_account_key: Optional[Path] = Field(
+        None, 
+        description="Path to service account key JSON file"
+    )
+    project_id: Optional[str] = Field(
+        None,
+        description="Google Cloud Project ID (can be inferred from service account)"
+    )
+    auth_method: EarthEngineAuthMethod = Field(
+        EarthEngineAuthMethod.SERVICE_ACCOUNT,
+        description="Authentication method to use"
+    )
+    
+    # Core extraction settings with sensible defaults
+    dataset_version: OpenBuildingsDataset = Field(
+        OpenBuildingsDataset.V3, 
+        description="Open Buildings dataset version"
+    )
+    confidence_threshold: float = Field(
+        0.75, 
+        ge=0.5, 
+        le=1.0,
+        description="Minimum building confidence threshold (0.5-1.0)"
+    )
+    
+    # Building filtering
+    min_area_m2: Optional[float] = Field(
+        10.0, 
+        ge=0, 
+        description="Minimum building area in m²"
+    )
+    max_area_m2: Optional[float] = Field(
+        100000.0, 
+        description="Maximum building area in m² (None for no limit)"
+    )
+    
+    # Export options
+    export_format: BuildingExportFormat = Field(
+        BuildingExportFormat.GEOJSON, 
+        description="Export format for building data"
+    )
+    include_confidence: bool = Field(
+        True, 
+        description="Include confidence scores in output"
+    )
+    include_area: bool = Field(
+        True, 
+        description="Include calculated area in output"
+    )
+    include_plus_codes: bool = Field(
+        True, 
+        description="Include Google Plus Codes in output"
+    )
+    
+    # Processing limits
+    max_features: Optional[int] = Field(
+        None, 
+        description="Maximum number of features to export (None for no limit)"
+    )
+    chunk_size: int = Field(
+        1000, 
+        ge=100, 
+        le=10000,
+        description="Processing chunk size for large extractions"
+    )
+    
+    # Processing options
+    overwrite_existing: bool = Field(
+        False, 
+        description="Overwrite existing output files"
+    )
+    create_index: bool = Field(
+        True, 
+        description="Create spatial index for output data"
+    )
+    
+    # Timeout and retry settings
+    timeout_minutes: int = Field(
+        30, 
+        ge=5, 
+        le=120,
+        description="Timeout for Earth Engine operations in minutes"
+    )
+    retry_attempts: int = Field(
+        3, 
+        ge=1, 
+        le=5,
+        description="Number of retry attempts for failed operations"
+    )
+
+    @field_validator('aoi_file')
+    @classmethod
+    def validate_aoi_file_exists(cls, v):
+        """Validate that AOI file exists."""
+        if not Path(v).exists():
+            raise ValueError(f"AOI file does not exist: {v}")
+        return v
+
+    @field_validator('service_account_key')
+    @classmethod
+    def validate_service_account_key(cls, v):
+        """Validate service account key file if provided."""
+        if v is not None and not Path(v).exists():
+            raise ValueError(f"Service account key file does not exist: {v}")
+        return v
+
+    @field_validator('confidence_threshold')
+    @classmethod
+    def validate_confidence_threshold(cls, v):
+        """Validate confidence threshold and provide guidance."""
+        if v < 0.7:
+            import warnings
+            warnings.warn(
+                f"Confidence threshold {v} is below 0.7. "
+                "Lower thresholds may include low-quality building detections."
+            )
+        return v
+
+    @model_validator(mode='after')
+    def validate_authentication_setup(self):
+        """Validate authentication configuration."""
+        # If service account is specified, ensure it's the right auth method
+        if self.service_account_key and self.auth_method != EarthEngineAuthMethod.SERVICE_ACCOUNT:
+            import warnings
+            warnings.warn(
+                "Service account key provided but auth_method is not 'service_account'. "
+                "Setting auth_method to 'service_account'."
+            )
+            self.auth_method = EarthEngineAuthMethod.SERVICE_ACCOUNT
+        
+        return self
+    
+    def get_output_file_path(self) -> Path:
+        """Get the full output file path based on configuration."""
+        extension_map = {
+            BuildingExportFormat.GEOJSON: "geojson",
+            BuildingExportFormat.SHAPEFILE: "shp",
+            BuildingExportFormat.CSV: "csv"
+        }
+        extension = extension_map[self.export_format]
+        return self.output_dir / f"open_buildings.{extension}"
+    
+    def get_academic_setup_guidance(self) -> str:
+        """Get setup guidance for academic users."""
+        guidance = """
+Earth Engine Setup for Academic Users:
+
+1. Get Earth Engine Access:
+- Visit: https://earthengine.google.com/signup/
+- Select 'Register for a noncommercial use account'
+- Provide academic institution details
+- Wait for approval (usually 1-2 days)
+
+2. Setup Authentication:
+- Option A: Service Account (Recommended for teams)
+    * Go to Google Cloud Console
+    * Create/select project
+    * Enable Earth Engine API
+    * Create service account with Earth Engine permissions
+    * Download JSON key file
+    * Set service_account_key in config
+
+- Option B: User Credentials
+    * Run: earthengine authenticate
+    * Follow browser authentication
+    * Credentials stored automatically
+
+3. Configuration Tips:
+- Start with small AOIs for testing
+- Use confidence_threshold >= 0.75 for reliable results
+- Set max_features for large areas to avoid timeouts
+- Higher confidence = fewer but more reliable buildings
+        """
+        return guidance.strip()

@@ -26,6 +26,16 @@ from geoworkflow.core.config import load_config, WorkflowConfig
 from geoworkflow.core.pipeline import ProcessingPipeline
 from geoworkflow.core.exceptions import GeoWorkflowError
 
+from .schemas.config_models import (
+    AOIConfig,
+    ExtractionConfig, 
+    ClippingConfig,
+    AlignmentConfig,
+    VisualizationConfig,
+    WorkflowConfig,
+    OpenBuildingsExtractionConfig  # Add this line
+)
+
 __all__ = [
     "__version__",
     "__author__", 
@@ -34,4 +44,5 @@ __all__ = [
     "WorkflowConfig", 
     "ProcessingPipeline",
     "GeoWorkflowError",
+    "OpenBuildingsExtractionConfig",  # Add this line
 ]

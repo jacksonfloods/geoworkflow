@@ -1,0 +1,46 @@
+# Open Buildings Extraction Configuration Template
+# Google's Open Buildings v3 dataset via Earth Engine
+
+# Required: Area of Interest and Output
+aoi_file: "path/to/your/boundary.geojson"  # Boundary file for extraction area
+output_dir: "path/to/output/directory"     # Where to save extracted buildings
+
+# Authentication Options (choose one)
+# Option 1: Service account key file (recommended for teams)
+service_account_key: "path/to/service-account-key.json"
+auth_method: "service_account"
+
+# Option 2: Use environment variable GOOGLE_APPLICATION_CREDENTIALS
+# auth_method: "default"
+
+# Option 3: Project ID if using user credentials
+# project_id: "your-google-cloud-project-id"
+# auth_method: "user_credentials"
+
+# Extraction Settings
+dataset_version: "v3"                    # Open Buildings version (v3 recommended)
+confidence_threshold: 0.75              # Building confidence (0.5-1.0, higher = more certain)
+export_format: "geojson"                # Output format: geojson, shapefile, csv
+
+# Building Filtering (optional)
+min_area_m2: 10.0                       # Minimum building area in square meters
+max_area_m2: 100000.0                   # Maximum building area (null = no limit)
+max_features: null                      # Maximum number of buildings (null = no limit)
+
+# Export Options
+include_confidence: true                # Include confidence scores in output
+include_area: true                     # Include calculated building areas  
+include_plus_codes: true               # Include Google Plus Codes
+create_index: true                     # Create spatial index for output
+
+# Processing Settings
+chunk_size: 1000                       # Processing chunk size for large areas
+overwrite_existing: false              # Overwrite existing output files
+timeout_minutes: 30                    # Timeout for Earth Engine operations
+retry_attempts: 3                      # Number of retry attempts
+
+# Academic Team Notes:
+# 1. Get Earth Engine access: https://earthengine.google.com/signup/
+# 2. For large areas, consider breaking into smaller AOIs
+# 3. Higher confidence thresholds = fewer but more reliable buildings
+# 4. Start with max_features: 1000 for testing

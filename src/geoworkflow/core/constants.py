@@ -214,3 +214,16 @@ DEFAULT_PROJECT_STRUCTURE: Dict[str, str] = {
     "logs": "logs",
     "cache": "data/cache"
 }
+
+# ============================================================================
+# Google Earth Engine Constants
+# ============================================================================
+EARTH_ENGINE_DATASETS = {
+    'open_buildings_v3': 'GOOGLE/Research/open-buildings/v3/polygons',
+    'open_buildings_temporal_v1': 'GOOGLE/Research/open-buildings-temporal/v1/polygons'
+}
+
+# Default Earth Engine settings
+DEFAULT_EARTH_ENGINE_TIMEOUT = 1800  # 30 minutes in seconds
+DEFAULT_BUILDING_CONFIDENCE = 0.75
+DEFAULT_MIN_BUILDING_AREA = 10.0  # square meters
