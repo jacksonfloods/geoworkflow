@@ -35,6 +35,7 @@ src/geoworkflow/processors/spatial/masker.py
 src/geoworkflow/schemas/__init__.py
 src/geoworkflow/schemas/config_models.py
 src/geoworkflow/utils/__init__.py
+src/geoworkflow/utils/earth_engine_utils.py
 src/geoworkflow/utils/file_utils.py
 src/geoworkflow/utils/mask_utils.py
 src/geoworkflow/utils/progress_utils.py

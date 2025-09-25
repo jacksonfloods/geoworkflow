@@ -227,3 +227,19 @@ EARTH_ENGINE_DATASETS = {
 DEFAULT_EARTH_ENGINE_TIMEOUT = 1800  # 30 minutes in seconds
 DEFAULT_BUILDING_CONFIDENCE = 0.75
 DEFAULT_MIN_BUILDING_AREA = 10.0  # square meters
+DEFAULT_MAX_BUILDING_AREA = 100000.0  # square meters
+DEFAULT_CHUNK_SIZE = 1000
+
+
+# Earth Engine quota and retry settings
+DEFAULT_EE_RETRY_ATTEMPTS = 3
+DEFAULT_EE_RETRY_DELAY = 5  # seconds
+MAX_EE_FEATURES_PER_REQUEST = 5000
+
+# Common Earth Engine error patterns for academic-friendly messages
+EE_ERROR_PATTERNS = {
+    'authentication': ['authentication', 'unauthorized', 'credentials'],
+    'quota': ['quota', 'limit', 'rate limit', 'too many requests'],
+    'timeout': ['timeout', 'deadline', 'cancelled'],
+    'geometry': ['invalid geometry', 'self-intersection', 'too complex']
+}
