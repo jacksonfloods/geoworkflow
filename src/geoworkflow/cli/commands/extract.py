@@ -118,12 +118,12 @@ def netcdf(netcdf_file: Path, output: Optional[Path], variable: str, crs: str, c
 @click.option(
     '--aoi-file', 
     type=click.Path(exists=True, path_type=Path), 
-    help='Area of Interest boundary file (GeoJSON/Shapefile) [REQUIRED]'
+    help='Area of Interest boundary file (GeoJSON/Shapefile) [REQUIRED if no config]'
 )
 @click.option(
     '--output-dir', '-o',
     type=click.Path(path_type=Path),
-    help='Output directory for extracted buildings [REQUIRED]'
+    help='Output directory for extracted buildings [REQUIRED if no config]'
 )
 @click.option(
     '--confidence', 
@@ -169,8 +169,8 @@ def netcdf(netcdf_file: Path, output: Optional[Path], variable: str, crs: str, c
     help='Overwrite existing output files'
 )
 @click.pass_context
-def extract_open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format, 
-                          service_account, project_id, max_features, min_area, max_area, overwrite):
+def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format, 
+                  service_account, project_id, max_features, min_area, max_area, overwrite):
     """
     Extract building footprints from Google Open Buildings v3 dataset via Earth Engine.
     
@@ -178,53 +178,20 @@ def extract_open_buildings(ctx, config, aoi_file, output_dir, confidence, export
     from Google's Open Buildings dataset using the Earth Engine API.
     
     \b
-    Requirements:
-    - Earth Engine access (academic accounts available)
-    - Google Cloud service account or user authentication
-    - AOI file in GeoJSON or Shapefile format
-    
-    \b
-    Authentication Options (in order of precedence):
-    1. --service-account: Path to service account JSON key
-    2. GOOGLE_APPLICATION_CREDENTIALS environment variable
-    3. Default Earth Engine user credentials
+    Quick Start:
+        # Create configuration template
+        geoworkflow config --template open-buildings --output my_config.yaml
+        
+        # Edit the template with your settings, then run:
+        geoworkflow extract open-buildings --config my_config.yaml
     
     \b
     Examples:
         # Basic extraction with defaults
         geoworkflow extract open-buildings --aoi-file boundary.geojson --output-dir ./buildings
         
-        # Custom confidence and format with service account
-        geoworkflow extract open-buildings \\
-            --aoi-file accra_boundary.shp \\
-            --output-dir ./accra_buildings \\
-            --confidence 0.8 \\
-            --format shapefile \\
-            --service-account ./my-service-account-key.json
-            
-        # Large area with limits to avoid timeouts
-        geoworkflow extract open-buildings \\
-            --aoi-file large_region.geojson \\
-            --output-dir ./buildings \\
-            --max-features 50000 \\
-            --min-area 25
-        
-        # Using configuration file (recommended for complex setups)
+        # Using configuration file (recommended)
         geoworkflow extract open-buildings --config open_buildings_config.yaml
-    
-    \b
-    Academic Setup Guide:
-    1. Get Earth Engine access: https://earthengine.google.com/signup/
-    2. Create Google Cloud Project & Service Account
-    3. Download service account key JSON file
-    4. Use --service-account option or set GOOGLE_APPLICATION_CREDENTIALS
-    
-    \b
-    Tips:
-    - Start with small AOIs for testing
-    - Higher confidence thresholds = fewer but more reliable buildings
-    - Use --max-features for large areas to avoid timeouts
-    - GeoJSON format is most compatible across tools
     """
     
     quiet = ctx.obj.get("quiet", False)
@@ -284,7 +251,7 @@ def extract_open_buildings(ctx, config, aoi_file, output_dir, confidence, export
         buildings_config = OpenBuildingsExtractionConfig(**config_dict)
         
         if not quiet:
-            console.print("\n[bold blue]🏢 Open Buildings Extraction[/bold blue]")
+            console.print("\n[bold blue]Open Buildings Extraction[/bold blue]")
             console.print(f"[blue]AOI File:[/blue] {buildings_config.aoi_file}")
             console.print(f"[blue]Output Directory:[/blue] {buildings_config.output_dir}")
             console.print(f"[blue]Confidence Threshold:[/blue] {buildings_config.confidence_threshold}")
@@ -299,8 +266,7 @@ def extract_open_buildings(ctx, config, aoi_file, output_dir, confidence, export
         except ImportError as e:
             raise click.ClickException(
                 f"Open Buildings processor not available: {e}\n"
-                "Install Earth Engine dependencies with: pip install geoworkflow[earth-engine]\n"
-                "Or manually: pip install earthengine-api google-auth google-cloud-storage"
+                "Install Earth Engine dependencies with: pip install geoworkflow[earth-engine]"
             )
         
         # Initialize processor
@@ -308,44 +274,41 @@ def extract_open_buildings(ctx, config, aoi_file, output_dir, confidence, export
         
         # Show academic setup guidance if authentication might be an issue
         if not buildings_config.service_account_key and not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-            console.print("\n[yellow]⚠️  No explicit authentication found.[/yellow]")
-            console.print("For academic setup guidance, see:")
-            console.print("https://earthengine.google.com/signup/")
+            console.print("\n[yellow]No explicit authentication found.[/yellow]")
+            console.print("For academic setup guidance, see: https://earthengine.google.com/signup/")
         
         # Run extraction
         if not quiet:
-            console.print("\n[yellow]🚀 Starting extraction...[/yellow]")
+            console.print("\n[yellow]Starting extraction...[/yellow]")
             
         result = processor.process()
         
         if result.success:
-            console.print(f"\n[bold green]✅ {result.message}[/bold green]")
+            console.print(f"\n[bold green]{result.message}[/bold green]")
             if result.output_paths:
-                console.print(f"[green]📁 Output:[/green] {', '.join(str(p) for p in result.output_paths)}")
+                console.print(f"[green]Output:[/green] {', '.join(str(p) for p in result.output_paths)}")
             if hasattr(result, 'processed_count') and result.processed_count:
-                console.print(f"[green]🏢 Buildings Extracted:[/green] {result.processed_count:,}")
+                console.print(f"[green]Buildings Extracted:[/green] {result.processed_count:,}")
         else:
-            console.print(f"[bold red]❌ Extraction failed:[/bold red] {result.message}")
+            console.print(f"[bold red]Extraction failed:[/bold red] {result.message}")
             ctx.exit(1)
             
     except ConfigurationError as e:
-        console.print(f"\n[bold red]❌ Configuration Error:[/bold red]", err=True)
-        console.print(f"[red]{e.message}[/red]", err=True)
+        console.print(f"\n[bold red]Configuration Error:[/bold red]")
+        console.print(f"[red]{e.message}[/red]")
         if "service account" in str(e).lower() or "authentication" in str(e).lower():
-            console.print("\n[dim]💡 Authentication Help:[/dim]")
+            console.print("\n[dim]Authentication Help:[/dim]")
             console.print("1. Get Earth Engine access: https://earthengine.google.com/signup/")
-            console.print("2. Create service account: https://cloud.google.com/iam/docs/service-accounts-create")
+            console.print("2. Create service account key file")
             console.print("3. Use --service-account option or set GOOGLE_APPLICATION_CREDENTIALS")
         ctx.exit(1)
         
     except ExtractionError as e:
-        console.print(f"\n[bold red]❌ Extraction Error:[/bold red]", err=True)
-        console.print(f"[red]{e.message}[/red]", err=True)
-        if e.details:
-            console.print(f"[dim]Details: {e.details}[/dim]", err=True)
+        console.print(f"\n[bold red]Extraction Error:[/bold red]")
+        console.print(f"[red]{e.message}[/red]")
         ctx.exit(1)
         
     except Exception as e:
-        console.print(f"\n[bold red]❌ Unexpected Error:[/bold red] {str(e)}", err=True)
-        console.print("[dim]Run with --log-level DEBUG for more details[/dim]", err=True)
+        console.print(f"\n[bold red]Unexpected Error:[/bold red] {str(e)}")
+        console.print("[dim]Run with --log-level DEBUG for more details[/dim]")
         ctx.exit(1)
