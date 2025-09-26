@@ -13,8 +13,22 @@ from typing import Optional
 import click
 from rich.console import Console
 
+from click.exceptions import Exit as ClickExit
+
 from geoworkflow.schemas.config_models import OpenBuildingsExtractionConfig
 from geoworkflow.core.exceptions import GeoWorkflowError, ExtractionError, ConfigurationError
+
+from geoworkflow.utils.earth_engine_error_handler import (
+    EarthEngineErrorHandler, 
+    validate_earth_engine_prerequisites
+)
+from geoworkflow.core.exceptions import (
+    EarthEngineError,
+    EarthEngineAuthenticationError,
+    EarthEngineQuotaError,
+    EarthEngineTimeoutError,
+    get_academic_friendly_error_message
+)
 
 console = Console()
 
@@ -197,12 +211,34 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
     quiet = ctx.obj.get("quiet", False)
     
     try:
-        # Configuration priority: file > CLI args > defaults
+        # Step 1: Validate Earth Engine prerequisites
+        if not quiet:
+            console.print("[blue]Validating Earth Engine setup...[/blue]")
+            
+        validation_result = validate_earth_engine_prerequisites()
+        
+        if not validation_result["valid"]:
+            console.print(f"\n[bold red]Setup Error:[/bold red]")
+            for error in validation_result["errors"]:
+                console.print(f"[red]• {error}[/red]")
+            
+            if validation_result["setup_guidance"]:
+                console.print(f"\n[dim]Setup Guide:[/dim]")
+                for guidance in validation_result["setup_guidance"]:
+                    console.print(f"[dim]• {guidance}[/dim]")
+            
+            ctx.exit(1)
+        
+        # Show warnings if any
+        if validation_result.get("warnings") and not quiet:
+            for warning in validation_result["warnings"]:
+                console.print(f"[yellow]Warning: {warning}[/yellow]")
+        
+        # Step 2: Configuration handling (existing code)
         if config:
             if not quiet:
                 console.print(f"[blue]Loading configuration from:[/blue] {config}")
             
-            # Load from YAML config file
             import yaml
             with open(config, 'r') as f:
                 config_dict = yaml.safe_load(f)
@@ -220,11 +256,9 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
             if max_area: cli_overrides['max_area_m2'] = max_area
             if overwrite: cli_overrides['overwrite_existing'] = overwrite
             
-            # Merge config file with CLI overrides
             config_dict.update(cli_overrides)
             
         else:
-            # Build configuration entirely from CLI arguments
             if not aoi_file or not output_dir:
                 raise click.ClickException(
                     "Either --config file OR both --aoi-file and --output-dir are required.\n"
@@ -244,10 +278,9 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
                 'overwrite_existing': overwrite
             }
             
-            # Remove None values
             config_dict = {k: v for k, v in config_dict.items() if v is not None}
         
-        # Create and validate configuration object
+        # Step 3: Create and validate configuration object
         buildings_config = OpenBuildingsExtractionConfig(**config_dict)
         
         if not quiet:
@@ -260,7 +293,7 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
             if buildings_config.max_features:
                 console.print(f"[blue]Max Features:[/blue] {buildings_config.max_features:,}")
         
-        # Import and initialize processor (dynamic import to handle optional dependencies)
+        # Step 4: Import and initialize processor
         try:
             from geoworkflow.processors.extraction.open_buildings import OpenBuildingsExtractionProcessor
         except ImportError as e:
@@ -269,15 +302,9 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
                 "Install Earth Engine dependencies with: pip install geoworkflow[earth-engine]"
             )
         
-        # Initialize processor
         processor = OpenBuildingsExtractionProcessor(buildings_config)
         
-        # Show academic setup guidance if authentication might be an issue
-        if not buildings_config.service_account_key and not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-            console.print("\n[yellow]No explicit authentication found.[/yellow]")
-            console.print("For academic setup guidance, see: https://earthengine.google.com/signup/")
-        
-        # Run extraction
+        # Step 5: Run extraction
         if not quiet:
             console.print("\n[yellow]Starting extraction...[/yellow]")
             
@@ -293,6 +320,29 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
             console.print(f"[bold red]Extraction failed:[/bold red] {result.message}")
             ctx.exit(1)
             
+    # Enhanced Error Handling with Academic Guidance
+    except EarthEngineAuthenticationError as e:
+        console.print(f"\n[bold red]Authentication Error:[/bold red]")
+        console.print(f"[red]{e.message}[/red]")
+        ctx.exit(1)
+        
+    except EarthEngineQuotaError as e:
+        console.print(f"\n[bold red]Quota Exceeded:[/bold red]")
+        console.print(f"[red]{e.message}[/red]")
+        console.print(f"\n[dim]Tip: Try reducing area size or increasing confidence threshold[/dim]")
+        ctx.exit(1)
+        
+    except EarthEngineTimeoutError as e:
+        console.print(f"\n[bold red]Operation Timed Out:[/bold red]")
+        console.print(f"[red]{e.message}[/red]")
+        console.print(f"\n[dim]Tip: Break large areas into smaller chunks[/dim]")
+        ctx.exit(1)
+        
+    except EarthEngineError as e:
+        console.print(f"\n[bold red]Earth Engine Error:[/bold red]")
+        console.print(f"[red]{e.message}[/red]")
+        ctx.exit(1)
+        
     except ConfigurationError as e:
         console.print(f"\n[bold red]Configuration Error:[/bold red]")
         console.print(f"[red]{e.message}[/red]")
@@ -302,13 +352,27 @@ def open_buildings(ctx, config, aoi_file, output_dir, confidence, export_format,
             console.print("2. Create service account key file")
             console.print("3. Use --service-account option or set GOOGLE_APPLICATION_CREDENTIALS")
         ctx.exit(1)
-        
+    
     except ExtractionError as e:
         console.print(f"\n[bold red]Extraction Error:[/bold red]")
         console.print(f"[red]{e.message}[/red]")
         ctx.exit(1)
+    
+    except (SystemExit, ClickExit):
+        # Let both SystemExit and Click Exit pass through without catching them
+        raise
         
     except Exception as e:
-        console.print(f"\n[bold red]Unexpected Error:[/bold red] {str(e)}")
-        console.print("[dim]Run with --log-level DEBUG for more details[/dim]")
+        # Try to classify unknown errors as Earth Engine errors
+        if 'earth engine' in str(e).lower() or 'ee.' in str(e).lower():
+            try:
+                ee_error = EarthEngineErrorHandler.classify_and_handle_error(e, config_dict)
+                console.print(f"\n[bold red]Earth Engine Error:[/bold red]")
+                console.print(f"[red]{ee_error.message}[/red]")
+            except:
+                console.print(f"\n[bold red]Unexpected Error:[/bold red] {str(e)}")
+                console.print("[dim]Run with --log-level DEBUG for more details[/dim]")
+        else:
+            console.print(f"\n[bold red]Unexpected Error:[/bold red] {str(e)}")
+            console.print("[dim]Run with --log-level DEBUG for more details[/dim]")
         ctx.exit(1)

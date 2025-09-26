@@ -124,7 +124,7 @@ def main():
         
     except GeoWorkflowError as e:
         error_console = Console(stderr=True)
-        error_console.print(f"[bold red]Error:[/bold red] {e.message}")
+        console.print(f"[bold red]Error:[/bold red] {e.message}")
         if e.details:
             error_console.print(f"[dim]Details: {e.details}[/dim]")
         sys.exit(1)
