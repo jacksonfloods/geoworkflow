@@ -310,7 +310,71 @@ def get_config_template(config_type: str) -> Dict[str, Any]:
             'data_sources': ['copernicus', 'odiac', 'pm25'],
             'create_visualizations': True,
             'stop_on_error': True
+        },
+        'open-buildings': {
+            # Required inputs
+            'aoi_file': 'data/aoi/study_area.geojson',
+            'output_dir': 'data/extracted/open_buildings/',
+            
+            # Authentication - choose one method
+            'service_account_key': 'path/to/service-account-key.json',
+            # 'project_id': 'your-google-cloud-project-id',
+            
+            # Core extraction settings  
+            'dataset_version': 'v3',
+            'confidence_threshold': 0.75,
+            'export_format': 'geojson',
+            
+            # Building filtering
+            'min_area_m2': 10.0,
+            'max_area_m2': None,
+            'max_features': None,
+            
+            # Export options
+            'include_confidence': True,
+            'include_area': True, 
+            'include_plus_codes': True,
+            'overwrite_existing': False,
+            'create_index': True,
+            
+            # Processing settings
+            'chunk_size': 1000,
+            'timeout_minutes': 30,
+            'retry_attempts': 3
+        },
+        'open-buildings': {
+            # Required inputs
+            'aoi_file': 'path/to/your/boundary.geojson',
+            'output_dir': 'path/to/output/directory',
+            
+            # Authentication
+            'service_account_key': 'path/to/service-account-key.json',
+            'auth_method': 'service_account',
+            
+            # Core settings
+            'dataset_version': 'v3',
+            'confidence_threshold': 0.75,
+            'export_format': 'geojson',
+            
+            # Filtering
+            'min_area_m2': 10.0,
+            'max_area_m2': 100000.0,
+            'max_features': None,
+            
+            # Export options
+            'include_confidence': True,
+            'include_area': True,
+            'include_plus_codes': True,
+            'create_index': True,
+            
+            # Processing
+            'chunk_size': 1000,
+            'overwrite_existing': False,
+            'timeout_minutes': 30,
+            'retry_attempts': 3
         }
     }
+
+    
     
     return templates.get(config_type, {})

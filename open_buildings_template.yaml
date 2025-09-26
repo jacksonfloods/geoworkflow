@@ -1,0 +1,139 @@
+# Open Buildings Extraction Configuration Template
+# Google's Open Buildings v3 dataset via Earth Engine API
+#
+# This template provides all configuration options for extracting building 
+# footprints from Google's Open Buildings dataset using Earth Engine.
+
+# === REQUIRED SETTINGS ===
+# You MUST provide these two settings for extraction to work
+
+# Area of Interest - your study area boundary file
+# Supported formats: GeoJSON (.geojson), Shapefile (.shp)
+# Can be any polygon geometry - country, city, region, etc.
+aoi_file: "path/to/your/boundary.geojson"
+
+# Output directory where extracted buildings will be saved
+# Directory will be created if it doesn't exist
+output_dir: "path/to/output/directory"
+
+
+# === AUTHENTICATION ===
+# Choose ONE authentication method (in order of priority)
+
+# Option 1: Service Account Key (Recommended for teams)
+# Download from Google Cloud Console -> IAM & Admin -> Service Accounts
+service_account_key: "path/to/service-account-key.json"
+
+# Option 2: Google Cloud Project ID (if using environment variable)
+# Set GOOGLE_APPLICATION_CREDENTIALS environment variable to key file path
+# project_id: "your-google-cloud-project-id"
+
+# Option 3: Default User Credentials (if you've run 'earthengine authenticate')
+# Leave both above options commented out to use default credentials
+
+
+# === EXTRACTION SETTINGS ===
+
+# Dataset version to use (v3 is recommended and most current)
+dataset_version: "v3"
+
+# Building confidence threshold (0.5 to 1.0)
+# Higher values = fewer but more reliable buildings
+# 0.75 is Google's recommended minimum for reliable results
+confidence_threshold: 0.75
+
+# Export format for the building data
+# Options: geojson (most compatible), shapefile, csv (centroids only)
+export_format: "geojson"
+
+
+# === BUILDING FILTERING ===
+# Filter buildings by size to remove noise and artifacts
+
+# Minimum building area in square meters
+# 10 m² filters out very small structures and artifacts
+min_area_m2: 10.0
+
+# Maximum building area in square meters  
+# Useful for filtering out very large polygons that might be artifacts
+# Set to null or comment out for no maximum limit
+max_area_m2: null
+
+# Maximum number of buildings to extract
+# Useful for large areas to avoid timeouts and manage data size
+# Set to null or comment out for no limit
+max_features: null
+
+
+# === OUTPUT OPTIONS ===
+# Control what additional data is included in the output
+
+# Include building confidence scores (recommended)
+include_confidence: true
+
+# Include calculated building area in square meters
+include_area: true
+
+# Include Google Plus Codes for each building (global addressing system)
+include_plus_codes: true
+
+# Overwrite existing output files if they exist
+overwrite_existing: false
+
+# Create spatial index for output data (improves query performance)
+create_index: true
+
+
+# === PROCESSING SETTINGS ===
+# Advanced settings for handling large extractions
+
+# Processing chunk size for large areas
+# Larger values = faster processing but more memory usage
+chunk_size: 1000
+
+# Timeout for Earth Engine operations (in minutes)
+# Increase for very large areas
+timeout_minutes: 30
+
+# Number of retry attempts for failed operations
+# Earth Engine can be flaky, retries help with reliability
+retry_attempts: 3
+
+
+# === ACADEMIC TEAM NOTES ===
+#
+# Getting Started:
+# 1. Get Earth Engine access: https://earthengine.google.com/signup/
+#    - Select "Register for a noncommercial use account"
+#    - Provide your academic institution details
+#    - Approval usually takes 1-2 days
+#
+# 2. Create Google Cloud Project & Service Account:
+#    - Go to: https://console.cloud.google.com/
+#    - Create new project or select existing
+#    - Enable Earth Engine API
+#    - IAM & Admin -> Service Accounts -> Create Service Account
+#    - Grant "Earth Engine Resource Viewer" role
+#    - Download JSON key file
+#
+# 3. Test with small area first:
+#    - Use a 1-2 km² area for initial testing
+#    - Larger areas can timeout or hit quota limits
+#
+# Usage Tips:
+# - confidence_threshold >= 0.75 for reliable research results
+# - Use max_features for large cities to avoid timeouts
+# - GeoJSON format works with most GIS software
+# - Higher confidence = fewer buildings but more reliable
+# - Start with small test areas before processing large regions
+#
+# Common Issues:
+# - "Authentication failed": Check service account setup
+# - "Quota exceeded": Use smaller areas or higher confidence_threshold
+# - "Timeout": Reduce area size or increase timeout_minutes
+# - "No buildings found": Check AOI projection and confidence_threshold
+#
+# For African urban analysis:
+# - Confidence 0.7-0.8 works well for most African cities
+# - Min area 15-25 m² filters compound walls and artifacts
+# - Consider cultural context - many buildings are compounds/clusters

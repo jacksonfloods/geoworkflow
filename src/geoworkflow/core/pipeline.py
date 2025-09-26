@@ -73,17 +73,43 @@ class ProcessingPipeline:
         # Register built-in processors
         self._register_processors()
     
+
     def _register_processors(self):
         """Register available processors."""
-        # This will be populated as we implement processors
-        # For now, we'll define the expected processor mapping
-        self._stage_processor_map = {
-            "extract": "ArchiveProcessor",
-            "clip": "ClippingProcessor", 
-            "align": "AlignmentProcessor",
-            "integrate": "IntegrationProcessor",
-            "visualize": "VisualizationProcessor",
-        }
+        # Import processors when registering to avoid circular imports
+        try:
+            from ..processors.aoi.processor import AOIProcessor
+            from ..processors.spatial.clipper import ClippingProcessor
+            from ..processors.spatial.aligner import AlignmentProcessor
+            from ..processors.integration.enrichment import StatisticalEnrichmentProcessor
+            from ..processors.extraction.archive import ArchiveExtractionProcessor
+            from ..processors.extraction.open_buildings import OpenBuildingsExtractionProcessor  # Add this line
+            
+            # Register processors for each stage
+            self.register_processor("aoi", AOIProcessor)
+            self.register_processor("extract", ArchiveExtractionProcessor) 
+            self.register_processor("extract_buildings", OpenBuildingsExtractionProcessor)  # Add this line
+            self.register_processor("clip", ClippingProcessor)
+            self.register_processor("align", AlignmentProcessor)
+            self.register_processor("enrich", StatisticalEnrichmentProcessor)
+            # self.register_processor("visualize", VisualizationProcessor)  # When implemented
+            
+            self.logger.debug("Successfully registered all processors")
+            
+        except ImportError as e:
+            self.logger.warning(f"Could not import all processors: {e}")
+            # Define the expected processor mapping as fallback
+            self._stage_processor_map = {
+                "extract": "ArchiveExtractionProcessor",
+                "extract_buildings": "OpenBuildingsExtractionProcessor",  # Add this line
+                "clip": "ClippingProcessor", 
+                "align": "AlignmentProcessor",
+                "enrich": "StatisticalEnrichmentProcessor",
+                "integrate": "IntegrationProcessor",
+                "visualize": "VisualizationProcessor",
+            }
+    
+
     
     def register_processor(self, stage_name: str, processor_class: Type[BaseProcessor]):
         """
@@ -513,3 +539,41 @@ def _validate_enrichment_stage(self) -> Dict[str, Any]:
             )
     
     return validation_result
+
+# File: Update to src/geoworkflow/core/pipeline.py
+# Add these lines to the _register_processors method
+
+def _register_processors(self):
+    """Register available processors."""
+    # Import processors when registering to avoid circular imports
+    try:
+        from ..processors.aoi.processor import AOIProcessor
+        from ..processors.spatial.clipper import ClippingProcessor
+        from ..processors.spatial.aligner import AlignmentProcessor
+        from ..processors.integration.enrichment import StatisticalEnrichmentProcessor
+        from ..processors.extraction.archive import ArchiveExtractionProcessor
+        from ..processors.extraction.open_buildings import OpenBuildingsExtractionProcessor  # Add this line
+        
+        # Register processors for each stage
+        self.register_processor("aoi", AOIProcessor)
+        self.register_processor("extract", ArchiveExtractionProcessor) 
+        self.register_processor("extract_buildings", OpenBuildingsExtractionProcessor)  # Add this line
+        self.register_processor("clip", ClippingProcessor)
+        self.register_processor("align", AlignmentProcessor)
+        self.register_processor("enrich", StatisticalEnrichmentProcessor)
+        # self.register_processor("visualize", VisualizationProcessor)  # When implemented
+        
+        self.logger.debug("Successfully registered all processors")
+        
+    except ImportError as e:
+        self.logger.warning(f"Could not import all processors: {e}")
+        # Define the expected processor mapping as fallback
+        self._stage_processor_map = {
+            "extract": "ArchiveExtractionProcessor",
+            "extract_buildings": "OpenBuildingsExtractionProcessor",  # Add this line
+            "clip": "ClippingProcessor", 
+            "align": "AlignmentProcessor",
+            "enrich": "StatisticalEnrichmentProcessor",
+            "integrate": "IntegrationProcessor",
+            "visualize": "VisualizationProcessor",
+        }

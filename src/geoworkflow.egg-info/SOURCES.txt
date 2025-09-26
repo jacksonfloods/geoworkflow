@@ -12,6 +12,11 @@ src/geoworkflow/cli/__init__.py
 src/geoworkflow/cli/cli_structure.py
 src/geoworkflow/cli/main.py
 src/geoworkflow/cli/commands/__init__.py
+src/geoworkflow/cli/commands/aoi.py
+src/geoworkflow/cli/commands/extract.py
+src/geoworkflow/cli/commands/pipeline.py
+src/geoworkflow/cli/commands/process.py
+src/geoworkflow/cli/commands/visualize.py
 src/geoworkflow/core/__init__.py
 src/geoworkflow/core/base.py
 src/geoworkflow/core/config.py
@@ -26,6 +31,7 @@ src/geoworkflow/processors/aoi/__init__.py
 src/geoworkflow/processors/aoi/processor.py
 src/geoworkflow/processors/extraction/__init__.py
 src/geoworkflow/processors/extraction/archive.py
+src/geoworkflow/processors/extraction/open_buildings.py
 src/geoworkflow/processors/integration/__init__.py
 src/geoworkflow/processors/integration/enrichment.py
 src/geoworkflow/processors/spatial/__init__.py
