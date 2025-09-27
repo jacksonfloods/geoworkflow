@@ -14,13 +14,27 @@ from datetime import datetime
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic import ConfigDict
 
+# Grid processing constants with fallback values
+try:
+    from geoworkflow.core.constants import (
+        GRID_EXPORT_THRESHOLD, BASE_GRID_SIZE_M, DEFAULT_GRID_WORKERS
+    )
+except ImportError as e:
+    # Fallback values if constants file isn't available
+    GRID_EXPORT_THRESHOLD = 4000
+    BASE_GRID_SIZE_M = 1500  
+    DEFAULT_GRID_WORKERS = 4
+    import warnings
+    warnings.warn(f"Could not import grid constants: {e}. Using fallback values.")
 
+    
 class BaseConfig(BaseModel):
     """Base configuration class with common settings."""
     model_config = ConfigDict(
-        extra='forbid',
-        validate_assignment=True,
-        use_enum_values=True
+        extra='forbid',  # Don't allow extra fields
+        validate_assignment=True,  # Validate on assignment
+        use_enum_values=True,  # Use enum values in serialization
+        arbitrary_types_allowed=True  # Allow Path and other types
     )
 
 
@@ -429,27 +443,6 @@ class OpenBuildingsExtractionConfig(BaseConfig):
         EarthEngineAuthMethod.SERVICE_ACCOUNT,
         description="Authentication method to use"
     )
-
-
-    """Configuration for Open Buildings dataset extraction via Earth Engine."""
-    
-    # Required inputs (user must provide)
-    aoi_file: Path = Field(..., description="Area of Interest boundary file")
-    output_dir: Path = Field(..., description="Output directory for extracted buildings")
-    
-    # Authentication (flexible options for academic teams)
-    service_account_key: Optional[Path] = Field(
-        None, 
-        description="Path to service account key JSON file"
-    )
-    project_id: Optional[str] = Field(
-        None,
-        description="Google Cloud Project ID (can be inferred from service account)"
-    )
-    auth_method: EarthEngineAuthMethod = Field(
-        EarthEngineAuthMethod.SERVICE_ACCOUNT,
-        description="Authentication method to use"
-    )
     
     # Core extraction settings with sensible defaults
     dataset_version: OpenBuildingsDataset = Field(
@@ -504,6 +497,30 @@ class OpenBuildingsExtractionConfig(BaseConfig):
         description="Processing chunk size for large extractions"
     )
     
+    # Grid processing options (for large datasets - NEW)
+    enable_grid_processing: bool = Field(
+        True, 
+        description="Enable automatic grid processing for large datasets"
+    )
+    grid_size_m: int = Field(
+        BASE_GRID_SIZE_M,  # Using constant as default
+        ge=500, 
+        le=5000,
+        description="Grid cell size in meters for parallel processing"
+    )
+    grid_workers: int = Field(
+        DEFAULT_GRID_WORKERS,  # Using constant as default
+        ge=1, 
+        le=8,
+        description="Number of parallel workers for grid processing"
+    )
+    grid_threshold: int = Field(
+        GRID_EXPORT_THRESHOLD,  # Using constant as default
+        ge=1000, 
+        le=10000,
+        description="Feature count threshold to trigger grid processing"
+    )
+    
     # Processing options
     overwrite_existing: bool = Field(
         False, 
@@ -527,6 +544,7 @@ class OpenBuildingsExtractionConfig(BaseConfig):
         le=5,
         description="Number of retry attempts for failed operations"
     )
+
 
     @field_validator('aoi_file')
     @classmethod
@@ -620,3 +638,4 @@ Earth Engine Setup for Academic Users:
 - Higher confidence = fewer but more reliable buildings
         """
         return guidance.strip()
+    

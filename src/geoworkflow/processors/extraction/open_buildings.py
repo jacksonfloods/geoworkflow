@@ -208,147 +208,38 @@ class OpenBuildingsExtractionProcessor(TemplateMethodProcessor, GeospatialProces
         return cleanup_info
     
     def _export_buildings(self) -> None:
-        """Export buildings to the specified format."""
-        format_type = self.buildings_config.export_format.value
+        """Export buildings using the enhanced API with grid processing support."""
+        self.logger.info(f"Exporting buildings to {self.buildings_config.export_format.value}: {self.output_file}")
         
-        if format_type == "geojson":
-            self._export_to_geojson()
-        elif format_type == "shapefile":
-            self._export_to_shapefile()
-        elif format_type == "csv":
-            self._export_to_csv()
-        else:
-            raise ExtractionError(f"Unsupported export format: {format_type}")
-    
-    def _export_to_geojson(self) -> None:
-        """Export buildings to GeoJSON format."""
-        self.logger.info(f"Exporting buildings to GeoJSON: {self.output_file}")
-        
-        # Prepare export task
-        export_params = {
-            'collection': self._prepare_collection_for_export(),
-            'description': f'open_buildings_export_{int(time.time())}',
-            'fileFormat': 'GeoJSON'
-        }
-        
-        # Execute synchronous export
-        features = self._execute_ee_export(export_params)
-        
-        # Write to local file
-        with open(self.output_file, 'w') as f:
-            json.dump(features, f, indent=2)
-        
-        self.logger.info(f"GeoJSON export completed: {self.output_file}")
-    
-    def _export_to_shapefile(self) -> None:
-        """Export buildings to Shapefile format."""
-        self.logger.info(f"Exporting buildings to Shapefile: {self.output_file}")
-        
-        # For Shapefile, we need to ensure column names are <= 10 characters
-        collection = self._prepare_collection_for_export()
-        
-        # Earth Engine to GeoDataFrame conversion
-        features = self._execute_ee_export({'collection': collection, 'fileFormat': 'GeoDataFrame'})
-        gdf = gpd.GeoDataFrame.from_features(features['features'])
-        
-        # Truncate column names for Shapefile compatibility
-        gdf = self._truncate_shapefile_columns(gdf)
-        
-        # Write to Shapefile
-        gdf.to_file(self.output_file, driver='ESRI Shapefile')
-        
-        self.logger.info(f"Shapefile export completed: {self.output_file}")
-    
-    def _export_to_csv(self) -> None:
-        """Export building centroids to CSV format."""
-        self.logger.info(f"Exporting building centroids to CSV: {self.output_file}")
-        
-        # For CSV, we export centroids rather than full polygons
-        collection = self._prepare_collection_for_export()
-        
-        # Add centroid coordinates to each feature
-        collection = collection.map(lambda feature: feature.set(
-            'longitude', feature.geometry().centroid().coordinates().get(0)
-        ).set(
-            'latitude', feature.geometry().centroid().coordinates().get(1)
-        ))
-        
-        # Execute export without geometry
-        export_params = {
-            'collection': collection.select(['.*'], None, False),  # Drop geometry
-            'fileFormat': 'CSV'
-        }
-        
-        features = self._execute_ee_export(export_params)
-        
-        # Convert to DataFrame and save
-        df = pd.DataFrame([f['properties'] for f in features.get('features', [])])
-        df.to_csv(self.output_file, index=False)
-        
-        self.logger.info(f"CSV export completed: {self.output_file}")
-    
-    def _prepare_collection_for_export(self) -> 'ee.FeatureCollection':
-        """Prepare the collection for export by adding requested attributes."""
-        collection = self.filtered_buildings
-        
-        # Add confidence scores if requested
+        # Prepare properties to include
+        include_properties = []
         if self.buildings_config.include_confidence:
-            # Confidence is already in the original data
-            pass
-        
-        # Add calculated area if requested
+            include_properties.append('confidence')
         if self.buildings_config.include_area:
-            collection = collection.map(lambda feature: feature.set(
-                'area_m2', feature.geometry().area()
-            ))
-        
-        # Add Plus Codes if requested
+            include_properties.append('area_in_meters')
         if self.buildings_config.include_plus_codes:
-            # Plus codes are already in the original Open Buildings data
-            pass
+            include_properties.append('plus_code')
         
-        return collection
-    
-    def _execute_ee_export(self, export_params: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute Earth Engine export with timeout and retry logic."""
-        max_attempts = self.buildings_config.retry_attempts
-        timeout_seconds = self.buildings_config.timeout_minutes * 60
-        
-        for attempt in range(max_attempts):
-            try:
-                self.logger.debug(f"Export attempt {attempt + 1}/{max_attempts}")
-                
-                # Convert EE collection to features (simplified synchronous approach)
-                features = export_params['collection'].getInfo()
-                
-                return features
-                
-            except Exception as e:
-                if attempt == max_attempts - 1:
-                    raise ExtractionError(f"Export failed after {max_attempts} attempts: {e}")
-                
-                self.logger.warning(f"Export attempt {attempt + 1} failed: {e}. Retrying...")
-                time.sleep(2 ** attempt)  # Exponential backoff
-    
-    def _truncate_shapefile_columns(self, gdf: 'gpd.GeoDataFrame') -> 'gpd.GeoDataFrame':
-        """Truncate column names for Shapefile compatibility (10 character limit)."""
-        column_mapping = {}
-        
-        for col in gdf.columns:
-            if col == 'geometry':
-                continue
+        try:
+            # Use the enhanced export_to_format method with grid processing support
+            self.ee_api.export_to_format(
+                collection=self.filtered_buildings,
+                output_path=self.output_file,
+                format_type=self.buildings_config.export_format.value,
+                include_properties=include_properties if include_properties else None,
+                max_features=self.buildings_config.max_features,
+                # Grid processing configuration
+                enable_grid_processing=self.buildings_config.enable_grid_processing,
+                grid_size_m=self.buildings_config.grid_size_m,
+                grid_workers=self.buildings_config.grid_workers,
+                grid_threshold=self.buildings_config.grid_threshold
+            )
             
-            if len(col) > 10:
-                # Create abbreviated version
-                truncated = col[:7] + str(abs(hash(col)))[:3]
-                column_mapping[col] = truncated
-                self.logger.debug(f"Truncated column '{col}' -> '{truncated}'")
-        
-        if column_mapping:
-            gdf = gdf.rename(columns=column_mapping)
-        
-        return gdf
-    
+            self.logger.info(f"Export completed: {self.output_file}")
+            
+        except Exception as e:
+            raise ExtractionError(f"Failed to export buildings: {e}")
+
     def _get_actual_feature_count(self) -> int:
         """Get the actual number of features that were exported."""
         try:

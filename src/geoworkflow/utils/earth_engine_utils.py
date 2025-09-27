@@ -13,11 +13,12 @@ import time
 from pathlib import Path
 from typing import Optional, Union, Dict, Any, List, Tuple, TYPE_CHECKING
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
-import json  # For GeoJSON export
-import time  # For task waiting
-from typing import Optional, Union, Dict, Any, List, Tuple, TYPE_CHECKING
-from datetime import datetime
+import numpy as np
+from shapely.geometry import box
+import geopandas as gpd
 
 # Additional imports for CSV export
 try:
@@ -27,7 +28,7 @@ except ImportError:
     HAS_PANDAS = False
     pd = None
 
-# Shapely for geometry operations (if not already imported)
+# Shapely for geometry operations
 try:
     from shapely.geometry import mapping
     HAS_SHAPELY = True
@@ -36,25 +37,22 @@ except ImportError:
     mapping = None
 
 
-
 # Proper conditional imports for Earth Engine
 HAS_EARTH_ENGINE = False
 EARTH_ENGINE_ERROR = None
 
 try:
     import ee
-    import geopandas as gpd
     HAS_EARTH_ENGINE = True
 except ImportError as e:
     EARTH_ENGINE_ERROR = str(e)
     # Only import for type checking, not runtime
     if TYPE_CHECKING:
         import ee
-        import geopandas as gpd
     else:
         # Runtime stubs that will never be used when EE is unavailable
         ee = None
-        gpd = None
+
 
 # Import our exceptions and constants
 from ..core.exceptions import (
@@ -65,14 +63,16 @@ from ..core.exceptions import (
     EarthEngineGeometryError
 )
 from ..core.constants import (
-    EARTH_ENGINE_DATASETS,
-    DEFAULT_EARTH_ENGINE_TIMEOUT,
-    DEFAULT_BUILDING_CONFIDENCE,
-    DEFAULT_MIN_BUILDING_AREA,
-    DEFAULT_MAX_BUILDING_AREA,
-    DEFAULT_EE_RETRY_ATTEMPTS,
-    DEFAULT_EE_RETRY_DELAY,
-    EE_ERROR_PATTERNS
+    EARTH_ENGINE_DATASETS, DEFAULT_EARTH_ENGINE_TIMEOUT, DEFAULT_BUILDING_CONFIDENCE,
+    DEFAULT_MIN_BUILDING_AREA,DEFAULT_MAX_BUILDING_AREA, DEFAULT_EE_RETRY_ATTEMPTS,
+    DEFAULT_EE_RETRY_DELAY, EE_ERROR_PATTERNS
+)
+# Add after existing imports
+from geoworkflow.core.constants import (
+    EARTH_ENGINE_DATASETS, MAX_EE_FEATURES_PER_REQUEST,
+    GRID_EXPORT_THRESHOLD, BASE_GRID_SIZE_M, SUBDIVISION_THRESHOLD,
+    MAX_FEATURES_PER_CELL, MIN_CELL_SIZE_M, MAX_SUBDIVISION_DEPTH,
+    DEFAULT_GRID_WORKERS, GRID_CRS_METRIC, GRID_PROGRESS_UPDATE_INTERVAL
 )
 
 logger = logging.getLogger(__name__)
@@ -343,7 +343,27 @@ class OpenBuildingsAPI:
         self.collection = ee.FeatureCollection(self.collection_path)
         
         logger.info(f"Initialized Open Buildings API for dataset: {self.collection_path}")
-    
+
+    def _truncate_shapefile_columns(self, gdf: 'gpd.GeoDataFrame') -> 'gpd.GeoDataFrame':
+        """Truncate column names for Shapefile compatibility (10 char limit)."""
+        column_mapping = {}
+        for col in gdf.columns:
+            if col != 'geometry' and len(col) > 10:
+                # Truncate to 10 characters
+                new_col = col[:10]
+                # Handle duplicates by adding numbers
+                counter = 1
+                while new_col in column_mapping.values():
+                    new_col = col[:8] + f"{counter:02d}"
+                    counter += 1
+                column_mapping[col] = new_col
+        
+        if column_mapping:
+            gdf = gdf.rename(columns=column_mapping)
+            logger.info(f"Truncated {len(column_mapping)} column names for Shapefile compatibility")
+        
+        return gdf
+
     def load_aoi_geometry(self, aoi_file: Path) -> EEGeometry:
         """
         Load AOI from file and convert to Earth Engine geometry.
@@ -576,98 +596,21 @@ class OpenBuildingsAPI:
         
         logger.error(f"Task timed out after {timeout_minutes} minutes")
         return False
-    
-    def load_aoi_geometry(self, aoi_file: Path) -> EEGeometry:
-        """
-        Load AOI from file and convert to Earth Engine geometry.
-        
-        Args:
-            aoi_file: Path to AOI file (GeoJSON, Shapefile, etc.)
-            
-        Returns:
-            Earth Engine Geometry object
-            
-        Raises:
-            EarthEngineGeometryError: If geometry loading or conversion fails
-        """
-        if not HAS_EARTH_ENGINE:
-            raise EarthEngineGeometryError("Earth Engine not available")
-            
-        if not aoi_file.exists():
-            raise EarthEngineGeometryError(f"AOI file not found: {aoi_file}")
-            
-        try:
-            # Load AOI using geopandas
-            gdf = gpd.read_file(aoi_file)
-            
-            if gdf.empty:
-                raise EarthEngineGeometryError(f"AOI file is empty: {aoi_file}")
-            
-            # Ensure CRS is WGS84 for Earth Engine
-            if gdf.crs is None:
-                logger.warning("AOI file has no CRS, assuming EPSG:4326")
-                gdf.crs = 'EPSG:4326'
-            elif gdf.crs.to_string() != 'EPSG:4326':
-                logger.info(f"Reprojecting AOI from {gdf.crs} to EPSG:4326")
-                gdf = gdf.to_crs('EPSG:4326')
-            
-            # Combine all geometries into one (union)
-            if len(gdf) > 1:
-                logger.info(f"Combining {len(gdf)} AOI features into single geometry")
-                combined_geom = gdf.geometry.unary_union
-            else:
-                combined_geom = gdf.geometry.iloc[0]
-            
-            # Convert to GeoJSON format for Earth Engine
-            if hasattr(combined_geom, '__geo_interface__'):
-                geojson_geom = combined_geom.__geo_interface__
-            else:
-                # Fallback: use shapely's mapping
-                from shapely.geometry import mapping
-                geojson_geom = mapping(combined_geom)
-            
-            # Create Earth Engine geometry
-            ee_geometry = ee.Geometry(geojson_geom)
-            
-            # Validate geometry
-            try:
-                # Simple validation: check if geometry is valid
-                area = ee_geometry.area().getInfo()  
-                if area <= 0:
-                    raise EarthEngineGeometryError("AOI geometry has zero or negative area")
-            except Exception as e:
-                logger.warning(f"Geometry validation warning: {e}")
-                if "too complex" in str(e).lower():
-                    raise EarthEngineGeometryError(
-                        f"AOI geometry is too complex for Earth Engine. "
-                        "Consider simplifying the geometry."
-                    )
-            
-            logger.info(f"Successfully loaded AOI geometry from {aoi_file}")
-            return ee_geometry
-            
-        except Exception as e:
-            if isinstance(e, EarthEngineGeometryError):
-                raise
-            else:
-                raise EarthEngineGeometryError(f"Failed to load AOI geometry from {aoi_file}: {e}")
+ 
 
     def export_to_format(self, collection: EEFeatureCollection, 
                         output_path: Path, format_type: str,
                         include_properties: Optional[List[str]] = None,
-                        max_features: Optional[int] = None) -> None:
+                        max_features: Optional[int] = None,
+                        # Grid processing parameters
+                        enable_grid_processing: bool = True,
+                        grid_size_m: int = BASE_GRID_SIZE_M,
+                        grid_workers: int = DEFAULT_GRID_WORKERS,
+                        grid_threshold: int = GRID_EXPORT_THRESHOLD) -> None:
+
         """
         Export Earth Engine collection to specified format.
-        
-        Args:
-            collection: Earth Engine FeatureCollection to export
-            output_path: Output file path
-            format_type: Export format ('geojson', 'shapefile', 'csv')
-            include_properties: List of properties to include (None for all)
-            max_features: Maximum number of features to export
-            
-        Raises:
-            EarthEngineError: If export operation fails
+        Automatically uses grid-based processing for large datasets.
         """
         if not HAS_EARTH_ENGINE:
             raise EarthEngineError("Earth Engine not available")
@@ -682,23 +625,25 @@ class OpenBuildingsAPI:
             
             # Select properties if specified
             if include_properties is not None:
-                # Always include geometry
                 properties_with_geometry = ['geometry'] + include_properties
                 collection = collection.select(properties_with_geometry)
             
-            # Convert to client-side for local export
-            logger.info(f"Converting Earth Engine collection to {format_type} format...")
+            # Count features to determine export strategy
+            logger.info("Counting features in collection...")
+            feature_count = collection.size().getInfo()
+            logger.info(f"Collection contains {feature_count:,} features")
             
-            if format_type.lower() == 'geojson':
-                self._export_to_geojson(collection, output_path)
-            elif format_type.lower() == 'shapefile':
-                self._export_to_shapefile(collection, output_path)
-            elif format_type.lower() == 'csv':
-                self._export_to_csv(collection, output_path)
+            
+            # Choose export strategy based on feature count and config
+            if (enable_grid_processing and feature_count > grid_threshold):
+                logger.info(f"Large dataset detected ({feature_count:,} features). Using grid-based export...")
+                self._export_using_grid_processing(collection, output_path, format_type, 
+                                                grid_size_m, grid_workers, grid_threshold)
             else:
-                raise EarthEngineError(f"Unsupported export format: {format_type}")
+                logger.info(f"Using direct export for {feature_count:,} features...")
+                self._export_using_direct_method(collection, output_path, format_type)
                 
-            logger.info(f"Successfully exported buildings to {output_path}")
+            logger.info(f"Successfully exported {feature_count:,} buildings to {output_path}")
             
         except Exception as e:
             if isinstance(e, EarthEngineError):
@@ -772,6 +717,49 @@ class OpenBuildingsAPI:
         except Exception as e:
             raise EarthEngineError(f"Failed to export CSV: {e}")
 
+    def _save_combined_features(self, all_features: List[Dict], 
+                            output_path: Path, format_type: str) -> None:
+        """Save combined features to the specified format."""
+        logger.info(f"Saving {len(all_features):,} features to {format_type} format...")
+        
+        if format_type.lower() == 'geojson':
+            geojson_data = {
+                "type": "FeatureCollection",
+                "features": all_features
+            }
+            with open(output_path, 'w') as f:
+                json.dump(geojson_data, f, indent=2)
+        
+        elif format_type.lower() == 'shapefile':
+            gdf = gpd.GeoDataFrame.from_features(all_features)
+            gdf.crs = 'EPSG:4326'
+            gdf = self._truncate_shapefile_columns(gdf)
+            gdf.to_file(output_path, driver='ESRI Shapefile')
+        
+        elif format_type.lower() == 'csv':
+            if not HAS_PANDAS:
+                raise EarthEngineError("Pandas is required for CSV export. Install with: pip install pandas")
+            
+            # Extract centroids for CSV
+            rows = []
+            for feature in all_features:
+                props = feature.get('properties', {})
+                geom = feature.get('geometry', {})
+                if geom.get('type') == 'Polygon' and geom.get('coordinates'):
+                    # Calculate centroid (simplified)
+                    coords = geom['coordinates'][0]
+                    if coords:
+                        centroid_lon = sum(c[0] for c in coords) / len(coords)
+                        centroid_lat = sum(c[1] for c in coords) / len(coords)
+                        props.update({'longitude': centroid_lon, 'latitude': centroid_lat})
+                rows.append(props)
+            
+            df = pd.DataFrame(rows)
+            df.to_csv(output_path, index=False)
+        
+        else:
+            raise EarthEngineError(f"Unsupported format: {format_type}")
+
     def wait_for_export_task(self, task: EETask, timeout_minutes: int = 30) -> bool:
         """
         Wait for an Earth Engine export task to complete.
@@ -814,8 +802,289 @@ class OpenBuildingsAPI:
         logger.error(f"Export task timeout after {timeout_minutes} minutes")
         return False
 
+    def _export_using_direct_method(self, collection: EEFeatureCollection, 
+                                output_path: Path, format_type: str) -> None:
+        """Use existing direct export for smaller datasets."""
+        if format_type.lower() == 'geojson':
+            self._export_to_geojson(collection, output_path)
+        elif format_type.lower() == 'shapefile':
+            self._export_to_shapefile(collection, output_path)
+        elif format_type.lower() == 'csv':
+            self._export_to_csv(collection, output_path)
+        else:
+            raise EarthEngineError(f"Unsupported export format: {format_type}")
 
+    def _export_using_grid_processing(self, collection: EEFeatureCollection,
+                                    output_path: Path, format_type: str,
+                                    grid_size_m: int = BASE_GRID_SIZE_M,
+                                    grid_workers: int = DEFAULT_GRID_WORKERS,
+                                    grid_threshold: int = SUBDIVISION_THRESHOLD) -> None:
+        """Use grid-based processing for large datasets."""
+        logger.info("Starting grid-based export processing...")
+        
+        # Get collection bounds
+        bounds = collection.geometry().bounds().getInfo()
+        bounds_list = [bounds['coordinates'][0][0][0], bounds['coordinates'][0][0][1],
+                    bounds['coordinates'][0][2][0], bounds['coordinates'][0][2][1]]
+        
+        # Create grid tasks using provided parameters
+        grid_tasks = self._create_grid_tasks_from_bounds(bounds_list, grid_size_m)
+        logger.info(f"Created {len(grid_tasks)} grid cells for processing")
+        
+        # Process grid cells in parallel using provided workers
+        all_features = self._process_grid_cells_parallel(collection, grid_tasks, grid_workers, grid_threshold)
+        
+        # Combine and export results
+        self._save_combined_features(all_features, output_path, format_type)
 
+    def _create_grid_tasks_from_bounds(self, bounds_wgs84: List[float], grid_size_m: int) -> List[Dict]:
+        """Create grid tasks covering the bounding box."""
+        west, south, east, north = bounds_wgs84
+        
+        # Convert to Africa Albers for metric grid
+        bbox_wgs84 = box(west, south, east, north)
+        bbox_gdf = gpd.GeoDataFrame([1], geometry=[bbox_wgs84], crs="EPSG:4326")
+        bbox_albers = bbox_gdf.to_crs(GRID_CRS_METRIC)
+        
+        x_min, y_min, x_max, y_max = bbox_albers.total_bounds
+        x_coords = np.arange(x_min, x_max, grid_size_m)  # Use parameter, not constant
+        y_coords = np.arange(y_min, y_max, grid_size_m)  # Use parameter, not constant
+        
+        tasks = []
+        task_id = 0
+        
+        for i, x in enumerate(x_coords[:-1]):
+            for j, y in enumerate(y_coords[:-1]):
+                cell_bounds_albers = (x, y, x_coords[i+1], y_coords[j+1])
+                cell_geom_albers = box(*cell_bounds_albers)
+                
+                # Transform back to WGS84
+                cell_gdf_albers = gpd.GeoDataFrame([1], geometry=[cell_geom_albers], crs=GRID_CRS_METRIC)
+                cell_gdf_wgs84 = cell_gdf_albers.to_crs("EPSG:4326")
+                bounds_wgs84_cell = cell_gdf_wgs84.total_bounds.tolist()
+                
+                tasks.append({
+                    'task_id': task_id,
+                    'grid_id': f"{i}_{j}",
+                    'bounds_wgs84': bounds_wgs84_cell,
+                    'grid_size_m': grid_size_m  # Use parameter, not constant
+                })
+                task_id += 1
+        
+        return tasks
+
+    def _process_grid_cells_parallel(self, collection: EEFeatureCollection, 
+                                    grid_tasks: List[Dict], grid_workers: int, 
+                                    subdivision_threshold: int) -> List[Dict]:
+        """Process grid cells in parallel and return all features."""
+        all_features = []
+        results_lock = threading.Lock()
+        completed_tasks = 0
+        
+        def process_single_cell(task: Dict) -> None:
+            nonlocal completed_tasks
+            
+            try:
+                # Create geometry for this cell
+                bounds = task['bounds_wgs84']
+                west, south, east, north = bounds
+                cell_geometry = ee.Geometry.Rectangle([west, south, east, north])
+                
+                # Filter collection to this cell
+                cell_buildings = collection.filterBounds(cell_geometry)
+                building_count = cell_buildings.size().getInfo()
+                
+                if building_count == 0:
+                    return
+                
+                # Check if subdivision needed - use parameter, not constant
+                if building_count > subdivision_threshold:
+                    logger.info(f"Subdividing dense cell {task['grid_id']} ({building_count} buildings)")
+                    cell_features = self._process_cell_with_subdivision(
+                        cell_buildings, bounds, subdivision_threshold=subdivision_threshold
+                    )
+                else:
+                    # Direct download
+                    cell_features = cell_buildings.getInfo().get('features', [])
+                
+                # Thread-safe feature collection
+                with results_lock:
+                    all_features.extend(cell_features)
+                    completed_tasks += 1
+                    
+                    if completed_tasks % 10 == 0:
+                        progress = (completed_tasks / len(grid_tasks)) * 100
+                        logger.info(f"Progress: {completed_tasks}/{len(grid_tasks)} cells ({progress:.1f}%)")
+            
+            except Exception as e:
+                logger.warning(f"Error processing cell {task['grid_id']}: {e}")
+                with results_lock:
+                    completed_tasks += 1
+        
+        # Process in parallel - use parameter, not constant
+        with ThreadPoolExecutor(max_workers=grid_workers) as executor:
+            futures = [executor.submit(process_single_cell, task) for task in grid_tasks]
+            
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    logger.error(f"Cell processing error: {e}")
+        
+        logger.info(f"Collected {len(all_features):,} features from {len(grid_tasks)} grid cells")
+        return all_features
+
+    def _process_cell_with_subdivision(self, cell_buildings: EEFeatureCollection, 
+                                    bounds_wgs84: List[float], 
+                                    subdivision_threshold: int = SUBDIVISION_THRESHOLD,
+                                    max_features_per_cell: int = MAX_FEATURES_PER_CELL,
+                                    min_cell_size_m: float = MIN_CELL_SIZE_M,
+                                    max_depth: int = MAX_SUBDIVISION_DEPTH,
+                                    depth: int = 0) -> List[Dict]:
+        """
+        Recursively subdivide a dense cell and collect features.
+        
+        This method handles cells that exceed the Earth Engine feature limit by:
+        1. Checking if subdivision is needed based on feature count and depth limits
+        2. Converting to metric CRS for precise geometric subdivision
+        3. Splitting the cell into 4 quadrants
+        4. Recursively processing each quadrant until feature counts are manageable
+        
+        Args:
+            cell_buildings: Earth Engine FeatureCollection for this cell
+            bounds_wgs84: Cell bounds in WGS84 [west, south, east, north]
+            subdivision_threshold: Feature count threshold to trigger subdivision
+            max_features_per_cell: Maximum features to download per cell (EE limit)
+            min_cell_size_m: Minimum cell size in meters to prevent infinite subdivision
+            max_depth: Maximum recursion depth to prevent infinite loops
+            depth: Current recursion depth
+            
+        Returns:
+            List of feature dictionaries ready for export
+            
+        Raises:
+            EarthEngineError: If subdivision process fails
+        """
+        try:
+            # Count buildings in current cell
+            building_count = cell_buildings.size().getInfo()
+            
+            # Base cases - stop subdivision
+            if building_count <= max_features_per_cell:
+                # Cell is small enough, download directly
+                return cell_buildings.getInfo().get('features', [])
+            
+            if depth >= max_depth:
+                logger.warning(
+                    f"Maximum subdivision depth ({max_depth}) reached at depth {depth}. "
+                    f"Truncating to {max_features_per_cell} features to avoid infinite recursion."
+                )
+                return cell_buildings.limit(max_features_per_cell).getInfo().get('features', [])
+            
+            # Convert bounds to metric CRS for precise geometric operations
+            west, south, east, north = bounds_wgs84
+            bbox_wgs84 = box(west, south, east, north)
+            gdf_wgs84 = gpd.GeoDataFrame([1], geometry=[bbox_wgs84], crs="EPSG:4326")
+            gdf_albers = gdf_wgs84.to_crs(GRID_CRS_METRIC)
+            x_min, y_min, x_max, y_max = gdf_albers.total_bounds
+            
+            # Check minimum cell size to prevent infinite subdivision
+            current_width_m = x_max - x_min
+            current_height_m = y_max - y_min
+            current_size_m = min(current_width_m, current_height_m)
+            
+            if current_size_m < min_cell_size_m:
+                logger.warning(
+                    f"Cell size ({current_size_m:.1f}m) below minimum ({min_cell_size_m}m). "
+                    f"Truncating to {max_features_per_cell} features to prevent over-subdivision."
+                )
+                return cell_buildings.limit(max_features_per_cell).getInfo().get('features', [])
+            
+            # Log subdivision attempt
+            logger.debug(
+                f"Subdividing cell at depth {depth}: {building_count} buildings, "
+                f"size {current_size_m:.1f}m"
+            )
+            
+            # Split into 4 quadrants in metric space
+            mid_x = (x_min + x_max) / 2
+            mid_y = (y_min + y_max) / 2
+            
+            quadrants_albers = [
+                (x_min, y_min, mid_x, mid_y),    # Southwest
+                (mid_x, y_min, x_max, mid_y),    # Southeast  
+                (x_min, mid_y, mid_x, y_max),    # Northwest
+                (mid_x, mid_y, x_max, y_max)     # Northeast
+            ]
+            
+            # Process each quadrant
+            all_features = []
+            
+            for i, quad_albers in enumerate(quadrants_albers):
+                try:
+                    # Convert quadrant bounds back to WGS84
+                    quad_geom_albers = box(*quad_albers)
+                    quad_gdf_albers = gpd.GeoDataFrame([1], geometry=[quad_geom_albers], crs=GRID_CRS_METRIC)
+                    quad_gdf_wgs84 = quad_gdf_albers.to_crs("EPSG:4326")
+                    quad_bounds_wgs84 = quad_gdf_wgs84.total_bounds.tolist()
+                    
+                    # Create Earth Engine geometry for this quadrant
+                    quad_west, quad_south, quad_east, quad_north = quad_bounds_wgs84
+                    quad_geometry = ee.Geometry.Rectangle([quad_west, quad_south, quad_east, quad_north])
+                    
+                    # Filter buildings to this quadrant
+                    quad_buildings = cell_buildings.filterBounds(quad_geometry)
+                    quad_count = quad_buildings.size().getInfo()
+                    
+                    if quad_count == 0:
+                        # No buildings in this quadrant, skip
+                        continue
+                        
+                    elif quad_count <= max_features_per_cell:
+                        # Quadrant is small enough, download directly
+                        logger.debug(f"Downloading {quad_count} buildings from quadrant {i}")
+                        quad_features = quad_buildings.getInfo().get('features', [])
+                        all_features.extend(quad_features)
+                        
+                    else:
+                        # Quadrant still too large, recurse
+                        logger.debug(
+                            f"Quadrant {i} has {quad_count} buildings (>{max_features_per_cell}), "
+                            f"subdividing further (depth {depth+1})"
+                        )
+                        subdivided_features = self._process_cell_with_subdivision(
+                            quad_buildings, 
+                            quad_bounds_wgs84,
+                            subdivision_threshold=subdivision_threshold,
+                            max_features_per_cell=max_features_per_cell,
+                            min_cell_size_m=min_cell_size_m,
+                            max_depth=max_depth,
+                            depth=depth + 1
+                        )
+                        all_features.extend(subdivided_features)
+                        
+                except Exception as e:
+                    logger.error(f"Error processing quadrant {i} at depth {depth}: {e}")
+                    # Continue with other quadrants rather than failing completely
+                    continue
+            
+            logger.debug(
+                f"Subdivision at depth {depth} complete: collected {len(all_features)} features "
+                f"from {len(quadrants_albers)} quadrants"
+            )
+            
+            return all_features
+            
+        except Exception as e:
+            logger.error(f"Subdivision failed at depth {depth}: {e}")
+            # Fallback: try to download what we can with the limit
+            try:
+                logger.warning(f"Falling back to truncated download of {max_features_per_cell} features")
+                return cell_buildings.limit(max_features_per_cell).getInfo().get('features', [])
+            except Exception as fallback_error:
+                logger.error(f"Fallback download also failed: {fallback_error}")
+                return []  # Return empty list rather than crashing
+            
 def retry_ee_operation(func, max_attempts: int = DEFAULT_EE_RETRY_ATTEMPTS, 
                       delay: float = DEFAULT_EE_RETRY_DELAY):
     """
@@ -941,3 +1210,5 @@ def create_buildings_feature_properties(include_confidence: bool = True,
     properties.extend(['longitude', 'latitude'])
     
     return properties
+
+

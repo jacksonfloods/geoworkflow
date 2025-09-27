@@ -1,3 +1,4 @@
+#/src/geoworkflow/core/constants.py
 """
 Global constants for the geoworkflow package.
 
@@ -243,3 +244,17 @@ EE_ERROR_PATTERNS = {
     'timeout': ['timeout', 'deadline', 'cancelled'],
     'geometry': ['invalid geometry', 'self-intersection', 'too complex']
 }
+
+# Grid-based export settings (for bypassing 5000 feature limit)
+GRID_EXPORT_THRESHOLD = 4000        # Switch to grid processing above this count
+BASE_GRID_SIZE_M = 1500             # Default grid cell size in meters
+SUBDIVISION_THRESHOLD = 4800        # When to subdivide dense cells  
+MAX_FEATURES_PER_CELL = 5000        # Hard EE limit per request
+MIN_CELL_SIZE_M = 50               # Minimum subdivision size in meters
+MAX_SUBDIVISION_DEPTH = 6           # Prevent infinite recursion
+DEFAULT_GRID_WORKERS = 4            # Parallel processing threads
+GRID_CRS_METRIC = "ESRI:102022"     # Africa Albers for metric calculations
+
+# Grid processing chunk sizes
+GRID_PROGRESS_UPDATE_INTERVAL = 10  # Log progress every N cells
+GRID_BATCH_SIZE = 25               # Cells per worker batch
