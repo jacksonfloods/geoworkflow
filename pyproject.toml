@@ -36,6 +36,11 @@ dependencies = [
     "typer>=0.9.0",
     "marshmallow>=3.19.0",
     "jsonschema>=4.17.0",
+    # Earth Engine dependencies (now included by default)
+    "earthengine-api>=0.1.400",
+    "google-cloud-storage>=2.10.0", 
+    "google-auth>=2.15.0",
+    "google-auth-oauthlib>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -77,12 +82,7 @@ jupyter = [
     "ipywidgets>=8.0.0",
 ]
 
-earth-engine = [
-    "earthengine-api>=0.1.400",
-    "google-cloud-storage>=2.10.0", 
-    "google-auth>=2.15.0",
-    "google-auth-oauthlib>=1.0.0"
-]
+# Note: earth-engine dependencies are now included by default in the main dependencies list
 
 # All pip dependencies (for pip-only users)
 all = [
@@ -117,11 +117,7 @@ all = [
     "jupyter>=1.0.0",
     "jupyterlab>=3.0.0",
     "ipywidgets>=8.0.0",
-    # Earth Engine dependencies
-    "earthengine-api>=0.1.400",
-    "google-cloud-storage>=2.10.0", 
-    "google-auth>=2.15.0",
-    "google-auth-oauthlib>=1.0.0"
+    # Note: Earth Engine dependencies are now included by default
 ]
 
 [project.urls]

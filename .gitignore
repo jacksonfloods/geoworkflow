@@ -9,3 +9,5 @@
 *.log
 /data/*
 /config/auth
+src/geoworkflow.egg-info/PKG-INFO
+src/geoworkflow.egg-info/PKG-INFO

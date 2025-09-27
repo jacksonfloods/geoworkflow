@@ -117,6 +117,7 @@ class OpenBuildingsExtractionProcessor(TemplateMethodProcessor, GeospatialProces
         validation_result["valid"] = len(validation_result["errors"]) == 0
         return validation_result
 
+    
     def _setup_custom_processing(self) -> Dict[str, Any]:
         """Set up Earth Engine authentication and API."""
         setup_info = {"components": []}
@@ -125,6 +126,7 @@ class OpenBuildingsExtractionProcessor(TemplateMethodProcessor, GeospatialProces
             # Authenticate with Earth Engine
             project_id = EarthEngineAuth.authenticate(
                 service_account_key=self.buildings_config.service_account_key,
+                service_account_email=self.buildings_config.service_account_email,  # Add this line
                 project_id=self.buildings_config.project_id
             )
             

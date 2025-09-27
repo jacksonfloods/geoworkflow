@@ -176,17 +176,14 @@ class EarthEngineAuth:
     
     @staticmethod
     def authenticate(service_account_key: Optional[Path] = None, 
+                    service_account_email: Optional[str] = None,
                     project_id: Optional[str] = None) -> str:
         """
         Authenticate with Earth Engine using academic-friendly credential discovery.
         
-        Order of precedence:
-        1. Explicit service account key file
-        2. GOOGLE_APPLICATION_CREDENTIALS environment variable  
-        3. Default EE credentials location
-        
         Args:
             service_account_key: Optional path to service account key
+            service_account_email: Service account email (required with service_account_key)
             project_id: Optional Google Cloud project ID
             
         Returns:
@@ -201,7 +198,12 @@ class EarthEngineAuth:
         try:
             # Method 1: Service account key file
             if service_account_key and service_account_key.exists():
-                logger.info(f"Using service account key: {service_account_key}")
+                if not service_account_email:
+                    raise EarthEngineAuthenticationError(
+                        "service_account_email is required when using service account key file"
+                    )
+                
+                logger.info(f"Using service account: {service_account_email}")
                 
                 # Extract project ID from service account if not provided
                 if not project_id:
@@ -209,13 +211,14 @@ class EarthEngineAuth:
                 
                 # Initialize with service account
                 credentials = ee.ServiceAccountCredentials(
-                    email=None,  # Will be extracted from key file
+                    email=service_account_email,  # Now explicitly required
                     key_file=str(service_account_key)
                 )
                 ee.Initialize(credentials, project=project_id)
                 
                 logger.info(f"Earth Engine authenticated with service account, project: {project_id}")
                 return project_id
+            
             
             # Method 2: Environment variable
             elif os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):

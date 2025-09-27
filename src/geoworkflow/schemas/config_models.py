@@ -417,6 +417,31 @@ class OpenBuildingsExtractionConfig(BaseConfig):
         None, 
         description="Path to service account key JSON file"
     )
+    service_account_email: Optional[str] = Field(
+        None,
+        description="Service account email address (required when using service_account auth)"
+    )
+    project_id: Optional[str] = Field(
+        None,
+        description="Google Cloud Project ID (can be inferred from service account)"
+    )
+    auth_method: EarthEngineAuthMethod = Field(
+        EarthEngineAuthMethod.SERVICE_ACCOUNT,
+        description="Authentication method to use"
+    )
+
+
+    """Configuration for Open Buildings dataset extraction via Earth Engine."""
+    
+    # Required inputs (user must provide)
+    aoi_file: Path = Field(..., description="Area of Interest boundary file")
+    output_dir: Path = Field(..., description="Output directory for extracted buildings")
+    
+    # Authentication (flexible options for academic teams)
+    service_account_key: Optional[Path] = Field(
+        None, 
+        description="Path to service account key JSON file"
+    )
     project_id: Optional[str] = Field(
         None,
         description="Google Cloud Project ID (can be inferred from service account)"
@@ -531,9 +556,17 @@ class OpenBuildingsExtractionConfig(BaseConfig):
             )
         return v
 
+    
     @model_validator(mode='after')
     def validate_authentication_setup(self):
         """Validate authentication configuration."""
+        # Validate service account authentication requirements
+        if self.auth_method == EarthEngineAuthMethod.SERVICE_ACCOUNT:
+            if not self.service_account_key:
+                raise ValueError("service_account_key is required when using SERVICE_ACCOUNT auth method")
+            if not self.service_account_email:
+                raise ValueError("service_account_email is required when using SERVICE_ACCOUNT auth method")
+        
         # If service account is specified, ensure it's the right auth method
         if self.service_account_key and self.auth_method != EarthEngineAuthMethod.SERVICE_ACCOUNT:
             import warnings
@@ -544,7 +577,7 @@ class OpenBuildingsExtractionConfig(BaseConfig):
             self.auth_method = EarthEngineAuthMethod.SERVICE_ACCOUNT
         
         return self
-    
+
     def get_output_file_path(self) -> Path:
         """Get the full output file path based on configuration."""
         extension_map = {
