@@ -82,6 +82,18 @@ jupyter = [
     "ipywidgets>=8.0.0",
 ]
 
+docs = [
+    "sphinx>=7.0",
+    "pydata-sphinx-theme>=0.15.0",
+    "sphinx-autodoc-typehints>=1.25.0",
+    "sphinx-click>=5.0.0",
+    "nbsphinx>=0.9.0",
+    "nbsphinx-link>=1.3.0",
+    "myst-parser>=2.0.0",
+    "sphinx-copybutton>=0.5.0",
+    "sphinx-autobuild>=2024.0.0",
+]
+
 # Note: earth-engine dependencies are now included by default in the main dependencies list
 
 # All pip dependencies (for pip-only users)
@@ -121,10 +133,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/geoworkflow"
-Repository = "https://github.com/yourusername/geoworkflow"
+Homepage = "https://github.com/jacksonfloods/geoworkflow"
+Repository = "https://github.com/jacksonfloods/geoworkflow"
 Documentation = "https://geoworkflow.readthedocs.io/"
-"Bug Tracker" = "https://github.com/yourusername/geoworkflow/issues"
+"Bug Tracker" = "https://github.com/jacksonfloods/geoworkflow/issues"
 
 [project.scripts]
 geoworkflow = "geoworkflow.cli.main:main"

@@ -1,0 +1,22 @@
+/* Custom CSS for GeoWorkflow documentation */
+
+/* Adjust code block styling */
+div.highlight {
+    border-radius: 4px;
+}
+
+/* Make tables more readable */
+table.docutils {
+    border: none;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    border: 1px solid #e1e4e5;
+    padding: 8px;
+}
+
+/* Improve sidebar navigation */
+.bd-sidebar {
+    font-size: 0.9rem;
+}

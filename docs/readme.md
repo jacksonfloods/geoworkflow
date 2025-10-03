@@ -87,7 +87,7 @@ pip install geoworkflow[geospatial]
 ### Development Installation
 
 ```bash
-git clone https://github.com/yourusername/geoworkflow.git
+git clone https://github.com/jacksonfloods/geoworkflow.git
 cd geoworkflow
 conda env create -f environment.yml
 conda activate geoworkflow
@@ -768,7 +768,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ### Development Setup
 
 ```bash
-git clone https://github.com/yourusername/geoworkflow.git
+git clone https://github.com/jacksonfloods/geoworkflow.git
 cd geoworkflow
 conda env create -f environment.yml
 conda activate geoworkflow
