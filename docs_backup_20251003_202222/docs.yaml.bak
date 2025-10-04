@@ -23,9 +23,9 @@ jobs:
         with:
           python-version: 3.x
       - run: pip install -e ".[docs]"
-      - run: cd docs/api cd docs/api cd docs && make htmlcd docs && make html make htmlcd docs/api cd docs && make htmlcd docs && make html make html make html
+      - run: cd docs && make html
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/api/build/html
+          publish_dir: ./docs/build/html
           destination_dir: api

@@ -1,0 +1,668 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>geoworkflow.core.constants &#8212; GeoWorkflow 1.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=489676ce" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/geoworkflow.core.constants';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">GeoWorkflow Documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../schemas/index.html">
+    Configuration Schemas
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../literature/index.html">
+    Literature & References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../schemas/index.html">
+    Configuration Schemas
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../literature/index.html">
+    Literature & References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">geoworkflow.core.constants</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-geoworkflow.core.constants">
+<span id="geoworkflow-core-constants"></span><h1>geoworkflow.core.constants<a class="headerlink" href="#module-geoworkflow.core.constants" title="Link to this heading">#</a></h1>
+<p>Global constants for the geoworkflow package.</p>
+<p>This module contains constants used throughout the package including
+file extensions, coordinate reference systems, and default values.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#geoworkflow.core.constants.CommonCRS" title="geoworkflow.core.constants.CommonCRS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CommonCRS</span></code></a>()</p></td>
+<td><p>Common coordinate reference systems for African geospatial data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#geoworkflow.core.constants.DataSource" title="geoworkflow.core.constants.DataSource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSource</span></code></a>(value)</p></td>
+<td><p>Known data sources with specialized processing requirements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#geoworkflow.core.constants.DataType" title="geoworkflow.core.constants.DataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataType</span></code></a>(value)</p></td>
+<td><p>Data type categories for processing decisions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#geoworkflow.core.constants.ProcessingStage" title="geoworkflow.core.constants.ProcessingStage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProcessingStage</span></code></a>(value)</p></td>
+<td><p>Processing stages in the geoworkflow pipeline.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geoworkflow.core.constants.</span></span><span class="sig-name descname"><span class="pre">CommonCRS</span></span><a class="reference internal" href="../../_modules/geoworkflow/core/constants.html#CommonCRS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS" title="Link to this definition">#</a></dt>
+<dd><p>Common coordinate reference systems for African geospatial data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS.WGS84">
+<span class="sig-name descname"><span class="pre">WGS84</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EPSG:4326'</span></em><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS.WGS84" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS.WGS84_UTM_33S">
+<span class="sig-name descname"><span class="pre">WGS84_UTM_33S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EPSG:32733'</span></em><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS.WGS84_UTM_33S" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS.WGS84_UTM_34S">
+<span class="sig-name descname"><span class="pre">WGS84_UTM_34S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EPSG:32734'</span></em><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS.WGS84_UTM_34S" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS.AFRICA_ALBERS">
+<span class="sig-name descname"><span class="pre">AFRICA_ALBERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ESRI:102022'</span></em><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS.AFRICA_ALBERS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS.AFRICA_LAMBERT">
+<span class="sig-name descname"><span class="pre">AFRICA_LAMBERT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ESRI:102023'</span></em><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS.AFRICA_LAMBERT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.CommonCRS.WEB_MERCATOR">
+<span class="sig-name descname"><span class="pre">WEB_MERCATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EPSG:3857'</span></em><a class="headerlink" href="#geoworkflow.core.constants.CommonCRS.WEB_MERCATOR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.ProcessingStage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geoworkflow.core.constants.</span></span><span class="sig-name descname"><span class="pre">ProcessingStage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/geoworkflow/core/constants.html#ProcessingStage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoworkflow.core.constants.ProcessingStage" title="Link to this definition">#</a></dt>
+<dd><p>Processing stages in the geoworkflow pipeline.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.ProcessingStage.SOURCE">
+<span class="sig-name descname"><span class="pre">SOURCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'00_source'</span></em><a class="headerlink" href="#geoworkflow.core.constants.ProcessingStage.SOURCE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.ProcessingStage.EXTRACTED">
+<span class="sig-name descname"><span class="pre">EXTRACTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'01_extracted'</span></em><a class="headerlink" href="#geoworkflow.core.constants.ProcessingStage.EXTRACTED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.ProcessingStage.CLIPPED">
+<span class="sig-name descname"><span class="pre">CLIPPED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'02_clipped'</span></em><a class="headerlink" href="#geoworkflow.core.constants.ProcessingStage.CLIPPED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.ProcessingStage.PROCESSED">
+<span class="sig-name descname"><span class="pre">PROCESSED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'03_processed'</span></em><a class="headerlink" href="#geoworkflow.core.constants.ProcessingStage.PROCESSED" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.ProcessingStage.ANALYSIS_READY">
+<span class="sig-name descname"><span class="pre">ANALYSIS_READY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'04_analysis_ready'</span></em><a class="headerlink" href="#geoworkflow.core.constants.ProcessingStage.ANALYSIS_READY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geoworkflow.core.constants.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/geoworkflow/core/constants.html#DataType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoworkflow.core.constants.DataType" title="Link to this definition">#</a></dt>
+<dd><p>Data type categories for processing decisions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataType.RASTER">
+<span class="sig-name descname"><span class="pre">RASTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raster'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataType.RASTER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataType.VECTOR">
+<span class="sig-name descname"><span class="pre">VECTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'vector'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataType.VECTOR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataType.ARCHIVE">
+<span class="sig-name descname"><span class="pre">ARCHIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'archive'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataType.ARCHIVE" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataType.NETCDF">
+<span class="sig-name descname"><span class="pre">NETCDF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'netcdf'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataType.NETCDF" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataType.OTHER">
+<span class="sig-name descname"><span class="pre">OTHER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'other'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataType.OTHER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geoworkflow.core.constants.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/geoworkflow/core/constants.html#DataSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#geoworkflow.core.constants.DataSource" title="Link to this definition">#</a></dt>
+<dd><p>Known data sources with specialized processing requirements.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.COPERNICUS">
+<span class="sig-name descname"><span class="pre">COPERNICUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'copernicus'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.COPERNICUS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.ODIAC">
+<span class="sig-name descname"><span class="pre">ODIAC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'odiac'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.ODIAC" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.PM25">
+<span class="sig-name descname"><span class="pre">PM25</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pm25'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.PM25" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.AFRICA_POLIS">
+<span class="sig-name descname"><span class="pre">AFRICA_POLIS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'africa_polis'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.AFRICA_POLIS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.LANDSAT">
+<span class="sig-name descname"><span class="pre">LANDSAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'landsat'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.LANDSAT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.MODIS">
+<span class="sig-name descname"><span class="pre">MODIS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'modis'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.MODIS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.SENTINEL">
+<span class="sig-name descname"><span class="pre">SENTINEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sentinel'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.SENTINEL" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="geoworkflow.core.constants.DataSource.OTHER">
+<span class="sig-name descname"><span class="pre">OTHER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'other'</span></em><a class="headerlink" href="#geoworkflow.core.constants.DataSource.OTHER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS"><code class="docutils literal notranslate"><span class="pre">CommonCRS</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS.WGS84"><code class="docutils literal notranslate"><span class="pre">CommonCRS.WGS84</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS.WGS84_UTM_33S"><code class="docutils literal notranslate"><span class="pre">CommonCRS.WGS84_UTM_33S</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS.WGS84_UTM_34S"><code class="docutils literal notranslate"><span class="pre">CommonCRS.WGS84_UTM_34S</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS.AFRICA_ALBERS"><code class="docutils literal notranslate"><span class="pre">CommonCRS.AFRICA_ALBERS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS.AFRICA_LAMBERT"><code class="docutils literal notranslate"><span class="pre">CommonCRS.AFRICA_LAMBERT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.CommonCRS.WEB_MERCATOR"><code class="docutils literal notranslate"><span class="pre">CommonCRS.WEB_MERCATOR</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.ProcessingStage"><code class="docutils literal notranslate"><span class="pre">ProcessingStage</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.ProcessingStage.SOURCE"><code class="docutils literal notranslate"><span class="pre">ProcessingStage.SOURCE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.ProcessingStage.EXTRACTED"><code class="docutils literal notranslate"><span class="pre">ProcessingStage.EXTRACTED</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.ProcessingStage.CLIPPED"><code class="docutils literal notranslate"><span class="pre">ProcessingStage.CLIPPED</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.ProcessingStage.PROCESSED"><code class="docutils literal notranslate"><span class="pre">ProcessingStage.PROCESSED</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.ProcessingStage.ANALYSIS_READY"><code class="docutils literal notranslate"><span class="pre">ProcessingStage.ANALYSIS_READY</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataType.RASTER"><code class="docutils literal notranslate"><span class="pre">DataType.RASTER</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataType.VECTOR"><code class="docutils literal notranslate"><span class="pre">DataType.VECTOR</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataType.ARCHIVE"><code class="docutils literal notranslate"><span class="pre">DataType.ARCHIVE</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataType.NETCDF"><code class="docutils literal notranslate"><span class="pre">DataType.NETCDF</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataType.OTHER"><code class="docutils literal notranslate"><span class="pre">DataType.OTHER</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource"><code class="docutils literal notranslate"><span class="pre">DataSource</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.COPERNICUS"><code class="docutils literal notranslate"><span class="pre">DataSource.COPERNICUS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.ODIAC"><code class="docutils literal notranslate"><span class="pre">DataSource.ODIAC</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.PM25"><code class="docutils literal notranslate"><span class="pre">DataSource.PM25</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.AFRICA_POLIS"><code class="docutils literal notranslate"><span class="pre">DataSource.AFRICA_POLIS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.LANDSAT"><code class="docutils literal notranslate"><span class="pre">DataSource.LANDSAT</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.MODIS"><code class="docutils literal notranslate"><span class="pre">DataSource.MODIS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.SENTINEL"><code class="docutils literal notranslate"><span class="pre">DataSource.SENTINEL</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geoworkflow.core.constants.DataSource.OTHER"><code class="docutils literal notranslate"><span class="pre">DataSource.OTHER</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/api/generated/geoworkflow.core.constants.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, AfricaPolis Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
