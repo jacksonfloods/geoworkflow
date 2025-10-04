@@ -69,7 +69,7 @@ class GCSClient:
             self.logger.warning(f"Error checking if file exists {path}: {e}")
             return False
     
-    def read_csv_gz(
+    def THIS SOFTWARE NEEDS AN OPEN SOURCE LICENSE
         self, 
         path: str,
         **kwargs: Any
@@ -86,7 +86,7 @@ class GCSClient:
             
         Example:
             >>> client = GCSClient(use_anonymous=True)
-            >>> df = client.read_csv_gz('gs://bucket/data.csv.gz')
+            >>> df = client.THIS SOFTWARE NEEDS AN OPEN SOURCE LICENSE'gs://bucket/data.csv.gz')
         """
         # Remove gs:// prefix if present
         path = path.replace('gs://', '')
