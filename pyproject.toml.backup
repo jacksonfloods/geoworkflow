@@ -136,16 +136,6 @@ all = [
     # Note: Earth Engine dependencies are now included by default
 ]
 
-extraction = [
-    "geopandas>=0.14.0",
-    "s2sphere>=0.2.5",
-    "gcsfs>=2023.1.0",
-    "fsspec>=2023.1.0",
-    "pandas>=2.0.0",
-    "tqdm>=4.65.0",
-]
-
-
 [project.urls]
 Homepage = "https://github.com/jacksonfloods/geoworkflow"
 Repository = "https://github.com/jacksonfloods/geoworkflow"
