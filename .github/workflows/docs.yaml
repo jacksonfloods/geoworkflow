@@ -36,8 +36,9 @@ jobs:
       # Combine both into single site
       - name: Combine documentation
         run: |
-          mkdir -p site_temp/api
+          mkdir -p site_temp
           cp -r site/* site_temp/
+          mkdir -p site_temp/api
           cp -r docs/api/build/html/* site_temp/api/
           rm -rf site
           mv site_temp site
