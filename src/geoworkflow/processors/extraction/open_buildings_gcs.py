@@ -35,7 +35,8 @@ except ImportError:
 
 from geoworkflow.core.enhanced_base import TemplateMethodProcessor, GeospatialProcessorMixin
 from geoworkflow.core.exceptions import ExtractionError, ValidationError, ConfigurationError
-from geoworkflow.schemas.config_models import OpenBuildingsGCSConfig
+from geoworkflow.utils.progress_utils import ProgressTracker
+from geoworkflow.schemas.open_buildings_gcs_config import OpenBuildingsGCSConfig
 from geoworkflow.core.base import ProcessingResult
 from geoworkflow.utils.s2_utils import get_bounding_box_s2_covering_tokens
 from geoworkflow.utils.gcs_utils import GCSClient
@@ -311,7 +312,7 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
         temp_files = []
         
         with multiprocessing.Pool(self.gcs_config.num_workers) as pool:
-            with track_progress(
+            with ProgressTracker(
                 total=len(self.s2_tokens),
                 description="Processing S2 cells"
             ) as progress:
