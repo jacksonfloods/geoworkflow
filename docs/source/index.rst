@@ -74,3 +74,11 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Project Documentation
+=====================
+
+For comprehensive project guides, tutorials, and structural documentation, see the
+`Project Guide <https://your-mkdocs-url/>`_.
+
+This API reference provides detailed documentation of all classes and functions.
