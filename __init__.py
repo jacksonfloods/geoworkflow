@@ -22,27 +22,49 @@ __author__ = "Your Name"
 __email__ = "your.email@example.com"
 
 # Core imports for convenience
-from geoworkflow.core.config import load_config, WorkflowConfig
-from geoworkflow.core.pipeline import ProcessingPipeline
-from geoworkflow.core.exceptions import GeoWorkflowError
+try:
+    from geoworkflow.core.config import ConfigManager  # Changed: load_config doesn't exist as direct import
+    from geoworkflow.core.pipeline import ProcessingPipeline
+    from geoworkflow.core.exceptions import GeoWorkflowError
+except ImportError:
+    # Core modules not available yet
+    ConfigManager = None
+    ProcessingPipeline = None
+    GeoWorkflowError = Exception
 
-from .schemas.config_models import (
-    AOIConfig,
-    ExtractionConfig, 
-    ClippingConfig,
-    AlignmentConfig,
-    VisualizationConfig,
-    WorkflowConfig,
-    OpenBuildingsExtractionConfig  # Add this line
-)
+# Schema imports
+try:
+    from .schemas.config_models import (
+        AOIConfig,
+        ExtractionConfig, 
+        ClippingConfig,
+        AlignmentConfig,
+        VisualizationConfig,
+        WorkflowConfig,
+        OpenBuildingsExtractionConfig
+    )
+except ImportError:
+    # Schemas not available yet
+    AOIConfig = None
+    ExtractionConfig = None
+    ClippingConfig = None
+    AlignmentConfig = None
+    VisualizationConfig = None
+    WorkflowConfig = None
+    OpenBuildingsExtractionConfig = None
 
 __all__ = [
     "__version__",
     "__author__", 
     "__email__",
-    "load_config",
+    "ConfigManager",
     "WorkflowConfig", 
     "ProcessingPipeline",
     "GeoWorkflowError",
-    "OpenBuildingsExtractionConfig",  # Add this line
+    "OpenBuildingsExtractionConfig",
+    "AOIConfig",
+    "ExtractionConfig",
+    "ClippingConfig",
+    "AlignmentConfig",
+    "VisualizationConfig",
 ]
