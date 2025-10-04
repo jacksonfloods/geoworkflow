@@ -38,7 +38,7 @@ plugins:
   - search
   - gen-files:
       scripts:
-        - gen_ref_pages.py  # Change from: docs/guide/gen_ref_pages.py
+        - docs/guide/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
   - section-index
