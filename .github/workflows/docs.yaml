@@ -32,15 +32,17 @@ jobs:
           make html
           cd ../..
       
+    
       # Combine both into single site
       - name: Combine documentation
         run: |
-          mkdir -p site/api
-          cp -r site/* site_temp/  # MkDocs output
+          mkdir -p site_temp/api
+          cp -r site/* site_temp/
           cp -r docs/api/build/html/* site_temp/api/
           rm -rf site
           mv site_temp site
-      
+
+
       # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
