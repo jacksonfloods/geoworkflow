@@ -1,24 +1,193 @@
-*.DS_Store
-*.zip
-*.tif
-*.tiff
-*.aux.xml
-*.geojson
-*.pyc
-*.pdf
-*.log
-/data/*
-/config/auth
-src/geoworkflow.egg-info/PKG-INFO
-notebooks/accra_extraction_summary.json
+# ============================================================================
+# Python
+# ============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# Documentation builds
-site/
-docs/api/build/
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# MkDocs
-.cache/
+# PyInstaller
+*.manifest
+*.spec
 
-# Sphinx
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================================================
+# Jupyter Notebook (KEEPING .ipynb files, but ignoring checkpoints)
+# ============================================================================
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# ============================================================================
+# Documentation
+# ============================================================================
+# Sphinx documentation
+docs/_build/
 docs/api/build/
 docs/api/source/_build/
+
+# MkDocs documentation
+site/
+.cache/
+
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+
+# ============================================================================
+# Operating System
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+Desktop.ini
+
+# Linux
+.directory
+.Trash-*
+
+# ============================================================================
+# Project-Specific: Data Files
+# ============================================================================
+# Large geospatial data files
+data/
+*.tif
+*.tiff
+*.geotiff
+*.aux.xml
+*.geojson
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# OpenStreetMap
+*.osm
+*.osm.pbf
+
+# Raster formats
+*.img
+*.hdr
+
+# ============================================================================
+# Project-Specific: Configuration & Secrets
+# ============================================================================
+# Authentication files
+config/auth/
+*.json
+
+# Keep template files but ignore filled configs
+!*template*.json
+!*example*.json
+
+# Specific notebook outputs (if needed)
+notebooks/accra_extraction_summary.json
+
+# ============================================================================
+# Project-Specific: Outputs & Logs
+# ============================================================================
+# Log files
+logs/
+*.log
+
+# Processing outputs
+cache/
+temp/
+tmp/
+
+# ============================================================================
+# Documents & Literature
+# ============================================================================
+*.pdf
+
+# ============================================================================
+# Miscellaneous
+# ============================================================================
+# Backup files
+*.bak
+*.swp
+*.tmp
+*~
+
+# Archive files (allowing specific archives if needed)
+# Add exceptions with ! if you need to track specific archives
