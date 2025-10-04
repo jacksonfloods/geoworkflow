@@ -9,8 +9,10 @@ This module provides processors for extracting geospatial data from various sour
 
 from .archive import ArchiveExtractionProcessor
 from .open_buildings import OpenBuildingsExtractionProcessor
+from .open_buildings_gcs import OpenBuildingsGCSProcessor
 
 __all__ = [
     "ArchiveExtractionProcessor",
-    "OpenBuildingsExtractionProcessor"
+    "OpenBuildingsExtractionProcessor",
+    "OpenBuildingsGCSProcessor"
 ]
