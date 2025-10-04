@@ -12,8 +12,13 @@
 src/geoworkflow.egg-info/PKG-INFO
 notebooks/accra_extraction_summary.json
 
-# Sphinx build artifacts (keep HTML for hosting)
-docs/build/*
-!docs/build/html/
-docs/build/html/.buildinfo
-docs/build/html/.doctrees/
+# Documentation builds
+site/
+docs/api/build/
+
+# MkDocs
+.cache/
+
+# Sphinx
+docs/api/build/
+docs/api/source/_build/
