@@ -1,0 +1,8 @@
+# Sphinx build artifacts
+build/*
+!build/html/
+build/html/.buildinfo
+build/html/.doctrees/
+
+# Jupyter notebook checkpoints (if any get created)
+.ipynb_checkpoints/

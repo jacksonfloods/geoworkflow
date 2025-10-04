@@ -1,0 +1,50 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material mkdocs-gen-files mkdocs-literate-nav mkdocs-section-index
+          pip install -e ".[docs]"
+      
+      # Build MkDocs (user guide)
+      - name: Build MkDocs
+        run: mkdocs build
+      
+      # Build Sphinx (API reference)
+      - name: Build Sphinx
+        run: |
+          cd docs/api
+          make html
+          cd ../..
+      
+      # Combine both into single site
+      - name: Combine documentation
+        run: |
+          mkdir -p site/api
+          cp -r site/* site_temp/  # MkDocs output
+          cp -r docs/api/build/html/* site_temp/api/
+          rm -rf site
+          mv site_temp site
+      
+      # Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          force_orphan: true
