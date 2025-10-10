@@ -124,3 +124,36 @@ def test_clipper_basic(tmp_path):
 ## Questions?
 
 Open an issue or reach out to the maintainers.
+
+## Updating Documentation
+
+### Directory Structure
+
+When you add new files or directories to the project:
+
+1. **Automatic updates**: The directory tree updates automatically during documentation builds
+2. **Manual update**: Run `python docs/guide/gen_ref_pages.py` locally to regenerate
+
+### Adding Descriptions
+
+To add descriptions for new directories or files:
+
+1. Edit `docs/guide/gen_ref_pages.py`
+2. Add entries to `DIRECTORY_DESCRIPTIONS` dict:
+   ```python
+   DIRECTORY_DESCRIPTIONS = {
+       "your_new_dir": "Description of your new directory",
+       "your_new_dir/subdir": "Description of subdirectory",
+   }
+   ```
+3. Run `python docs/guide/gen_ref_pages.py` to regenerate
+4. Preview with `mkdocs serve`
+
+### Interactive Tree
+
+The directory tree visualization will automatically show your changes:
+- New files appear as green leaf nodes (📄)
+- New directories appear as blue folder nodes (📁)
+- Descriptions show on hover
+
+No manual updates to the visualization code are needed!

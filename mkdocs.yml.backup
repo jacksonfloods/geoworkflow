@@ -1,0 +1,211 @@
+# GeoWorkflow Documentation Configuration
+
+site_name: GeoWorkflow
+site_description: Geospatial data processing for African urbanization analysis
+site_author: AfricaPolis Team
+site_url: https://jacksonfloods.github.io/geoworkflow/
+
+# Repository
+repo_name: jacksonfloods/geoworkflow
+repo_url: https://github.com/jacksonfloods/geoworkflow
+edit_uri: edit/main/docs/guide/
+
+# Copyright
+copyright: Copyright &copy; 2025 AfricaPolis Team
+
+# Configuration
+docs_dir: docs/guide
+site_dir: site
+
+# Theme configuration - Material for MkDocs (FastAPI-style)
+theme:
+  name: material
+  language: en
+  
+  # Color scheme
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  # Features
+  features:
+    - content.code.annotate        # Code annotations
+    - content.code.copy            # Copy button for code blocks
+    - content.tabs.link            # Link content tabs
+    - content.tooltips             # Improved tooltips
+    - navigation.expand            # Expand navigation by default
+    - navigation.footer            # Footer navigation
+    - navigation.indexes           # Section index pages
+    - navigation.instant           # Instant loading (SPA-like)
+    - navigation.instant.prefetch  # Prefetch pages on hover
+    - navigation.sections          # Group nav into sections
+    - navigation.tabs              # Top-level tabs
+    - navigation.tabs.sticky       # Sticky navigation tabs
+    - navigation.top               # "Back to top" button
+    - navigation.tracking          # URL tracking
+    - search.highlight             # Highlight search terms
+    - search.share                 # Share search results
+    - search.suggest               # Search suggestions
+    - toc.follow                   # TOC follows scroll
+    - toc.integrate                # TOC integrated in sidebar
+  
+  # Icons
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+  
+  # Logo and favicon (customize these)
+  # logo: assets/logo.png
+  # favicon: assets/favicon.ico
+  
+  # Font
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+# Additional CSS and JavaScript
+extra_css:
+  - assets/css/directory-tree.css
+  - assets/custom.css
+
+extra_javascript:
+  - https://d3js.org/d3.v7.min.js
+  - assets/js/directory-tree.js
+
+# Plugins
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.]+'
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_object_full_path: false
+            show_category_heading: true
+            show_if_no_docstring: false
+            inherited_members: false
+            members_order: source
+            separate_signature: true
+            unwrap_annotated: true
+            filters:
+              - "!^_"
+            merge_init_into_class: true
+            signature_crossrefs: true
+
+# Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Navigation
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Configuration: getting-started/configuration.md
+  - Project Guide:
+      - Structure: guide/structure.md
+      - Concepts: guide/concepts.md
+  - Tutorials:
+      - Basic Workflow: tutorials/basic-workflow.md
+  - Development:
+      - Contributing: development/contributing.md
+      - Testing: development/testing.md
+  - API Reference: https://your-sphinx-docs-url/api/" target="_blank
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jacksonfloods/geoworkflow
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/geoworkflow/
+  
+  # Analytics (optional - add your tracking ID)
+  # analytics:
+  #   provider: google
+  #   property: G-XXXXXXXXXX
+  
+  # Version info
+  version:
+    provider: mike
+    default: latest
+
+# Validation
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn

@@ -1,0 +1,226 @@
+# Project Structure
+
+This page documents the organization of the GeoWorkflow codebase.
+
+## Interactive Directory Tree
+
+Explore the project structure below. Click on folders to expand/collapse, and hover over items to see descriptions.
+
+<div style="margin: 2rem 0; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+  <iframe 
+    src="../../assets/directory-tree-container.html" 
+    width="100%" 
+    height="650px" 
+    frameborder="0"
+    style="border: none; display: block;"
+    title="Interactive Directory Structure">
+  </iframe>
+</div>
+
+!!! tip "How to Use"
+    - **Click** on folder nodes (📁) to expand or collapse them
+    - **Hover** over any node to see detailed descriptions
+    - **Blue nodes** represent directories
+    - **Green nodes** represent Python files
+
+??? note "Can't see the tree?"
+    If the interactive tree doesn't load, you can [view it directly](../../assets/directory-tree-container.html) or see the text version below.
+
+---
+
+## Text-Based Structure Reference
+
+For quick reference or if you prefer a text-based view, here's the complete directory structure:
+
+```
+src/geoworkflow/
+│   ├── __init__.py
+│   ├── __version__.py
+│   ├── cli/
+│   │   ├── __init__.py
+│   │   ├── cli_structure.py
+│   │   ├── commands/
+│   │   │   ├── __init__.py
+│   │   │   ├── aoi.py
+│   │   │   ├── extract.py
+│   │   │   ├── pipeline.py
+│   │   │   ├── process.py
+│   │   │   ├── visualize.py
+│   │   ├── main.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── config.py
+│   │   ├── constants.py
+│   │   ├── enhanced_base.py
+│   │   ├── exceptions.py
+│   │   ├── logging_setup.py
+│   │   ├── pipeline.py
+│   │   ├── pipeline_enhancements.py
+│   ├── processors/
+│   │   ├── __init__.py
+│   │   ├── aoi/
+│   │   │   ├── __init__.py
+│   │   │   ├── processor.py
+│   │   ├── extraction/
+│   │   │   ├── __init__.py
+│   │   │   ├── archive.py
+│   │   │   ├── open_buildings.py
+│   │   ├── integration/
+│   │   │   ├── __init__.py
+│   │   │   ├── enrichment.py
+│   │   ├── spatial/
+│   │   │   ├── __init__.py
+│   │   │   ├── aligner.py
+│   │   │   ├── clipper.py
+│   │   │   ├── masker.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── config_models.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── earth_engine_error_handler.py
+│   │   ├── earth_engine_utils.py
+│   │   ├── file_utils.py
+│   │   ├── mask_utils.py
+│   │   ├── progress_utils.py
+│   │   ├── raster_utils.py
+│   │   ├── resource_utils.py
+│   │   ├── validation.py
+│   ├── visualization/
+│   │   ├── __init__.py
+│   │   ├── raster/
+│   │   │   ├── __init__.py
+│   │   │   ├── processor.py
+│   │   ├── reports/
+│   │   │   ├── __init__.py
+│   │   ├── vector/
+│   │   │   ├── __init__.py
+```
+
+---
+
+## Directory Descriptions
+
+### Core Modules
+
+#### `core/`
+Foundation classes, base processors, configuration, and constants. This module provides the abstract base classes and core functionality that all other modules depend on.
+
+**Key files:**
+- `base.py` - Abstract base classes for processors
+- `pipeline.py` - Processing pipeline orchestration
+- `config.py` - Configuration management
+- `exceptions.py` - Custom exception classes
+
+#### `schemas/`
+Pydantic models for configuration validation. These models ensure that YAML configuration files are valid and provide type safety throughout the application.
+
+**Key files:**
+- `config_models.py` - All configuration model definitions
+
+---
+
+### Processing Modules
+
+#### `processors/`
+Specialized processors for each workflow stage. Each subdirectory contains processors for a specific type of operation.
+
+##### `processors/aoi/`
+Area of Interest (AOI) creation and management. Handles loading, creating, and validating geographic boundaries.
+
+##### `processors/spatial/`
+Spatial operations including clipping, alignment, and reprojection. These processors ensure all rasters are in the same coordinate system and extent.
+
+**Key files:**
+- `clipper.py` - Clip rasters to AOI boundaries
+- `aligner.py` - Align rasters to reference grid
+- `masker.py` - Apply masks to rasters
+
+##### `processors/extraction/`
+Data extraction from archives and downloads. Handles extracting data from various archive formats and downloading from remote sources.
+
+**Key files:**
+- `archive.py` - Extract from ZIP, TAR, etc.
+- `open_buildings.py` - Download Google Open Buildings data
+
+##### `processors/integration/`
+Statistical enrichment and data integration. Combines multiple datasets and performs zonal statistics.
+
+**Key files:**
+- `enrichment.py` - Zonal statistics and data enrichment
+
+---
+
+### Utilities
+
+#### `utils/`
+Helper functions and common operations used throughout the codebase.
+
+**Key files:**
+- `file_utils.py` - File system operations
+- `raster_utils.py` - Raster manipulation helpers
+- `earth_engine_utils.py` - Google Earth Engine integration
+- `validation.py` - Data validation utilities
+
+---
+
+### User Interface
+
+#### `cli/`
+Command-line interface entry points. Provides a user-friendly CLI built with Click/Typer.
+
+**Structure:**
+- `main.py` - CLI entry point
+- `commands/` - Individual command implementations
+  - `aoi.py` - AOI management commands
+  - `extract.py` - Data extraction commands
+  - `process.py` - Processing commands
+  - `visualize.py` - Visualization commands
+
+#### `visualization/`
+Visualization components for creating maps and charts.
+
+##### `visualization/raster/`
+Raster visualization processors for creating maps from raster data.
+
+##### `visualization/vector/`
+Vector visualization processors for creating maps from vector data.
+
+##### `visualization/reports/`
+Report generation utilities for creating analysis summaries.
+
+---
+
+## How Files Are Organized
+
+The GeoWorkflow codebase follows these organizational principles:
+
+1. **Separation of Concerns**: Each module has a specific responsibility
+2. **Processor Pattern**: All data processing follows the `BaseProcessor` pattern
+3. **Configuration-Driven**: Pydantic models in `schemas/` validate all configurations
+4. **Utilities as Support**: Common functionality is extracted to `utils/`
+5. **CLI as Interface**: User-facing commands are in `cli/`, calling processors internally
+
+---
+
+## For Developers
+
+When adding new functionality:
+
+1. **New processor**: Add to appropriate `processors/` subdirectory
+2. **New configuration**: Add Pydantic model to `schemas/config_models.py`
+3. **New utility**: Add to relevant module in `utils/`
+4. **New CLI command**: Add to `cli/commands/`
+5. **Update this page**: Run `python docs/guide/gen_ref_pages.py` to regenerate structure
+
+The interactive tree will automatically update when you run the documentation generation script.
+
+---
+
+## See Also
+
+- [Getting Started](../../getting-started/installation.md) - Installation and setup
+- [Configuration Guide](../../getting-started/configuration.md) - How to configure workflows
+- [API Reference](../../api/) - Detailed API documentation
+- [Development Guide](../../development/contributing.md) - Contributing to the project

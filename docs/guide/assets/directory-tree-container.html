@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoWorkflow Directory Structure</title>
+  
+  <!-- D3.js v7 from CDN -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="css/directory-tree.css">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tree wrapper -->
+  <div id="tree-wrapper">
+    <!-- Controls/header section -->
+    <div id="tree-controls">
+      <h3>📂 Project Structure</h3>
+      <span class="help-text">💡 Click folders to expand/collapse • Hover for descriptions</span>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Loading directory structure...</p>
+    </div>
+    
+    <!-- Tree visualization container -->
+    <div id="tree-container"></div>
+  </div>
+  
+  <!-- Tooltip (hidden by default) -->
+  <div id="tooltip"></div>
+  
+  <!-- Custom JavaScript -->
+  <script src="js/directory-tree.js"></script>
+</body>
+</html>

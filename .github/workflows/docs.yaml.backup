@@ -5,7 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch:  # Allow manual triggering
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history for proper versioning
       
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -31,31 +31,45 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install mkdocs-material
+          pip install mkdocs-material mkdocs-gen-files mkdocs-literate-nav mkdocs-section-index
+          pip install mkdocstrings[python] mkdocs-autorefs
           pip install -e ".[docs]"
       
       - name: Generate directory structure
         run: |
+          echo "Generating directory structure JSON and markdown..."
           python docs/guide/gen_ref_pages.py
+          echo "✓ Structure files generated"
       
-      - name: Build MkDocs
+      - name: Build MkDocs (User Guide)
         run: |
+          echo "Building MkDocs documentation..."
           mkdocs build --verbose --strict
+          echo "✓ MkDocs build complete"
       
-      - name: Build Sphinx
+      - name: Build Sphinx (API Reference)
         run: |
+          echo "Building Sphinx API documentation..."
           cd docs/api
           make html
           cd ../..
+          echo "✓ Sphinx build complete"
       
       - name: Combine documentation
         run: |
+          echo "Combining MkDocs and Sphinx outputs..."
           mkdir -p site_temp
           cp -r site/* site_temp/
           mkdir -p site_temp/api
           cp -r docs/api/build/html/* site_temp/api/
           rm -rf site
           mv site_temp site
+          echo "✓ Documentation combined"
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
       
       - name: Deploy to GitHub Pages
         if: github.event_name != 'pull_request'
@@ -67,3 +81,15 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: 'docs: deploy documentation [skip ci]'
+      
+      - name: Comment PR with preview
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📚 Documentation preview will be available after merge.'
+            })
