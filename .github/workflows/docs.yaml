@@ -31,38 +31,20 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install mkdocs-material
           pip install -e ".[docs]"
       
-      - name: Generate directory structure
+      - name: Build Sphinx Documentation
         run: |
-          python docs/guide/gen_ref_pages.py
-      
-      - name: Build MkDocs
-        run: |
-          mkdocs build --verbose --strict
-      
-      - name: Build Sphinx
-        run: |
-          cd docs/api
+          cd docs
           make html
-          cd ../..
-      
-      - name: Combine documentation
-        run: |
-          mkdir -p site_temp
-          cp -r site/* site_temp/
-          mkdir -p site_temp/api
-          cp -r docs/api/build/html/* site_temp/api/
-          rm -rf site
-          mv site_temp site
+          cd ..
       
       - name: Deploy to GitHub Pages
         if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+          publish_dir: ./docs/_build/html
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'

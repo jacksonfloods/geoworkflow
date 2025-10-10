@@ -68,14 +68,10 @@ venv.bak/
 # ============================================================================
 # Documentation
 # ============================================================================
-# Sphinx documentation
 docs/_build/
-docs/api/build/
-docs/api/source/_build/
-
-# MkDocs documentation
-site/
-.cache/
+docs/source/_build/
+docs/source/_autosummary/
+docs/source/api-reference/_autosummary/
 
 # ============================================================================
 # IDEs and Editors
