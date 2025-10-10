@@ -1,12 +1,13 @@
 /**
  * Organization Chart Style Directory Tree using D3.js v7
- * Based on: https://observablehq.com/@bumbeishvili/d3-v5-organization-chart
+ * Vertical layout with expand/collapse buttons on the right
  * 
  * Features:
+ * - Vertical tree layout (top-to-bottom)
  * - Modern card-based layout
  * - Smooth expand/collapse animations
  * - Professional styling
- * - Hover effects
+ * - Hover effects with tooltips
  * - Click to expand/collapse subtrees
  */
 
@@ -18,7 +19,7 @@ class OrgChart {
     this.attrs = {
       id: 'tree-container',
       svgWidth: 1200,
-      svgHeight: 800,
+      svgHeight: 1200,
       marginTop: 20,
       marginBottom: 20,
       marginRight: 20,
@@ -26,9 +27,9 @@ class OrgChart {
       duration: 400,
       nodeWidth: 240,
       nodeHeight: 100,
-      childrenMargin: 50,
+      childrenMargin: 220,         // Vertical space between levels (reduced)
       compactMarginPair: 80,
-      compactMarginBetween: 20,
+      compactMarginBetween: 1,   // Horizontal space between sibling nodes (reduced)
       onNodeClick: null,
       nodeContent: null,
       nodeUpdate: null,
@@ -44,11 +45,11 @@ class OrgChart {
       const response = await fetch('../assets/directory-tree.json');
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       this.data = await response.json();
-      
+
       // Initialize chart
       this.initializeChart();
       this.update(this.data);
-      
+
       // Hide loading
       document.getElementById('loading').style.display = 'none';
     } catch (error) {
@@ -81,19 +82,19 @@ class OrgChart {
 
     this.svg.call(zoom);
 
-    // Set initial zoom
+    // Set initial zoom and position (center horizontally, near top)
     this.svg.call(zoom.transform, d3.zoomIdentity.translate(
       this.attrs.svgWidth / 2,
-      50
+      100
     ).scale(this.attrs.initialZoom));
   }
 
   update(source) {
     const attrs = this.attrs;
-    
+
     // Compute the layout
     const root = d3.hierarchy(source);
-    
+
     // Store children references
     root.descendants().forEach((d, i) => {
       d.id = i;
@@ -112,25 +113,67 @@ class OrgChart {
 
   updateTree(source) {
     const attrs = this.attrs;
-    
-    // Compute tree layout
+
+    // Create tree layout
     const treeLayout = d3.tree()
-      .nodeSize([attrs.nodeWidth + attrs.compactMarginBetween, 
-                 attrs.nodeHeight + attrs.childrenMargin])
+      .nodeSize([attrs.nodeWidth + attrs.compactMarginBetween,
+      attrs.nodeHeight + attrs.childrenMargin])
       .separation((a, b) => a.parent === b.parent ? 1 : 1.2);
+
+    // Compute the layout
+    treeLayout(this.root);
 
     const nodes = this.root.descendants();
     const links = this.root.links();
 
-    // Update x/y coordinates
-    treeLayout(this.root);
+    // Swap x and y coordinates for vertical orientation
+    nodes.forEach(d => {
+      const temp = d.x;
+      d.x = d.y;
+      d.y = temp;
+    });
 
     // Transition setup
     const transition = this.svg.transition()
       .duration(attrs.duration)
       .tween('resize', () => () => this.svg.dispatch('toggle'));
 
-    // *************** NODES ***************
+    // *************** LINKS (RENDER FIRST - BEHIND NODES) ***************
+    const link = this.chart
+      .selectAll('.link')
+      .data(links, d => d.target.id);
+
+    // Enter new links
+    const linkEnter = link.enter()
+      .append('path')
+      .attr('class', 'link')
+      .attr('d', d => {
+        const o = { x: source.x0, y: source.y0 };
+        return this.diagonal(o, o);
+      })
+      .style('fill', 'none')
+      .style('stroke', '#ccc')
+      .style('stroke-width', '2px')
+      .style('opacity', 0);
+
+    // UPDATE links
+    const linkUpdate = linkEnter.merge(link);
+
+    linkUpdate.transition(transition)
+      .attr('d', d => this.diagonal(d.source, d.target))
+      .style('opacity', 1);
+
+    // EXIT old links
+    link.exit()
+      .transition(transition)
+      .attr('d', d => {
+        const o = { x: source.x, y: source.y };
+        return this.diagonal(o, o);
+      })
+      .style('opacity', 0)
+      .remove();
+
+    // *************** NODES (RENDER SECOND - ON TOP) ***************
     const node = this.chart
       .selectAll('.node')
       .data(nodes, d => d.id);
@@ -163,7 +206,7 @@ class OrgChart {
       .attr('class', 'node-icon')
       .attr('text-anchor', 'middle')
       .attr('y', -20)
-      .style('font-size', '32px')
+      .style('font-size', '48px')
       .text(d => this.getNodeIcon(d))
       .style('opacity', 0);
 
@@ -188,20 +231,23 @@ class OrgChart {
       .text(d => d.data.type === 'directory' ? '📁 Directory' : '📄 File')
       .style('opacity', 0);
 
-    // Add expand/collapse indicator
+    // Add expand/collapse indicator (circle)
     nodeEnter.append('circle')
       .attr('class', 'node-expand')
-      .attr('cy', attrs.nodeHeight / 2 + 15)
+      .attr('cx', attrs.nodeWidth / 2 + 20)  // To the right of the node
+      .attr('cy', 0)                          // Vertically centered
       .attr('r', 12)
       .style('fill', '#fff')
       .style('stroke', '#2196F3')
       .style('stroke-width', '2px')
       .style('opacity', d => d._children ? 1 : 0);
 
+    // Add expand/collapse indicator (text)
     nodeEnter.append('text')
       .attr('class', 'node-expand-text')
       .attr('text-anchor', 'middle')
-      .attr('y', attrs.nodeHeight / 2 + 20)
+      .attr('x', attrs.nodeWidth / 2 + 20)  // To the right of the node
+      .attr('y', 5)                          // Vertically centered (slight offset for baseline)
       .style('font-size', '14px')
       .style('font-weight', 'bold')
       .style('fill', '#2196F3')
@@ -253,42 +299,7 @@ class OrgChart {
     nodeExit.selectAll('text')
       .style('opacity', 0);
 
-    // *************** LINKS ***************
-    const link = this.chart
-      .selectAll('.link')
-      .data(links, d => d.target.id);
-
-    // Enter new links
-    const linkEnter = link.enter()
-      .append('path')
-      .attr('class', 'link')
-      .attr('d', d => {
-        const o = { x: source.x0, y: source.y0 };
-        return this.diagonal(o, o);
-      })
-      .style('fill', 'none')
-      .style('stroke', '#ccc')
-      .style('stroke-width', '2px')
-      .style('opacity', 0);
-
-    // UPDATE links
-    const linkUpdate = linkEnter.merge(link);
-
-    linkUpdate.transition(transition)
-      .attr('d', d => this.diagonal(d.source, d.target))
-      .style('opacity', 1);
-
-    // EXIT old links
-    link.exit()
-      .transition(transition)
-      .attr('d', d => {
-        const o = { x: source.x, y: source.y };
-        return this.diagonal(o, o);
-      })
-      .style('opacity', 0)
-      .remove();
-
-    // Store old positions
+    // Store old positions for next transition
     nodes.forEach(d => {
       d.x0 = d.x;
       d.y0 = d.y;
@@ -310,10 +321,23 @@ class OrgChart {
   }
 
   diagonal(s, d) {
-    const path = `M ${s.x} ${s.y + this.attrs.nodeHeight / 2}
-                  C ${s.x} ${(s.y + d.y) / 2},
-                    ${d.x} ${(s.y + d.y) / 2},
-                    ${d.x} ${d.y - this.attrs.nodeHeight / 2}`;
+    const attrs = this.attrs;
+
+    // Start from bottom center of parent
+    const startX = s.x;
+    const startY = s.y + attrs.nodeHeight / 2;
+
+    // End at top center of child
+    const endX = d.x;
+    const endY = d.y - attrs.nodeHeight / 2;
+
+    // Create smooth curved path
+    const midY = (startY + endY) / 2;
+
+    const path = `M ${startX} ${startY}
+                  C ${startX} ${midY},
+                    ${endX} ${midY},
+                    ${endX} ${endY}`;
     return path;
   }
 
