@@ -8,7 +8,7 @@ hands-on exercises.
 .. note::
    
    **Tutorial vs How-To**: Tutorials are for learning. If you're looking for
-   instructions to achieve a specific goal, see the :doc:`../user-guide/how-to/index`.
+   instructions to achieve a specific goal, see the :doc:`../user_guide/how-to/index`.
 
 .. grid:: 1
     :gutter: 3

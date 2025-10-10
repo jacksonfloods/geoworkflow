@@ -1,5 +1,5 @@
 """
-GeoWorkflow - Comprehensive geospatial data processing for African analysis.
+GeoWorkflow - Geoworkflow: A unified geospatial data processing workflow for Cornell University's AAP Geospatial Analysis Lab.
 
 A unified toolkit for processing, aligning, and visualizing geospatial data
 with focus on African datasets including Copernicus, ODIAC, PM2.5, and AFRICAPOLIS.

@@ -1,6 +1,6 @@
 """Package version information."""
 
 __version__ = "1.0.0"
-__author__ = "GeoWorkflow Team"
-__email__ = "your.email@example.com"
-__description__ = "Comprehensive geospatial data processing workflow for African geospatial analysis"
+__author__ = "Dr. Stephan Schmidt's Team"
+__email__ = "jdf277@cornell.edu"
+__description__ = "Geoworkflow: A unified geospatial data processing workflow for Cornell University's AAP Geospatial Analysis Lab."

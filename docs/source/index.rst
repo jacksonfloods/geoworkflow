@@ -1,8 +1,9 @@
-AfricaPolis GeoWorkflow
+AAP GeoWorkflow
 ========================
 
-Welcome to the **AfricaPolis GeoWorkflow** documentation! This is a comprehensive
-geospatial data processing pipeline for African geospatial analysis.
+Welcome to the **AAP's GeoWorkflow** documentation! 
+This is a unified geospatial data processing workflow for Cornell University's AAP Geospatial Analysis Lab.
+
 
 .. grid:: 2
     :gutter: 3
@@ -46,9 +47,8 @@ geospatial data processing pipeline for African geospatial analysis.
 What is GeoWorkflow?
 --------------------
 
-GeoWorkflow is a Python-based pipeline for processing geospatial data, specifically
-designed for the AfricaPolis project. It handles the complete workflow from raw data
-extraction to analysis-ready enriched datasets.
+GeoWorkflow is a Python-based pipeline for processing geospatial data for Stephan Schmidt's research group at Cornell University's AAP Geospatial Analysis Lab.
+It aims to create a streamlined, reproducible workflow for handling large geospatial datasets.
 
 **Key Features:**
 
@@ -105,3 +105,4 @@ See the :doc:`getting_started/installation` guide for detailed instructions.
 
    GitHub Repository <https://github.com/jacksonfloods/geoworkflow>
    Issue Tracker <https://github.com/jacksonfloods/geoworkflow/issues>
+   Cornell AAP Research Group <https://labs.aap.cornell.edu/stephan-schmidts-research-group/team>

@@ -44,7 +44,7 @@ console = Console()
 
 def cli(ctx, log_level: str, log_dir: Optional[Path], quiet: bool):
     """
-    Geoworkflow: Comprehensive geospatial data processing for African analysis.
+    Geoworkflow: Geoworkflow: A unified geospatial data processing workflow for Cornell University's AAP Geospatial Analysis Lab.
     
     This tool provides a unified interface for processing geospatial data including
     AOI creation, data extraction, clipping, alignment, and visualization.

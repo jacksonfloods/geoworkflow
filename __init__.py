@@ -1,13 +1,12 @@
 # File: src/geoworkflow/__init__.py
 """
-Geoworkflow: Comprehensive geospatial data processing workflow for African geospatial analysis.
+Geoworkflow: A unified geospatial data processing workflow for Cornell University's AAP Geospatial Analysis Lab.
 
-This package provides a unified framework for processing geospatial data including:
+This package provides a framework for processing geospatial data including:
 - Area of Interest (AOI) creation and management
 - Raster and vector data processing
-- Data extraction from archives
-- Spatial clipping and alignment
-- Advanced visualization capabilities
+- Data retreival from online databases
+- Visualization capabilities
 """
 
 from importlib.metadata import version, PackageNotFoundError
@@ -18,8 +17,8 @@ except PackageNotFoundError:
     # Package is not installed
     __version__ = "unknown"
 
-__author__ = "Your Name"
-__email__ = "your.email@example.com"
+__author__ = "Juan D. Fernandez"
+__email__ = "jdf277@cornell.edu"
 
 # Core imports for convenience
 try:
