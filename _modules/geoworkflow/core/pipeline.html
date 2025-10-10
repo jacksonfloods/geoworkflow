@@ -1,0 +1,1132 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>geoworkflow.core.pipeline &#8212; AfricaPolis GeoWorkflow 1.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=1e84bb91" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=4ebf8126"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/geoworkflow/core/pipeline';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">AfricaPolis GeoWorkflow</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">geoworkflow.core.pipeline</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for geoworkflow.core.pipeline</h1><div class="highlight"><pre>
+<span></span><span class="c1"># File: src/geoworkflow/core/pipeline.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Processing pipeline orchestration for the geoworkflow package.</span>
+
+<span class="sd">This module provides the main pipeline class that coordinates the execution</span>
+<span class="sd">of multiple processing stages in the correct order.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">geoworkflow.core.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseProcessor</span><span class="p">,</span> <span class="n">ProcessingResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geoworkflow.schemas.config_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkflowConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geoworkflow.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessingError</span><span class="p">,</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geoworkflow.core.logging_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geoworkflow.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessingStage</span>
+
+
+<div class="viewcode-block" id="PipelineResult">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.PipelineResult">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PipelineResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Result object for pipeline execution.&quot;&quot;&quot;</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">stages_completed</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">stages_failed</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">stage_results</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ProcessingResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">total_elapsed_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">start_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">end_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">error_message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_files_processed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total files processed across all stages.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">processed_count</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage_results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_files_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total files that failed across all stages.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">failed_count</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage_results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="ProcessingPipeline">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessingPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main processing pipeline for coordinating geospatial workflows.</span>
+<span class="sd">    </span>
+<span class="sd">    The pipeline manages the execution of multiple processing stages,</span>
+<span class="sd">    handles dependencies between stages, and provides comprehensive</span>
+<span class="sd">    logging and error handling.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="ProcessingPipeline.__init__">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">WorkflowConfig</span><span class="p">,</span> <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the processing pipeline.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            config: Workflow configuration</span>
+<span class="sd">            quiet: Whether to suppress verbose output</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="n">quiet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;Pipeline&quot;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
+        
+        <span class="c1"># Registry of available processors (will be populated by imports)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processor_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseProcessor</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Pipeline state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_stage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PipelineResult</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="c1"># Register built-in processors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_processors</span><span class="p">()</span></div>
+
+    
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_processors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register available processors.&quot;&quot;&quot;</span>
+        <span class="c1"># Import processors when registering to avoid circular imports</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.aoi.processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">AOIProcessor</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.spatial.clipper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClippingProcessor</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.spatial.aligner</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlignmentProcessor</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.integration.enrichment</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticalEnrichmentProcessor</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.extraction.archive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArchiveExtractionProcessor</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.extraction.open_buildings</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenBuildingsExtractionProcessor</span>  <span class="c1"># Add this line</span>
+            
+            <span class="c1"># Register processors for each stage</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;aoi&quot;</span><span class="p">,</span> <span class="n">AOIProcessor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;extract&quot;</span><span class="p">,</span> <span class="n">ArchiveExtractionProcessor</span><span class="p">)</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;extract_buildings&quot;</span><span class="p">,</span> <span class="n">OpenBuildingsExtractionProcessor</span><span class="p">)</span>  <span class="c1"># Add this line</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="n">ClippingProcessor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;align&quot;</span><span class="p">,</span> <span class="n">AlignmentProcessor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;enrich&quot;</span><span class="p">,</span> <span class="n">StatisticalEnrichmentProcessor</span><span class="p">)</span>
+            <span class="c1"># self.register_processor(&quot;visualize&quot;, VisualizationProcessor)  # When implemented</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully registered all processors&quot;</span><span class="p">)</span>
+            
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import all processors: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Define the expected processor mapping as fallback</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stage_processor_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="s2">&quot;ArchiveExtractionProcessor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;extract_buildings&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenBuildingsExtractionProcessor&quot;</span><span class="p">,</span>  <span class="c1"># Add this line</span>
+                <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="s2">&quot;ClippingProcessor&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="s2">&quot;AlignmentProcessor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="s2">&quot;StatisticalEnrichmentProcessor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="s2">&quot;IntegrationProcessor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="s2">&quot;VisualizationProcessor&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+    
+
+    
+<div class="viewcode-block" id="ProcessingPipeline.register_processor">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline.register_processor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_processor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">processor_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseProcessor</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a processor for a specific stage.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            stage_name: Name of the processing stage</span>
+<span class="sd">            processor_class: Processor class to register</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processor_registry</span><span class="p">[</span><span class="n">stage_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">processor_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registered processor </span><span class="si">{</span><span class="n">processor_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> for stage &#39;</span><span class="si">{</span><span class="n">stage_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="ProcessingPipeline.run">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_stage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_stage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipelineResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the complete processing pipeline.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            start_stage: Stage to start from (None = start from beginning)</span>
+<span class="sd">            end_stage: Stage to end at (None = run all stages)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            PipelineResult with comprehensive execution information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span> <span class="o">=</span> <span class="n">PipelineResult</span><span class="p">(</span>
+            <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting pipeline: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Description: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Validate configuration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_pipeline_config</span><span class="p">()</span>
+            
+            <span class="c1"># Determine stages to run</span>
+            <span class="n">stages_to_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_stages_to_run</span><span class="p">(</span><span class="n">start_stage</span><span class="p">,</span> <span class="n">end_stage</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pipeline will execute </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">stages_to_run</span><span class="p">)</span><span class="si">}</span><span class="s2"> stages: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stages_to_run</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Execute stages</span>
+            <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">stages_to_run</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing stage: </span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">stage_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_stage</span><span class="p">(</span><span class="n">stage</span><span class="p">)</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">stage_results</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span> <span class="o">=</span> <span class="n">stage_result</span>
+                
+                <span class="k">if</span> <span class="n">stage_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">stages_completed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stage</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stage &#39;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">&#39; completed successfully&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">stages_failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stage</span><span class="p">)</span>
+                    <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Stage &#39;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">&#39; failed: </span><span class="si">{</span><span class="n">stage_result</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                    
+                    <span class="c1"># Stop pipeline on failure (could be made configurable)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">error_message</span> <span class="o">=</span> <span class="n">error_msg</span>
+                    <span class="k">break</span>
+            
+            <span class="c1"># Pipeline succeeded if no stages failed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">stages_failed</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Pipeline execution failed: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">error_message</span> <span class="o">=</span> <span class="n">error_msg</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Calculate timing</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">total_elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            
+            <span class="c1"># Log summary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_pipeline_summary</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span></div>
+
+    
+<div class="viewcode-block" id="ProcessingPipeline.run_stage">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline.run_stage">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessingResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a specific processing stage.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            stage_name: Name of the stage to run</span>
+<span class="sd">            **kwargs: Additional arguments to pass to the processor</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            ProcessingResult for the stage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_stage</span> <span class="o">=</span> <span class="n">stage_name</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get processor class for this stage</span>
+            <span class="k">if</span> <span class="n">stage_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processor_registry</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ProcessingError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No processor registered for stage &#39;</span><span class="si">{</span><span class="n">stage_name</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Available stages: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_processor_registry</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            
+            <span class="n">processor_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processor_registry</span><span class="p">[</span><span class="n">stage_name</span><span class="p">]</span>
+            
+            <span class="c1"># Create stage-specific configuration</span>
+            <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_stage_config</span><span class="p">(</span><span class="n">stage_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            
+            <span class="c1"># Initialize and run processor</span>
+            <span class="n">processor</span> <span class="o">=</span> <span class="n">processor_class</span><span class="p">(</span><span class="n">stage_config</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quiet</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+            
+            <span class="k">return</span> <span class="n">result</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stage &#39;</span><span class="si">{</span><span class="n">stage_name</span><span class="si">}</span><span class="s2">&#39; failed: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ProcessingResult</span><span class="p">(</span>
+                <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+                <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stage&quot;</span><span class="p">:</span> <span class="n">stage_name</span><span class="p">,</span> <span class="s2">&quot;error_type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
+            <span class="p">)</span></div>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_pipeline_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate pipeline configuration.&quot;&quot;&quot;</span>
+        <span class="c1"># Check that required directories exist or can be created</span>
+        <span class="n">directories_to_check</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">source_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">aoi_dir</span><span class="p">,</span>
+        <span class="p">]</span>
+        
+        <span class="n">directories_to_create</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">extracted_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clipped_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">processed_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">analysis_ready_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="p">]</span>
+        
+        <span class="c1"># Validate existing directories</span>
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories_to_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">directory</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Required directory does not exist: </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Create output directories</span>
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories_to_create</span><span class="p">:</span>
+            <span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_stages_to_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_stage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">end_stage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine which stages to run based on start/end parameters.&quot;&quot;&quot;</span>
+        <span class="n">all_stages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">processing</span><span class="o">.</span><span class="n">stages</span>
+        
+        <span class="k">if</span> <span class="n">start_stage</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">end_stage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">all_stages</span>
+        
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">start_stage</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">all_stages</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">start_stage</span><span class="p">)</span>
+        <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_stages</span><span class="p">)</span> <span class="k">if</span> <span class="n">end_stage</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">all_stages</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">end_stage</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="k">return</span> <span class="n">all_stages</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_stage_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create configuration dictionary for a specific stage.&quot;&quot;&quot;</span>
+        <span class="c1"># Base configuration from workflow config</span>
+        <span class="n">stage_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;stage_name&quot;</span><span class="p">:</span> <span class="n">stage_name</span><span class="p">,</span>
+            <span class="s2">&quot;workflow_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;aoi_config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">aoi</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;processing_config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">processing</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;data_sources&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">source</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_sources</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            
+            <span class="c1"># Directory paths</span>
+            <span class="s2">&quot;source_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">source_dir</span><span class="p">,</span>
+            <span class="s2">&quot;extracted_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">extracted_dir</span><span class="p">,</span>
+            <span class="s2">&quot;clipped_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clipped_dir</span><span class="p">,</span>
+            <span class="s2">&quot;processed_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">processed_dir</span><span class="p">,</span>
+            <span class="s2">&quot;analysis_ready_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">analysis_ready_dir</span><span class="p">,</span>
+            <span class="s2">&quot;aoi_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">aoi_dir</span><span class="p">,</span>
+            <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Add any additional kwargs</span>
+        <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">stage_config</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_pipeline_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log a summary of pipeline execution.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pipeline_result</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;PIPELINE EXECUTION SUMMARY&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pipeline: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Status: </span><span class="si">{</span><span class="s1">&#39;SUCCESS&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;FAILED&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total elapsed time: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">total_elapsed_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stages completed: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stages_completed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stages failed: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stages_failed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">stages_completed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Completed stages: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stages_completed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">stages_failed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed stages: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stages_failed</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># File processing summary</span>
+        <span class="n">total_processed</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">total_files_processed</span>
+        <span class="n">total_failed</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">total_files_failed</span>
+        
+        <span class="k">if</span> <span class="n">total_processed</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">total_failed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files processed: </span><span class="si">{</span><span class="n">total_processed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files failed: </span><span class="si">{</span><span class="n">total_failed</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">error_message</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">error_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="ProcessingPipeline.get_stage_output_dir">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline.get_stage_output_dir">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stage_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the output directory for a specific stage.&quot;&quot;&quot;</span>
+        <span class="n">stage_dir_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">extracted_dir</span><span class="p">,</span>
+            <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clipped_dir</span><span class="p">,</span>
+            <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">processed_dir</span> <span class="o">/</span> <span class="s2">&quot;aligned&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">analysis_ready_dir</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;visualizations&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">stage_dir_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stage_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="ProcessingPipeline.get_stage_input_dir">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.ProcessingPipeline.get_stage_input_dir">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stage_input_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the input directory for a specific stage.&quot;&quot;&quot;</span>
+        <span class="n">stage_input_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">source_dir</span><span class="p">,</span>
+            <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">extracted_dir</span><span class="p">,</span>
+            <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clipped_dir</span><span class="p">,</span>
+            <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">processed_dir</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">analysis_ready_dir</span><span class="p">,</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">stage_input_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stage_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">source_dir</span><span class="p">)</span></div>
+</div>
+
+
+<span class="c1"># File: Update to src/geoworkflow/core/pipeline.py</span>
+<span class="c1"># Add these methods to the ProcessingPipeline class</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_processors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register available processors.&quot;&quot;&quot;</span>
+    <span class="c1"># Import processors when registering to avoid circular imports</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.aoi.processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">AOIProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.spatial.clipper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClippingProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.spatial.aligner</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlignmentProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.integration.enrichment</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticalEnrichmentProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.extraction.archive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArchiveExtractionProcessor</span>
+        
+        <span class="c1"># Register processors for each stage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;aoi&quot;</span><span class="p">,</span> <span class="n">AOIProcessor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;extract&quot;</span><span class="p">,</span> <span class="n">ArchiveExtractionProcessor</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="n">ClippingProcessor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;align&quot;</span><span class="p">,</span> <span class="n">AlignmentProcessor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;enrich&quot;</span><span class="p">,</span> <span class="n">StatisticalEnrichmentProcessor</span><span class="p">)</span>
+        <span class="c1"># self.register_processor(&quot;visualize&quot;, VisualizationProcessor)  # When implemented</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully registered all processors&quot;</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import all processors: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Define the expected processor mapping as fallback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stage_processor_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="s2">&quot;ArchiveExtractionProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="s2">&quot;ClippingProcessor&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="s2">&quot;AlignmentProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="s2">&quot;StatisticalEnrichmentProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="s2">&quot;IntegrationProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="s2">&quot;VisualizationProcessor&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_stage_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create configuration dictionary for a specific stage.&quot;&quot;&quot;</span>
+    <span class="c1"># Get stage-specific configuration from workflow config</span>
+    <span class="n">stage_config</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">if</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;aoi&quot;</span><span class="p">:</span>
+        <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">aoi</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;extract&quot;</span><span class="p">:</span>
+        <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">extraction</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="c1"># Add required fields for extraction</span>
+        <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;aoi_file&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">aoi</span><span class="o">.</span><span class="n">output_file</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="k">elif</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span>
+        <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">clipping</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;aoi_file&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">aoi</span><span class="o">.</span><span class="n">output_file</span><span class="p">,</span>
+            <span class="s2">&quot;input_directory&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_input_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+            <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_output_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+        <span class="p">})</span>
+    <span class="k">elif</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;align&quot;</span><span class="p">:</span>
+        <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">alignment</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;input_directory&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_input_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+            <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_output_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+        <span class="p">})</span>
+    <span class="k">elif</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;enrich&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enrichment</span><span class="p">:</span>
+            <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enrichment</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Create default enrichment config</span>
+            <span class="n">stage_config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;coi_directory&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_input_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+                <span class="s2">&quot;coi_pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;*AFRICAPOLIS*&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;raster_directory&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_input_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+                <span class="s2">&quot;raster_pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;*.tif&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;output_file&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_output_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;enriched_cities.geojson&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;statistics&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;skip_existing&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;add_area_column&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;area_units&quot;</span><span class="p">:</span> <span class="s2">&quot;km2&quot;</span>
+            <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;visualize&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">visualization</span><span class="p">:</span>
+            <span class="n">stage_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;input_directory&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_input_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+            <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_output_dir</span><span class="p">(</span><span class="n">stage_name</span><span class="p">),</span>
+        <span class="p">})</span>
+    
+    <span class="c1"># Add common configuration</span>
+    <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">&quot;stage_name&quot;</span><span class="p">:</span> <span class="n">stage_name</span><span class="p">,</span>
+        <span class="s2">&quot;workflow_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;data_sources&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_sources</span><span class="p">,</span>
+    <span class="p">})</span>
+    
+    <span class="c1"># Apply any additional kwargs</span>
+    <span class="n">stage_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">stage_config</span>
+
+<div class="viewcode-block" id="get_stage_output_dir">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.get_stage_output_dir">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_stage_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the output directory for a specific stage.&quot;&quot;&quot;</span>
+    <span class="c1"># Base directories from workflow config or default structure</span>
+    <span class="n">base_data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+    <span class="n">base_output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+    
+    <span class="n">stage_dir_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;aoi&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;aoi&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;01_extracted&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;02_clipped&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;03_processed&quot;</span> <span class="o">/</span> <span class="s2">&quot;aligned&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;04_analysis_ready&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;04_analysis_ready&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="n">base_output_dir</span> <span class="o">/</span> <span class="s2">&quot;visualizations&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">stage_dir_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stage_name</span><span class="p">,</span> <span class="n">base_output_dir</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_stage_input_dir">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.pipeline.get_stage_input_dir">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_stage_input_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the input directory for a specific stage.&quot;&quot;&quot;</span>
+    <span class="n">base_data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+    
+    <span class="n">stage_input_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;aoi&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;00_source&quot;</span> <span class="o">/</span> <span class="s2">&quot;boundaries&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;00_source&quot;</span> <span class="o">/</span> <span class="s2">&quot;archives&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;01_extracted&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;02_clipped&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;03_processed&quot;</span> <span class="o">/</span> <span class="s2">&quot;aligned&quot;</span><span class="p">,</span>  <span class="c1"># Prefer aligned data</span>
+        <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;03_processed&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;04_analysis_ready&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    
+    <span class="n">input_dir</span> <span class="o">=</span> <span class="n">stage_input_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stage_name</span><span class="p">,</span> <span class="n">base_data_dir</span><span class="p">)</span>
+    
+    <span class="c1"># For enrichment, fallback to clipped data if aligned doesn&#39;t exist</span>
+    <span class="k">if</span> <span class="n">stage_name</span> <span class="o">==</span> <span class="s2">&quot;enrich&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">input_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">fallback_dir</span> <span class="o">=</span> <span class="n">base_data_dir</span> <span class="o">/</span> <span class="s2">&quot;02_clipped&quot;</span>
+        <span class="k">if</span> <span class="n">fallback_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using clipped data for enrichment: </span><span class="si">{</span><span class="n">fallback_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">fallback_dir</span>
+    
+    <span class="k">return</span> <span class="n">input_dir</span></div>
+
+
+<span class="c1"># Also add this method to handle enrichment stage validation</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_enrichment_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate enrichment stage requirements.&quot;&quot;&quot;</span>
+    <span class="n">validation_result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="s2">&quot;enrich&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stages</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">validation_result</span>
+    
+    <span class="c1"># Check that either clipped or aligned data exists</span>
+    <span class="n">clipped_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/02_clipped&quot;</span><span class="p">)</span>
+    <span class="n">aligned_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/03_processed/aligned&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">clipped_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">aligned_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">validation_result</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="s2">&quot;Enrichment stage requires either clipped or aligned raster data&quot;</span>
+        <span class="p">)</span>
+        <span class="n">validation_result</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="c1"># Check for COI data</span>
+    <span class="n">input_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stage_input_dir</span><span class="p">(</span><span class="s2">&quot;enrich&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">input_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="c1"># Look for potential COI files</span>
+        <span class="n">coi_pattern</span> <span class="o">=</span> <span class="s2">&quot;*AFRICAPOLIS*&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enrichment</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enrichment</span><span class="o">.</span><span class="n">coi_pattern</span><span class="p">:</span>
+            <span class="n">coi_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enrichment</span><span class="o">.</span><span class="n">coi_pattern</span>
+        
+        <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
+        <span class="n">coi_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">input_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">coi_pattern</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;.shp&#39;</span><span class="p">,</span> <span class="s1">&#39;.geojson&#39;</span><span class="p">,</span> <span class="s1">&#39;.gpkg&#39;</span><span class="p">,</span> <span class="s1">&#39;.gml&#39;</span><span class="p">,</span> <span class="s1">&#39;.kml&#39;</span><span class="p">}:</span>
+                    <span class="n">coi_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">coi_files</span><span class="p">:</span>
+            <span class="n">validation_result</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No COI files found matching pattern &#39;</span><span class="si">{</span><span class="n">coi_pattern</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="n">input_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">coi_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">validation_result</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Multiple COI files found matching pattern &#39;</span><span class="si">{</span><span class="n">coi_pattern</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Processor will require more specific pattern.&quot;</span>
+            <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">validation_result</span>
+
+<span class="c1"># File: Update to src/geoworkflow/core/pipeline.py</span>
+<span class="c1"># Add these lines to the _register_processors method</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_processors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register available processors.&quot;&quot;&quot;</span>
+    <span class="c1"># Import processors when registering to avoid circular imports</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.aoi.processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">AOIProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.spatial.clipper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClippingProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.spatial.aligner</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlignmentProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.integration.enrichment</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticalEnrichmentProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.extraction.archive</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArchiveExtractionProcessor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..processors.extraction.open_buildings</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenBuildingsExtractionProcessor</span>  <span class="c1"># Add this line</span>
+        
+        <span class="c1"># Register processors for each stage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;aoi&quot;</span><span class="p">,</span> <span class="n">AOIProcessor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;extract&quot;</span><span class="p">,</span> <span class="n">ArchiveExtractionProcessor</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;extract_buildings&quot;</span><span class="p">,</span> <span class="n">OpenBuildingsExtractionProcessor</span><span class="p">)</span>  <span class="c1"># Add this line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="n">ClippingProcessor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;align&quot;</span><span class="p">,</span> <span class="n">AlignmentProcessor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_processor</span><span class="p">(</span><span class="s2">&quot;enrich&quot;</span><span class="p">,</span> <span class="n">StatisticalEnrichmentProcessor</span><span class="p">)</span>
+        <span class="c1"># self.register_processor(&quot;visualize&quot;, VisualizationProcessor)  # When implemented</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully registered all processors&quot;</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import all processors: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Define the expected processor mapping as fallback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stage_processor_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="s2">&quot;ArchiveExtractionProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;extract_buildings&quot;</span><span class="p">:</span> <span class="s2">&quot;OpenBuildingsExtractionProcessor&quot;</span><span class="p">,</span>  <span class="c1"># Add this line</span>
+            <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="s2">&quot;ClippingProcessor&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="s2">&quot;AlignmentProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="s2">&quot;StatisticalEnrichmentProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;integrate&quot;</span><span class="p">:</span> <span class="s2">&quot;IntegrationProcessor&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="s2">&quot;VisualizationProcessor&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, AfricaPolis Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
