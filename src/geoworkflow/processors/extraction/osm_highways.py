@@ -304,6 +304,7 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         4. Select requested attributes
         5. Clean and validate geometries
         6. Calculate derived attributes
+        7. Export results
         
         Returns:
             Dictionary with processing statistics
@@ -431,6 +432,14 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 f"Extraction complete: {processing_stats['highways_final']:,} highways, "
                 f"{summary['total_length_km']:.1f} km total"
             )
+            
+            # CRITICAL FIX: Export the results!
+            self.logger.info("Exporting results...")
+            self.output_file = self._export_results()
+            processing_stats["output_file"] = str(self.output_file)
+            
+            # CRITICAL FIX: Set processed_count for the result
+            processing_stats["processed_count"] = processing_stats["highways_final"]
             
             return processing_stats
             
