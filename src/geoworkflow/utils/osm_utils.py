@@ -97,11 +97,20 @@ def select_highway_attributes(
     """
     # Always keep geometry and osm_id
     required_cols = ['geometry']
+    
+    # Handle different ID column names
     if 'osm_id' in highways_gdf.columns:
         required_cols.append('osm_id')
     elif 'id' in highways_gdf.columns:
-        required_cols.append('id')
+        # Pyrosm uses 'id', rename to 'osm_id' for consistency
         highways_gdf = highways_gdf.rename(columns={'id': 'osm_id'})
+        required_cols.append('osm_id')  # FIX: Add 'osm_id', not 'id'
+    else:
+        # No ID column found - log warning but continue
+        logger.warning(
+            "No 'osm_id' or 'id' column found in highways data. "
+            "Feature identification may be limited."
+        )
     
     # Find available attributes
     available = [col for col in include_attributes if col in highways_gdf.columns]
@@ -304,13 +313,26 @@ def clip_highways_to_aoi(
     
     # Apply buffer if requested
     if buffer_meters > 0:
-        # Reproject to metric CRS for buffering
+        # FIX: Use proper UTM projection for accurate buffering
         if highways_gdf.crs.is_geographic:
-            # Use appropriate UTM zone or just use a local metric CRS
-            # For simplicity, use a rough conversion (1 degree ≈ 111km at equator)
-            buffer_degrees = buffer_meters / 111000
-            aoi_geom = aoi_geom.buffer(buffer_degrees)
+            # Import here to avoid circular imports
+            import geopandas as gpd
+            from shapely.geometry import mapping, shape
+            
+            # Create a temporary GeoDataFrame to use estimate_utm_crs
+            temp_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=highways_gdf.crs)
+            
+            # Estimate appropriate UTM zone based on geometry centroid
+            utm_crs = temp_gdf.estimate_utm_crs()
+            
+            # Reproject to UTM, buffer, then reproject back
+            temp_gdf_utm = temp_gdf.to_crs(utm_crs)
+            temp_gdf_utm['geometry'] = temp_gdf_utm.geometry.buffer(buffer_meters)
+            temp_gdf_buffered = temp_gdf_utm.to_crs(highways_gdf.crs)
+            
+            aoi_geom = temp_gdf_buffered.geometry.iloc[0]
         else:
+            # Already in metric CRS, buffer directly
             aoi_geom = aoi_geom.buffer(buffer_meters)
     
     # Clip geometries

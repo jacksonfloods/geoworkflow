@@ -326,7 +326,20 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 )
                 
                 # Spatial filter by AOI
+                # FIX: Ensure CRS compatibility before spatial operations
                 aoi_geom = self.aoi_gdf.unary_union
+                
+                # Check CRS compatibility and reproject if necessary
+                if highways_region.crs != self.aoi_gdf.crs:
+                    self.logger.debug(
+                        f"CRS mismatch detected: highways={highways_region.crs}, "
+                        f"AOI={self.aoi_gdf.crs}. Reprojecting AOI to match highways."
+                    )
+                    # Reproject AOI to match highways CRS
+                    aoi_gdf_reprojected = self.aoi_gdf.to_crs(highways_region.crs)
+                    aoi_geom = aoi_gdf_reprojected.unary_union
+                
+                # Perform spatial intersection
                 highways_in_aoi = highways_region[
                     highways_region.intersects(aoi_geom)
                 ].copy()
