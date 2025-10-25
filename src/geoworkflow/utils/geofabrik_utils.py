@@ -203,12 +203,22 @@ def detect_regions_from_aoi(aoi_geometry) -> List[str]:
         regions = detect_regions_from_aoi(nairobi_polygon)
         # Returns: ['kenya']
     """
-    # Get AOI bounds
-    if hasattr(aoi_geometry, 'unary_union'):
-        # GeoDataFrame
+    import geopandas as gpd
+    
+    # Ensure we're working in WGS84 for comparison with REGION_BOUNDS
+    if hasattr(aoi_geometry, 'crs'):
+        # It's a GeoDataFrame or GeoSeries
+        if aoi_geometry.crs is None:
+            logger.warning("AOI has no CRS, assuming EPSG:4326")
+            aoi_geometry = aoi_geometry.copy()
+            aoi_geometry.set_crs("EPSG:4326", inplace=True)
+        elif aoi_geometry.crs != "EPSG:4326":
+            logger.info(f"Reprojecting AOI from {aoi_geometry.crs} to EPSG:4326 for region detection")
+            aoi_geometry = aoi_geometry.to_crs("EPSG:4326")
+        
         bounds = aoi_geometry.unary_union.bounds
     else:
-        # Shapely geometry
+        # Shapely geometry - assume it's already in WGS84
         bounds = aoi_geometry.bounds
     
     aoi_box = box(*bounds)

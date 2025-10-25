@@ -1,4 +1,3 @@
-
 """
 OSM Highway extraction processor using Geofabrik PBF files.
 
@@ -227,7 +226,7 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             self.logger.info(f"Loading AOI from {self.highways_config.aoi_file}")
             self.aoi_gdf = gpd.read_file(self.highways_config.aoi_file)
             
-            # Ensure WGS84
+            # Ensure WGS84 for region detection and PBF downloads
             if self.aoi_gdf.crs is None:
                 self.logger.warning("AOI has no CRS, assuming EPSG:4326")
                 self.aoi_gdf.set_crs("EPSG:4326", inplace=True)
@@ -326,22 +325,23 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 )
                 
                 # Spatial filter by AOI
-                # FIX: Ensure CRS compatibility before spatial operations
-                aoi_geom = self.aoi_gdf.unary_union
-                
-                # Check CRS compatibility and reproject if necessary
+                # Ensure both geometries are in the same CRS for spatial operations
+                # self.aoi_gdf is already in EPSG:4326 from _setup_custom_processing()
                 if highways_region.crs != self.aoi_gdf.crs:
                     self.logger.debug(
-                        f"CRS mismatch detected: highways={highways_region.crs}, "
-                        f"AOI={self.aoi_gdf.crs}. Reprojecting AOI to match highways."
+                        f"CRS mismatch: highways={highways_region.crs}, AOI={self.aoi_gdf.crs}. "
+                        f"Reprojecting AOI to match highways CRS for spatial operations."
                     )
-                    # Reproject AOI to match highways CRS
-                    aoi_gdf_reprojected = self.aoi_gdf.to_crs(highways_region.crs)
-                    aoi_geom = aoi_gdf_reprojected.unary_union
+                    aoi_gdf_for_filter = self.aoi_gdf.to_crs(highways_region.crs)
+                else:
+                    aoi_gdf_for_filter = self.aoi_gdf
                 
-                # Perform spatial intersection
+                # Create unified geometry for intersection test
+                aoi_geom = aoi_gdf_for_filter.union_all()
+                
+                # Perform spatial intersection using GeoSeries method
                 highways_in_aoi = highways_region[
-                    highways_region.intersects(aoi_geom)
+                    highways_region.geometry.intersects(aoi_geom)
                 ].copy()
                 
                 self.logger.info(
