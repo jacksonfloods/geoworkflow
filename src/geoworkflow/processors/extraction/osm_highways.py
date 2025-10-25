@@ -227,15 +227,24 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             self.aoi_gdf = gpd.read_file(self.highways_config.aoi_file)
             
             # Ensure WGS84 for region detection and PBF downloads
+            # CRITICAL FIX: Properly check if CRS is WGS84 by comparing normalized CRS
             if self.aoi_gdf.crs is None:
                 self.logger.warning("AOI has no CRS, assuming EPSG:4326")
                 self.aoi_gdf.set_crs("EPSG:4326", inplace=True)
-            elif self.aoi_gdf.crs != "EPSG:4326":
-                self.logger.info(f"Reprojecting AOI from {self.aoi_gdf.crs} to EPSG:4326")
-                self.aoi_gdf = self.aoi_gdf.to_crs("EPSG:4326")
+            else:
+                # Check if already in WGS84 by comparing EPSG codes
+                from pyproj import CRS
+                target_crs = CRS.from_epsg(4326)
+                current_crs = CRS(self.aoi_gdf.crs)
+                
+                if not current_crs.equals(target_crs):
+                    self.logger.info(f"Reprojecting AOI from {self.aoi_gdf.crs} to EPSG:4326")
+                    self.aoi_gdf = self.aoi_gdf.to_crs("EPSG:4326")
+                    self.logger.info(f"AOI reprojected. New bounds: {self.aoi_gdf.total_bounds}")
             
             setup_info["aoi_features"] = len(self.aoi_gdf)
             setup_info["aoi_bounds"] = self.aoi_gdf.total_bounds.tolist()
+            setup_info["aoi_crs"] = str(self.aoi_gdf.crs)
             setup_info["components"].append("aoi_loaded")
             
             # Detect or validate regions
