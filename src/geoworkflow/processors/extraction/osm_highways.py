@@ -46,6 +46,8 @@ try:
 except ImportError:
     HAS_REQUIRED_LIBS = False
 
+from geoworkflow.schemas.processing_result import BatchProcessResult
+from geoworkflow.utils.config_loader import ConfigLoader
 from geoworkflow.core.enhanced_base import TemplateMethodProcessor, GeospatialProcessorMixin
 from geoworkflow.core.exceptions import (
     ExtractionError,
@@ -70,6 +72,26 @@ from geoworkflow.utils.osm_utils import (
     summarize_highway_network
 )
 from geoworkflow.utils.resource_utils import ensure_directory
+from geoworkflow.schemas.processing_result import BatchProcessResult
+from geoworkflow.utils.config_loader import ConfigLoader
+
+# ISO3 country codes to Geofabrik region name mapping
+ISO3_TO_GEOFABRIK = {
+    "DZA": "algeria", "AGO": "angola", "BEN": "benin", "BWA": "botswana",
+    "BFA": "burkina-faso", "BDI": "burundi", "CMR": "cameroon", "CPV": "cape-verde",
+    "CAF": "central-african-republic", "TCD": "chad", "COM": "comoros",
+    "COG": "congo-brazzaville", "COD": "congo-democratic-republic", "DJI": "djibouti",
+    "EGY": "egypt", "GNQ": "equatorial-guinea", "ERI": "eritrea", "ETH": "ethiopia",
+    "GAB": "gabon", "GHA": "ghana", "GIN": "guinea", "GNB": "guinea-bissau",
+    "CIV": "ivory-coast", "KEN": "kenya", "LSO": "lesotho", "LBR": "liberia",
+    "LBY": "libya", "MDG": "madagascar", "MWI": "malawi", "MLI": "mali",
+    "MRT": "mauritania", "MUS": "mauritius", "MAR": "morocco", "MOZ": "mozambique",
+    "NAM": "namibia", "NER": "niger", "NGA": "nigeria", "RWA": "rwanda",
+    "SHN": "saint-helena-ascension-and-tristan-da-cunha", "STP": "sao-tome-and-principe",
+    "SEN": "senegal", "SYC": "seychelles", "SLE": "sierra-leone", "SOM": "somalia",
+    "ZAF": "south-africa", "SSD": "south-sudan", "SDN": "sudan", "TZA": "tanzania",
+    "TGO": "togo", "TUN": "tunisia", "UGA": "uganda", "ZMB": "zambia", "ZWE": "zimbabwe"
+}
 
 
 class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
@@ -132,321 +154,128 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         self.output_file: Optional[Path] = None
     
     def process_data(self) -> Dict[str, Any]:
-        """
-        Main processing method (required abstract method from base class).
-        
-        The actual implementation follows the template method pattern where
-        the base class process() method orchestrates the workflow by calling:
-        - validate_inputs() -> _validate_custom_inputs()
-        - setup_processing() -> _setup_custom_processing()  
-        - process_data() -> this method
-        - cleanup_resources() -> _cleanup_custom_processing()
-        
-        This method executes the core highway extraction and filtering logic.
-        
-        Returns:
-            Dictionary with processing statistics and results
-        """
-        return self._execute_core_processing()
+        raise NotImplementedError("Use process() method directly")
+
+    def _is_africapolis_mode(self) -> bool:
+        """Check if running in AfricaPolis batch mode."""
+        return isinstance(self.highways_config.aoi_file, str) and self.highways_config.aoi_file == "africapolis"
     
-    def _validate_custom_inputs(self) -> Dict[str, Any]:
-        """
-        Validate OSM-specific inputs.
+    def process(self):
+        if self._is_africapolis_mode():
+            geometries = self._load_batch_geometries()  # Returns list of (geom, name, iso3)
+        else:
+            geometries = self._load_single_geometry()   # Returns list with 1 item        
+        return self._process_geometries(geometries)
+
+    def _process_geometries(self, geometries):
+        """Process all geometries grouped by country."""
+        succeeded = []
+        failed = {}
         
-        Checks:
-        - AOI file is readable and valid
-        - Output directory is writable
-        - Cache directory exists
-        - Highway types are valid
-        - Export format is supported
+        by_country = self._group_by_country(geometries)
         
-        Returns:
-            Dictionary with validation results and warnings
-        """
-        validation_result = {
-            "valid": True,
-            "errors": [],
-            "warnings": []
-        }
-        
-        # Validate AOI file
-        try:
-            aoi_test = gpd.read_file(self.highways_config.aoi_file)
-            if len(aoi_test) == 0:
-                validation_result["errors"].append("AOI file contains no features")
-            if aoi_test.crs is None:
-                validation_result["warnings"].append("AOI has no CRS, assuming EPSG:4326")
-        except Exception as e:
-            validation_result["errors"].append(f"Failed to read AOI file: {e}")
-        
-        # Validate output directory
-        if not self.highways_config.output_dir.exists():
+        for iso3, geom_list in by_country.items():
             try:
-                self.highways_config.output_dir.mkdir(parents=True)
+                pbf_data, _ = self._load_country_pbf(iso3)
             except Exception as e:
-                validation_result["errors"].append(f"Cannot create output directory: {e}")
+                for geom, name in geom_list:
+                    failed[name] = f"PBF load failed: {str(e)}"
+                continue
+            
+            for geom, name in geom_list:
+                try:
+                    highways = self._extract_highways(pbf_data, geom)
+                    self._export(highways, name, iso3)
+                    succeeded.append(name)
+                except Exception as e:
+                    failed[name] = str(e)
+                    self.logger.error(f"✗ {name}: {e}")
         
-        # Validate cache directory
-        if not self.highways_config.pbf_cache_dir.exists():
-            try:
-                self.highways_config.pbf_cache_dir.mkdir(parents=True)
-            except Exception as e:
-                validation_result["errors"].append(f"Cannot create cache directory: {e}")
-        
-        # Validate export format
-        supported_formats = ['geojson', 'shapefile', 'geoparquet', 'csv']
-        if self.highways_config.export_format not in supported_formats:
-            validation_result["errors"].append(
-                f"Unsupported export format: {self.highways_config.export_format}. "
-                f"Supported: {supported_formats}"
+        # Return appropriate result type
+        if self._is_africapolis_mode():
+            return BatchProcessResult(
+                success=len(succeeded) > 0,
+                total_count=len(geometries),
+                succeeded_count=len(succeeded),
+                failed_count=len(failed),
+                succeeded=succeeded,
+                failed=failed,
+                output_files=[]
+            )
+        else:
+            return ProcessingResult(
+                success=len(succeeded) > 0,
+                processed_count=len(succeeded),
+                message=f"Processed {len(succeeded)} geometries"
             )
         
-        # Check if PBF files are cached
-        cached = list_cached_pbfs(self.highways_config.pbf_cache_dir)
-        if cached:
-            validation_result["warnings"].append(
-                f"Found {len(cached)} cached PBF file(s). "
-                f"Set force_redownload=True to refresh."
-            )
+    def _filter_agglomerations(self, gdf: gpd.GeoDataFrame, columns: Dict[str, str]) -> gpd.GeoDataFrame:
+        """Filter by country and city using AND logic."""
+        filtered = gdf.copy()
         
-        validation_result["valid"] = len(validation_result["errors"]) == 0
-        return validation_result
+        if isinstance(self.highways_config.country, str) and self.highways_config.country.lower() == "all":
+            pass
+        elif isinstance(self.highways_config.country, list):
+            filtered = filtered[filtered[columns["iso3"]].isin(self.highways_config.country)]
+        
+        if self.highways_config.city:
+            filtered = filtered[filtered[columns["name"]].isin(self.highways_config.city)]
+        
+        if len(filtered) == 0:
+            raise ValueError("No agglomerations match the specified filters")
+        
+        self.logger.info(f"Filters: country={self.highways_config.country}, city={self.highways_config.city}")
+        return filtered
     
-    def _setup_custom_processing(self) -> Dict[str, Any]:
-        """
-        Setup processing: load AOI, detect regions, download PBFs.
+    def _load_country_pbf(self, iso3: str):
+        """Load and parse PBF for a country once."""
+        from geoworkflow.utils.geofabrik_utils import get_cached_pbf
         
-        Returns:
-            Dictionary with setup information
-        """
-        setup_info = {"components": []}
+        region = ISO3_TO_GEOFABRIK.get(iso3, iso3.lower())
+        if region not in ISO3_TO_GEOFABRIK.values():
+            self.logger.warning(f"ISO3 code {iso3} not found in mapping, using: {region}")
         
-        try:
-            # Load AOI
-            self.logger.info(f"Loading AOI from {self.highways_config.aoi_file}")
-            self.aoi_gdf = gpd.read_file(self.highways_config.aoi_file)
-            
-            # Ensure WGS84 for region detection and PBF downloads
-            # CRITICAL FIX: Properly check if CRS is WGS84 by comparing normalized CRS
-            if self.aoi_gdf.crs is None:
-                self.logger.warning("AOI has no CRS, assuming EPSG:4326")
-                self.aoi_gdf.set_crs("EPSG:4326", inplace=True)
-            else:
-                # Check if already in WGS84 by comparing EPSG codes
-                from pyproj import CRS
-                target_crs = CRS.from_epsg(4326)
-                current_crs = CRS(self.aoi_gdf.crs)
-                
-                if not current_crs.equals(target_crs):
-                    self.logger.info(f"Reprojecting AOI from {self.aoi_gdf.crs} to EPSG:4326")
-                    self.aoi_gdf = self.aoi_gdf.to_crs("EPSG:4326")
-                    self.logger.info(f"AOI reprojected. New bounds: {self.aoi_gdf.total_bounds}")
-            
-            setup_info["aoi_features"] = len(self.aoi_gdf)
-            setup_info["aoi_bounds"] = self.aoi_gdf.total_bounds.tolist()
-            setup_info["aoi_crs"] = str(self.aoi_gdf.crs)
-            setup_info["components"].append("aoi_loaded")
-            
-            # Detect or validate regions
-            if self.highways_config.geofabrik_regions is None:
-                self.logger.info("Auto-detecting Geofabrik regions from AOI...")
-                self.regions = detect_regions_from_aoi(self.aoi_gdf)
-            else:
-                self.regions = self.highways_config.geofabrik_regions
-                self.logger.info(f"Using specified regions: {self.regions}")
-            
-            setup_info["regions"] = self.regions
-            setup_info["multi_region"] = len(self.regions) > 1
-            
-            if len(self.regions) > 1:
-                self.logger.warning(
-                    f"AOI spans {len(self.regions)} regions: {self.regions}. "
-                    "Will download and merge multiple PBF files."
-                )
-            
-            # Download/cache PBF files
-            self.logger.info("Checking cache and downloading PBF files if needed...")
-            for region in self.regions:
-                self.logger.info(f"Processing region: {region}")
-                pbf_path, metadata = get_cached_pbf(
-                    region=region,
-                    cache_dir=self.highways_config.pbf_cache_dir,
-                    force_redownload=self.highways_config.force_redownload,
-                    max_age_days=self.highways_config.max_cache_age_days
-                )
-                self.pbf_files.append(pbf_path)
-                self.pbf_metadata.append(metadata)
-                
-                if metadata:
-                    age_days = metadata.age_days()
-                    self.logger.info(
-                        f"  {region}: {metadata.file_size_mb:.1f} MB, "
-                        f"{age_days} days old"
-                    )
-            
-            setup_info["pbf_files"] = [str(p) for p in self.pbf_files]
-            setup_info["components"].append("pbf_files_ready")
-            
-            return setup_info
-            
-        except Exception as e:
-            self.logger.error(f"Setup failed: {e}")
-            raise ConfigurationError(f"Setup failed: {e}")
+        self.logger.info(f"  Loading PBF for {iso3}...")
+        pbf_path, metadata = get_cached_pbf(
+            region=region,
+            cache_dir=self.highways_config.pbf_cache_dir,
+            force_redownload=self.highways_config.force_redownload,
+            max_age_days=self.highways_config.max_cache_age_days
+        )
+        
+        osm = pyrosm.OSM(str(pbf_path))
+        highways_data = osm.get_network(network_type="all")
+        
+        if highways_data is None or len(highways_data) == 0:
+            raise ExtractionError(f"No highways found in {region} PBF")
+        
+        self.logger.info(f"  Loaded {len(highways_data):,} highway segments")
+        return highways_data, osm
+
     
-    def _execute_core_processing(self) -> Dict[str, Any]:
-        """
-        Execute highway extraction and filtering.
+    def _clip_highways(self, pbf_data: gpd.GeoDataFrame, geometry) -> gpd.GeoDataFrame:
+        """Clip highways to geometry from pre-parsed PBF."""
+
+        temp_aoi = gpd.GeoDataFrame({'geometry': [geometry]}, crs="ESRI:102022")
         
-        Steps:
-        1. Extract highways from PBF file(s)
-        2. Spatial filter by AOI
-        3. Filter by highway type if specified
-        4. Select requested attributes
-        5. Clean and validate geometries
-        6. Calculate derived attributes
-        7. Export results
+        # Reproject to match PBF data CRS
+        if temp_aoi.crs != pbf_data.crs:
+            temp_aoi = temp_aoi.to_crs(pbf_data.crs)
         
-        Returns:
-            Dictionary with processing statistics
-        """
-        processing_stats = {}
-        all_highways = []
-        
-        try:
-            # Extract from each PBF file
-            self.logger.info(f"Extracting highways from {len(self.pbf_files)} PBF file(s)...")
-            
-            for pbf_path, region in zip(self.pbf_files, self.regions):
-                self.logger.info(f"Reading OSM data from {region}...")
-                
-                # Initialize Pyrosm
-                osm = pyrosm.OSM(str(pbf_path))
-                
-                # Extract all highways
-                # network_type="all" gets all highway types
-                highways_region = osm.get_network(network_type="all")
-                
-                if highways_region is None or len(highways_region) == 0:
-                    self.logger.warning(f"No highways found in {region}")
-                    continue
-                
-                self.logger.info(
-                    f"  Extracted {len(highways_region):,} highway segments from {region}"
-                )
-                
-                # Spatial filter by AOI
-                # Ensure both geometries are in the same CRS for spatial operations
-                # self.aoi_gdf is already in EPSG:4326 from _setup_custom_processing()
-                if highways_region.crs != self.aoi_gdf.crs:
-                    self.logger.debug(
-                        f"CRS mismatch: highways={highways_region.crs}, AOI={self.aoi_gdf.crs}. "
-                        f"Reprojecting AOI to match highways CRS for spatial operations."
-                    )
-                    aoi_gdf_for_filter = self.aoi_gdf.to_crs(highways_region.crs)
-                else:
-                    aoi_gdf_for_filter = self.aoi_gdf
-                
-                # Create unified geometry for intersection test
-                aoi_geom = aoi_gdf_for_filter.union_all()
-                
-                # Perform spatial intersection using GeoSeries method
-                highways_in_aoi = highways_region[
-                    highways_region.geometry.intersects(aoi_geom)
-                ].copy()
-                
-                self.logger.info(
-                    f"  Filtered to AOI: {len(highways_in_aoi):,} segments"
-                )
-                
-                all_highways.append(highways_in_aoi)
-            
-            if not all_highways:
-                raise ExtractionError("No highways found in any region")
-            
-            # Merge all regions
-            self.logger.info("Merging highways from all regions...")
-            self.highways_raw = gpd.GeoDataFrame(
-                pd.concat(all_highways, ignore_index=True),
-                crs=all_highways[0].crs
-            )
-            processing_stats["highways_extracted"] = len(self.highways_raw)
-            
-            # Deduplicate (for multi-region overlap)
-            if len(self.regions) > 1:
-                self.logger.info("Deduplicating highways across region boundaries...")
-                self.highways_raw = deduplicate_highways(self.highways_raw)
-                processing_stats["highways_after_dedup"] = len(self.highways_raw)
-            
-            # Filter by highway type
-            if self.highways_config.highway_types != "all":
-                self.logger.info(
-                    f"Filtering by highway types: {self.highways_config.highway_types}"
-                )
-                self.highways_filtered = filter_highways_by_type(
-                    self.highways_raw,
-                    self.highways_config.highway_types
-                )
-            else:
-                self.highways_filtered = self.highways_raw.copy()
-            
-            processing_stats["highways_after_type_filter"] = len(self.highways_filtered)
-            
-            # Clip to AOI if requested
-            if self.highways_config.clip_to_aoi:
-                self.logger.info("Clipping highways to AOI boundary...")
-                self.highways_filtered = clip_highways_to_aoi(
-                    self.highways_filtered,
-                    self.aoi_gdf,
-                    buffer_meters=self.highways_config.buffer_aoi_meters
-                )
-                processing_stats["highways_after_clip"] = len(self.highways_filtered)
-            
-            # Select attributes
-            if self.highways_config.include_attributes != "all":
-                self.logger.info(
-                    f"Selecting attributes: {self.highways_config.include_attributes}"
-                )
-                self.highways_filtered = select_highway_attributes(
-                    self.highways_filtered,
-                    self.highways_config.include_attributes
-                )
-            
-            # Clean attributes
-            self.logger.info("Cleaning and standardizing attributes...")
-            self.highways_filtered = clean_highway_attributes(self.highways_filtered)
-            
-            # Validate geometries
-            self.logger.info("Validating geometries...")
-            self.highways_filtered = validate_highway_geometries(self.highways_filtered)
-            processing_stats["highways_final"] = len(self.highways_filtered)
-            
-            # Calculate length
-            self.logger.info("Calculating highway lengths...")
-            self.highways_filtered = calculate_highway_length(self.highways_filtered)
-            
-            # Generate summary
-            summary = summarize_highway_network(self.highways_filtered)
-            processing_stats["summary"] = summary
-            
-            self.logger.info(
-                f"Extraction complete: {processing_stats['highways_final']:,} highways, "
-                f"{summary['total_length_km']:.1f} km total"
-            )
-            
-            # CRITICAL FIX: Export the results!
-            self.logger.info("Exporting results...")
-            self.output_file = self._export_results()
-            processing_stats["output_file"] = str(self.output_file)
-            
-            # CRITICAL FIX: Set processed_count for the result
-            processing_stats["processed_count"] = processing_stats["highways_final"]
-            
-            return processing_stats
-            
-        except Exception as e:
-            self.logger.error(f"Processing failed: {e}")
-            raise ExtractionError(f"Highway extraction failed: {e}")
+        buffer_meters = self.highways_config.buffer_aoi_meters or 0
+        clipped = clip_highways_to_aoi(pbf_data, temp_aoi, buffer_meters=buffer_meters)
+        return clipped
     
+    def _get_driver(self) -> str:
+        """Get GDAL driver name from export format."""
+        driver_map = {"geojson": "GeoJSON", "gpkg": "GPKG", "shapefile": "ESRI Shapefile"}
+        return driver_map.get(self.highways_config.export_format, "GPKG")
+    
+    def _get_extension(self) -> str:
+        """Get file extension from export format."""
+        ext_map = {"geojson": ".geojson", "gpkg": ".gpkg", "shapefile": ".shp"}
+        return ext_map.get(self.highways_config.export_format, ".gpkg")
+         
     def _cleanup_custom_processing(self) -> None:
         """
         Cleanup after processing.
@@ -455,127 +284,72 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         Could add: temp file cleanup, cache statistics, etc.
         """
         self.logger.info("Processing cleanup complete")
-    
-    def _export_results(self) -> Path:
-        """
-        Export highways to requested format.
+
+    def _load_batch_geometries(self):
+        """Load agglomerations from AfricaPolis."""
+        agglo_path = ConfigLoader.get_africapolis_path()
+        columns = ConfigLoader.get_africapolis_columns()
         
-        Supports:
-        - GeoJSON (.geojson)
-        - Shapefile (.shp)
-        - GeoParquet (.parquet)
-        - CSV (.csv) - geometry as WKT
+        if not agglo_path.exists():
+            raise FileNotFoundError(f"AfricaPolis file not found: {agglo_path}")
         
-        Returns:
-            Path to output file
-        """
-        try:
-            # Generate output filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            aoi_name = self.highways_config.aoi_file.stem
-            region_str = "_".join(self.regions) if len(self.regions) <= 3 else "multi_region"
-            
-            base_name = f"highways_{region_str}_{aoi_name}_{timestamp}"
-            
-            # Reproject if needed
-            if self.highways_config.output_crs != "EPSG:4326":
-                self.logger.info(f"Reprojecting to {self.highways_config.output_crs}")
-                self.highways_filtered = self.highways_filtered.to_crs(
-                    self.highways_config.output_crs
-                )
-            
-            # Simplify if requested
-            if self.highways_config.simplify_tolerance_meters:
-                self.logger.info(
-                    f"Simplifying geometries (tolerance: "
-                    f"{self.highways_config.simplify_tolerance_meters}m)"
-                )
-                self.highways_filtered['geometry'] = self.highways_filtered.geometry.simplify(
-                    self.highways_config.simplify_tolerance_meters,
-                    preserve_topology=True
-                )
-            
-            # Export based on format
-            format_map = {
-                'geojson': ('.geojson', 'GeoJSON'),
-                'shapefile': ('.shp', 'ESRI Shapefile'),
-                'geoparquet': ('.parquet', 'Parquet'),
-                'csv': ('.csv', 'CSV')
-            }
-            
-            ext, driver = format_map[self.highways_config.export_format]
-            self.output_file = self.highways_config.output_dir / f"{base_name}{ext}"
-            
-            # Check overwrite
-            if self.output_file.exists() and not self.highways_config.overwrite_existing:
-                raise ExtractionError(
-                    f"Output file exists: {self.output_file}. "
-                    "Set overwrite_existing=True to overwrite."
-                )
-            
-            self.logger.info(f"Exporting to {self.output_file}...")
-            
-            if self.highways_config.export_format == 'csv':
-                # CSV export with WKT geometry
-                df = self.highways_filtered.copy()
-                df['geometry'] = df.geometry.to_wkt()
-                df.to_csv(self.output_file, index=False)
-            else:
-                # Geospatial formats
-                self.highways_filtered.to_file(
-                    self.output_file,
-                    driver=driver,
-                    index=self.highways_config.create_spatial_index
-                )
-            
-            file_size_mb = self.output_file.stat().st_size / (1024 ** 2)
-            self.logger.info(
-                f"Export complete: {self.output_file} ({file_size_mb:.2f} MB)"
-            )
-            
-            # Create metadata file
-            self._export_metadata()
-            
-            return self.output_file
-            
-        except Exception as e:
-            self.logger.error(f"Export failed: {e}")
-            raise ExtractionError(f"Failed to export results: {e}")
-    
-    def _export_metadata(self) -> None:
-        """Export processing metadata JSON file."""
-        metadata = {
-            "processor": "OSMHighwaysProcessor",
-            "version": "1.0.0",
-            "processing_date": datetime.now().isoformat(),
-            "config": {
-                "aoi_file": str(self.highways_config.aoi_file),
-                "regions": self.regions,
-                "highway_types": self.highways_config.highway_types,
-                "include_attributes": self.highways_config.include_attributes,
-                "export_format": self.highways_config.export_format,
-            },
-            "data_sources": [
-                {
-                    "region": region,
-                    "download_date": meta.download_date.isoformat() if meta else "unknown",
-                    "file_size_mb": meta.file_size_mb if meta else None,
-                    "geofabrik_url": meta.geofabrik_url if meta else None
-                }
-                for region, meta in zip(self.regions, self.pbf_metadata)
-            ],
-            "results": {
-                "output_file": str(self.output_file),
-                "feature_count": len(self.highways_filtered),
-                "total_length_km": self.highways_filtered['length_m'].sum() / 1000 
-                    if 'length_m' in self.highways_filtered.columns else None,
-                "highway_type_counts": self.highways_filtered['highway'].value_counts().to_dict()
-                    if 'highway' in self.highways_filtered.columns else {}
-            }
-        }
+        agglomerations = gpd.read_file(agglo_path)
+        filtered = self._filter_agglomerations(agglomerations, columns)
         
-        meta_file = self.output_file.with_suffix('.meta.json')
-        with open(meta_file, 'w') as f:
-            json.dump(metadata, f, indent=2)
+        # Return list of (geometry, name, iso3)
+        return [(row.geometry, row[columns["name"]], row[columns["iso3"]]) 
+                for _, row in filtered.iterrows()]
+
+    def _load_single_geometry(self):
+        """Load single AOI geometry."""
+        aoi_gdf = gpd.read_file(self.highways_config.aoi_file)
         
-        self.logger.info(f"Metadata saved: {meta_file}")
+        # Detect country from geometry
+        region_name = detect_regions_from_aoi(aoi_gdf)[0]  
+        
+        # Reverse lookup: region name -> ISO3
+        GEOFABRIK_TO_ISO3 = {v: k for k, v in ISO3_TO_GEOFABRIK.items()}
+        iso3 = GEOFABRIK_TO_ISO3.get(region_name, region_name.upper())
+        
+        # Return list with single item: (geometry, name, iso3)
+        return [(aoi_gdf.union_all(), self.highways_config.aoi_file.stem, iso3)]
+
+    def _group_by_country(self, geometries):
+        """Group geometries by ISO3 country code."""
+        by_country = {}
+        for geom, name, iso3 in geometries:
+            if iso3 not in by_country:
+                by_country[iso3] = []
+            by_country[iso3].append((geom, name))
+        return by_country
+
+    def _extract_highways(self, pbf_data, geometry):
+        """Extract and filter highways for a single geometry."""
+        highways = self._clip_highways(pbf_data, geometry)
+        
+        if len(highways) == 0:
+            raise ExtractionError("No highways found")
+        
+        if self.highways_config.highway_types != "all":
+            highways = filter_highways_by_type(highways, self.highways_config.highway_types)
+        
+        if self.highways_config.include_attributes != "all":
+            highways = select_highway_attributes(highways, self.highways_config.include_attributes)
+        
+        highways = clean_highway_attributes(highways)
+        highways = validate_highway_geometries(highways)
+        highways = deduplicate_highways(highways)
+        highways = calculate_highway_length(highways)
+        
+        return highways
+
+    def _export(self, highways, name, iso3):
+        """Export highways to file."""
+        safe_name = name.replace(" ", "_").replace("/", "_")
+        ext = self._get_extension()
+        output_file = self.highways_config.output_dir / f"{iso3}_{safe_name}_hwys{ext}"
+        
+        driver = self._get_driver()
+        highways.to_file(output_file, driver=driver)
+        
+        self.logger.info(f"✓ {name} -> {output_file.name}")

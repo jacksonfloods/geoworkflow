@@ -29,14 +29,25 @@ class OSMHighwaysConfig(BaseModel):
     """
     
     # ==================== REQUIRED INPUTS ====================
-    aoi_file: Path = Field(
+    aoi_file: Union[Path, str] = Field(
         ...,
-        description="Path to AOI file (GeoJSON, Shapefile, etc.)"
+        description="Path to AOI file OR 'africapolis' for batch mode"
     )
     
     output_dir: Path = Field(
         ...,
         description="Directory for output files"
+    )
+    
+    # ==================== BATCH PROCESSING PARAMETERS ====================
+    country: Optional[Union[List[str], str]] = Field(
+        default=None,
+        description="ISO3 country codes list or 'all' (required for AfricaPolis mode)"
+    )
+    
+    city: Optional[List[str]] = Field(
+        default=None,
+        description="Agglomeration names to filter (optional, AND logic with country)"
     )
     
     # ==================== DATA SOURCE ====================
@@ -149,15 +160,18 @@ class OSMHighwaysConfig(BaseModel):
     # ==================== VALIDATORS ====================
     @field_validator('aoi_file')
     @classmethod
-    def validate_aoi_file(cls, v: Path) -> Path:
-        """Ensure AOI file exists."""
-        if not v.exists():
-            raise ValueError(f"AOI file not found: {v}")
-        if not v.suffix.lower() in ['.geojson', '.json', '.shp', '.gpkg']:
-            raise ValueError(
-                f"AOI file must be GeoJSON, Shapefile, or GeoPackage. Got: {v.suffix}"
-            )
-        return v
+    def validate_aoi(cls, v):
+        """Convert string to Path if not AfricaPolis keyword."""
+        if isinstance(v, str) and v.lower() == "africapolis":
+            return v.lower()  # Normalize to lowercase
+        
+        # Otherwise treat as path
+        path = Path(v)
+        if not path.exists():
+            raise ValueError(f"AOI file not found: {path}")
+        if not path.suffix.lower() in ['.geojson', '.json', '.shp', '.gpkg']:
+            raise ValueError(f"AOI file must be GeoJSON, Shapefile, or GeoPackage. Got: {path.suffix}")
+        return path
     
     @field_validator('output_dir')
     @classmethod
@@ -239,6 +253,19 @@ class OSMHighwaysConfig(BaseModel):
                     f"See: https://download.geofabrik.de/"
                 )
         
+        return self
+    
+    @model_validator(mode='after')
+    def validate_africapolis_requirements(self):
+        """Ensure country is provided for AfricaPolis mode."""
+        if isinstance(self.aoi_file, str) and self.aoi_file == "africapolis":
+            if self.country is None:
+                raise ValueError(
+                    "AfricaPolis mode requires 'country' parameter. "
+                    "Provide ISO3 codes list or 'all'."
+                )
+            if isinstance(self.country, list) and len(self.country) == 0:
+                raise ValueError("Country list cannot be empty for AfricaPolis mode.")
         return self
     
     class Config:
