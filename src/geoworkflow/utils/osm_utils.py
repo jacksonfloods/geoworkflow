@@ -287,9 +287,6 @@ def deduplicate_highways(
     
     return highways_gdf
 
-
-
-
 def clip_highways_to_aoi(
     highways_gdf: gpd.GeoDataFrame,
     aoi_geometry,
@@ -306,35 +303,51 @@ def clip_highways_to_aoi(
     Returns:
         Clipped GeoDataFrame
     """
-    if hasattr(aoi_geometry, 'unary_union'):
-        aoi_geom = aoi_geometry.unary_union
+    import geopandas as gpd
+    
+    # Handle different input types and extract geometry + CRS
+    if isinstance(aoi_geometry, gpd.GeoDataFrame):
+        aoi_geom = aoi_geometry.union_all()  # Updated from unary_union
+        aoi_crs = aoi_geometry.crs
     else:
+        # It's a shapely geometry
         aoi_geom = aoi_geometry
+        aoi_crs = None
+    
+    # Convert AOI to a GeoDataFrame if it isn't already
+    if not isinstance(aoi_geometry, gpd.GeoDataFrame):
+        # If we have a CRS from the original GeoDataFrame, use it
+        # Otherwise assume it matches highways_gdf.crs
+        if aoi_crs is None:
+            aoi_crs = highways_gdf.crs
+        temp_aoi_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=aoi_crs)
+    else:
+        temp_aoi_gdf = aoi_geometry.copy()
+    
+    # Reproject AOI to match highways CRS if needed
+    if temp_aoi_gdf.crs != highways_gdf.crs:
+        logger.info(f"Reprojecting AOI from {temp_aoi_gdf.crs} to {highways_gdf.crs}")
+        temp_aoi_gdf = temp_aoi_gdf.to_crs(highways_gdf.crs)
+        aoi_geom = temp_aoi_gdf.union_all()  # Updated from unary_union
     
     # Apply buffer if requested
     if buffer_meters > 0:
-        # FIX: Use proper UTM projection for accurate buffering
+        # Use proper UTM projection for accurate buffering
         if highways_gdf.crs.is_geographic:
-            # Import here to avoid circular imports
-            import geopandas as gpd
-            from shapely.geometry import mapping, shape
-            
-            # Create a temporary GeoDataFrame to use estimate_utm_crs
-            temp_gdf = gpd.GeoDataFrame({'geometry': [aoi_geom]}, crs=highways_gdf.crs)
-            
             # Estimate appropriate UTM zone based on geometry centroid
-            utm_crs = temp_gdf.estimate_utm_crs()
+            utm_crs = temp_aoi_gdf.estimate_utm_crs()
             
             # Reproject to UTM, buffer, then reproject back
-            temp_gdf_utm = temp_gdf.to_crs(utm_crs)
+            temp_gdf_utm = temp_aoi_gdf.to_crs(utm_crs)
             temp_gdf_utm['geometry'] = temp_gdf_utm.geometry.buffer(buffer_meters)
             temp_gdf_buffered = temp_gdf_utm.to_crs(highways_gdf.crs)
             
-            aoi_geom = temp_gdf_buffered.geometry.iloc[0]
+            aoi_geom = temp_gdf_buffered.union_all()  # Updated from unary_union
         else:
             # Already in metric CRS, buffer directly
             aoi_geom = aoi_geom.buffer(buffer_meters)
     
+    # Now both geometries are guaranteed to be in the same CRS
     # Clip geometries
     clipped = highways_gdf.copy()
     clipped['geometry'] = clipped.geometry.intersection(aoi_geom)
@@ -345,10 +358,6 @@ def clip_highways_to_aoi(
     logger.info(f"Clipped highways to AOI: {len(highways_gdf)} → {len(clipped)}")
     
     return clipped
-
-
-
-
 # ==================== UTILITY FUNCTIONS ====================
 
 
@@ -369,7 +378,7 @@ def calculate_highway_length(highways_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame
     # If geographic CRS, reproject for accurate length
     if highways.crs and highways.crs.is_geographic:
         # Get centroid to determine UTM zone
-        centroid = highways.unary_union.centroid
+        centroid = highways.union_all().centroid
         utm_crs = highways.estimate_utm_crs()
         highways_utm = highways.to_crs(utm_crs)
         highways['length_m'] = highways_utm.geometry.length

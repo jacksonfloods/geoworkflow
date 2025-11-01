@@ -540,7 +540,7 @@ class ClippingProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 vector_gdf = vector_gdf.to_crs(self.aoi_crs)
             
             # Find features completely within AOI
-            aoi_union = self.aoi_gdf.unary_union
+            aoi_union = self.aoi_gdf.union_all()
             features_within = vector_gdf[vector_gdf.geometry.within(aoi_union)]
             
             # Save clipped features

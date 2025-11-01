@@ -146,20 +146,14 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         
         # Processing state
         self.aoi_gdf: Optional[gpd.GeoDataFrame] = None
+        self.aoi_crs: None
         self.regions: List[str] = []
         self.pbf_files: List[Path] = []
         self.pbf_metadata: List[Any] = []
         self.highways_raw: Optional[gpd.GeoDataFrame] = None
         self.highways_filtered: Optional[gpd.GeoDataFrame] = None
         self.output_file: Optional[Path] = None
-    
-    def process_data(self) -> Dict[str, Any]:
-        raise NotImplementedError("Use process() method directly")
 
-    def _is_africapolis_mode(self) -> bool:
-        """Check if running in AfricaPolis batch mode."""
-        return isinstance(self.highways_config.aoi_file, str) and self.highways_config.aoi_file == "africapolis"
-    
     def process(self):
         if self._is_africapolis_mode():
             geometries = self._load_batch_geometries()  # Returns list of (geom, name, iso3)
@@ -167,13 +161,21 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             geometries = self._load_single_geometry()   # Returns list with 1 item        
         return self._process_geometries(geometries)
 
-    def _process_geometries(self, geometries):
+    def process_data(self) -> Dict[str, Any]:
+        raise NotImplementedError("Use process() method directly")
+
+    def _is_africapolis_mode(self) -> bool:
+        """Check if running in AfricaPolis batch mode."""
+        return isinstance(self.highways_config.aoi_file, str) and self.highways_config.aoi_file == "africapolis"
+    
+
+    def _process_geometries(self, geometries:list):
         """Process all geometries grouped by country."""
         succeeded = []
         failed = {}
-        
+
         by_country = self._group_by_country(geometries)
-        
+
         for iso3, geom_list in by_country.items():
             try:
                 pbf_data, _ = self._load_country_pbf(iso3)
@@ -184,7 +186,7 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             
             for geom, name in geom_list:
                 try:
-                    highways = self._extract_highways(pbf_data, geom)
+                    highways = self._extract_highways(pbf_data,geom)
                     self._export(highways, name, iso3)
                     succeeded.append(name)
                 except Exception as e:
@@ -256,7 +258,7 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
     def _clip_highways(self, pbf_data: gpd.GeoDataFrame, geometry) -> gpd.GeoDataFrame:
         """Clip highways to geometry from pre-parsed PBF."""
 
-        temp_aoi = gpd.GeoDataFrame({'geometry': [geometry]}, crs="ESRI:102022")
+        temp_aoi = gpd.GeoDataFrame({'geometry': [geometry]}, crs=self.aoi_crs)
         
         # Reproject to match PBF data CRS
         if temp_aoi.crs != pbf_data.crs:
@@ -294,16 +296,18 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             raise FileNotFoundError(f"AfricaPolis file not found: {agglo_path}")
         
         agglomerations = gpd.read_file(agglo_path)
+        self.aoi_crs = agglomerations.crs
+
         filtered = self._filter_agglomerations(agglomerations, columns)
         
         # Return list of (geometry, name, iso3)
-        return [(row.geometry, row[columns["name"]], row[columns["iso3"]]) 
-                for _, row in filtered.iterrows()]
+        return [(row.geometry, row[columns["name"]], row[columns["iso3"]]) for _, row in filtered.iterrows()]
 
     def _load_single_geometry(self):
         """Load single AOI geometry."""
         aoi_gdf = gpd.read_file(self.highways_config.aoi_file)
-        
+        self.aoi_crs = aoi_gdf.crs
+
         # Detect country from geometry
         region_name = detect_regions_from_aoi(aoi_gdf)[0]  
         
@@ -311,7 +315,7 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         GEOFABRIK_TO_ISO3 = {v: k for k, v in ISO3_TO_GEOFABRIK.items()}
         iso3 = GEOFABRIK_TO_ISO3.get(region_name, region_name.upper())
         
-        # Return list with single item: (geometry, name, iso3)
+        # Return list with single item: (geometry, name, iso3, aoi_crs)
         return [(aoi_gdf.union_all(), self.highways_config.aoi_file.stem, iso3)]
 
     def _group_by_country(self, geometries):
