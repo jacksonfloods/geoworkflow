@@ -216,7 +216,7 @@ def detect_regions_from_aoi(aoi_geometry) -> List[str]:
             logger.info(f"Reprojecting AOI from {aoi_geometry.crs} to EPSG:4326 for region detection")
             aoi_geometry = aoi_geometry.to_crs("EPSG:4326")
         
-        bounds = aoi_geometry.unary_union.bounds
+        bounds = aoi_geometry.union_all().bounds
     else:
         # Shapely geometry - assume it's already in WGS84
         bounds = aoi_geometry.bounds

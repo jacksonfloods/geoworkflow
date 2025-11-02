@@ -234,7 +234,7 @@ class AOIProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             if self.aoi_config.dissolve_boundaries:
                 self.log_processing_step("Dissolving country boundaries into single polygon")
                 # Use unary_union to combine geometries, then create new GeoDataFrame
-                dissolved_geom = filtered_gdf.geometry.unary_union
+                dissolved_geom = filtered_gdf.geometry.union_all()
                 dissolved_gdf = gpd.GeoDataFrame(
                     geometry=[dissolved_geom], 
                     crs=filtered_gdf.crs

@@ -199,7 +199,7 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
                 self.region_gdf = self.region_gdf.to_crs("EPSG:4326")
             
             # Create prepared geometry for fast intersection testing
-            combined_geometry = self.region_gdf.unary_union
+            combined_geometry = self.region_gdf.union_all()
             self.prepared_geometry = prep(combined_geometry)
             setup_info["components"].append("region_geometry")
             
