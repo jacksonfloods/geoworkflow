@@ -58,9 +58,9 @@ class OSMHighwaysConfig(BaseModel):
             "If None, auto-detect from AOI bounds."
         )
     )
-    
+
     pbf_cache_dir: Path = Field(
-        default=Path.home() / ".geoworkflow" / "osm_cache",
+        default= Path(__file__).resolve().parents[4] /"data"/ ".cache" / "osm",
         description="Directory to cache downloaded PBF files"
     )
     

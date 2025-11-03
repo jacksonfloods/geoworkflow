@@ -311,6 +311,8 @@ def download_pbf(
             logger.info(f"Using cached PBF: {pbf_path} (no metadata)")
             return pbf_path
     
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
     # Download
     url = get_geofabrik_url(region)
     logger.info(f"Downloading {region} from Geofabrik: {url}")
