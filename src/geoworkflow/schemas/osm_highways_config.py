@@ -113,6 +113,28 @@ class OSMHighwaysConfig(BaseModel):
         description="Buffer AOI by N meters before extraction (useful for edge cases)"
     )
     
+    # ==================== PERFORMANCE OPTIONS ====================
+    use_spatial_index: bool = Field(
+        default=True,
+        description=(
+            "Enable R-tree spatial index for pre-filtering highways. "
+            "Dramatically improves performance for large datasets by filtering "
+            "candidates before expensive geometric operations. "
+            "Recommended: True (disable only for debugging)"
+        )
+    )
+    
+    spatial_index_threshold: int = Field(
+        default=100,
+        ge=0,
+        description=(
+            "Minimum number of highway features to trigger spatial indexing. "
+            "Below this threshold, simple iteration may be faster due to index overhead. "
+            "Default: 100 features. Set to 0 to always use spatial index."
+        )
+    )
+    
+
     # ==================== EXPORT OPTIONS ====================
     export_format: Literal["geojson", "shapefile", "geoparquet", "csv"] = Field(
         default="geojson",
