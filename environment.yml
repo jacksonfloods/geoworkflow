@@ -35,6 +35,9 @@ dependencies:
   - netcdf4>=1.6.0  # xarray backend for NetCDF
   - libgdal-hdf5>=3.5.0
   - jenkspy>=0.3.0
+    # OSM data processing
+  - pyrosm>=0.6.0
+  - requests>=2.28.0
 
   # Jupyter and visualization
   - jupyter>=1.0.0

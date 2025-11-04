@@ -36,7 +36,7 @@ class ConfigLoader:
             return Path(path_str).expanduser()
         
         # Fallback default
-        default_path = Path(__file__).parent.parent.parent.parent / "data" / "00_source" / "boundaries" / "agglomerations.gpkg"
+        default_path = Path(__file__).parent.parent.parent.parent.parent / "data" / "00_source" / "boundaries" / "agglomerations.gpkg"
         return default_path
     
     @staticmethod

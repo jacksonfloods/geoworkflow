@@ -31,6 +31,7 @@ Example:
     print(f"Extracted {result.processed_count} highway segments")
 """
 
+from __future__ import annotations
 from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
 import logging
@@ -72,8 +73,6 @@ from geoworkflow.utils.osm_utils import (
     summarize_highway_network
 )
 from geoworkflow.utils.resource_utils import ensure_directory
-from geoworkflow.schemas.processing_result import BatchProcessResult
-from geoworkflow.utils.config_loader import ConfigLoader
 
 # ISO3 country codes to Geofabrik region name mapping
 ISO3_TO_GEOFABRIK = {
