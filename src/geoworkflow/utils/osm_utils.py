@@ -17,6 +17,7 @@ import pandas as pd
 from shapely.geometry import LineString, box
 from shapely import wkt
 from shapely.ops import linemerge
+from shapely.prepared import prep
 
 
 
@@ -393,16 +394,27 @@ def clip_highways_to_aoi(
     
     # Phase 3: Precise Clipping (only on pre-filtered candidates)
     # Now perform expensive intersection only on the reduced candidate set
-    # Now both geometries are guaranteed to be in the same CRS
-    # Clip geometries
-    clipped = highways_filtered.copy()
-    clipped['geometry'] = clipped.geometry.intersection(aoi_geom)
-    
+    # Use PreparedGeometry to eliminate R-tree false positives before intersection
+    logger.info(f"Preparing AOI geometry for optimized intersection...")
+    prepared_aoi = prep(aoi_geom)
+
+    # Use prepared geometry for fast predicate check to eliminate false positives
+    # (geometries whose bbox intersects but don't actually intersect the AOI)
+    truly_intersecting_mask = highways_filtered.geometry.apply(lambda g: prepared_aoi.intersects(g))
+    truly_intersecting = highways_filtered[truly_intersecting_mask].copy()
+
+    false_positives = len(highways_filtered) - len(truly_intersecting)
+    if false_positives > 0:
+        logger.info(f"PreparedGeometry eliminated {false_positives} false positives from R-tree")
+
+    # Clip geometries - only on confirmed intersecting highways
+    truly_intersecting['geometry'] = truly_intersecting.geometry.intersection(aoi_geom)
+
     # Remove empty results from clip
-    clipped = clipped[~clipped.geometry.is_empty].copy()
-    
+    clipped = truly_intersecting[~truly_intersecting.geometry.is_empty].copy()
+
     logger.info(f"Clipped highways to AOI: {len(highways_gdf)} → {len(clipped)}")
-    
+
     return clipped
 # ==================== UTILITY FUNCTIONS ====================
 
