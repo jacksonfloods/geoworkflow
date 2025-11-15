@@ -183,35 +183,40 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         return isinstance(self.highways_config.aoi_file, str) and self.highways_config.aoi_file == "africapolis"
     
 
-    def _process_single_geometry(self, pbf_data: 'gpd.GeoDataFrame', 
+    def _process_single_geometry(self, pbf_data: 'gpd.GeoDataFrame',
                                   geometry, name: str, iso3: str) -> tuple:
         """
         Process a single geometry (agglomeration) - thread-safe.
-        
+
         This method is designed to be called by multiple threads concurrently.
-        Since we're using threads (not processes), pbf_data is shared memory
-        and NOT serialized/copied. This is efficient for large GeoDataFrames.
-        
+        With S2 cache: pbf_data is None, loads only relevant S2 cells per city
+        With PBF: pbf_data is shared memory (efficient for threads)
+
         Thread safety notes:
-        - pbf_data is read-only, so safe to share
+        - S2 cache: Thread-safe file reads, no shared state
+        - PBF data: Read-only, safe to share
         - _extract_highways creates new objects (no mutation)
         - _export writes to unique files (no conflicts)
-        
+
         Args:
-            pbf_data: Pre-loaded highway network for the country (shared across threads)
+            pbf_data: Pre-loaded highway network (PBF mode) or None (S2 cache mode)
             geometry: Geometry to clip to
             name: Name of the agglomeration
             iso3: Country ISO3 code
-            
+
         Returns:
             Tuple of (name, success, error_message)
         """
         try:
-            highways = self._extract_highways(pbf_data, geometry)
+            highways = self._extract_highways(pbf_data, geometry, iso3)
             self._export(highways, name, iso3)
             return (name, True, None)
         except Exception as e:
-            return (name, False, str(e))
+            # Log the full exception with traceback
+            import traceback
+            error_msg = str(e) if str(e) else f"{type(e).__name__} (no message)"
+            self.logger.debug(f"Full traceback for {name}:\n{traceback.format_exc()}")
+            return (name, False, error_msg)
 
 
     def _process_geometries(self, geometries:list):
@@ -295,29 +300,75 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         return filtered
     
     def _load_country_pbf(self, iso3: str):
-        """Load and parse PBF for a country once."""
+        """
+        Load highway data for a country.
+
+        Uses S2 cache if available (fast), otherwise falls back to PBF loading (slow).
+        If auto_create_s2_cache is enabled, will create cache on first run.
+        """
         from geoworkflow.utils.geofabrik_utils import get_cached_pbf
-        
+        from geoworkflow.utils.osm_cache_utils import (
+            check_s2_cache_exists,
+            partition_pbf_to_s2_cache
+        )
+
         region = ISO3_TO_GEOFABRIK.get(iso3, iso3.lower())
         if region not in ISO3_TO_GEOFABRIK.values():
             self.logger.warning(f"ISO3 code {iso3} not found in mapping, using: {region}")
-        
-        self.logger.info(f"  Loading PBF for {iso3}...")
+
+        # Check if S2 cache is enabled and exists
+        if self.highways_config.use_s2_cache:
+            cache_exists = check_s2_cache_exists(
+                country_iso3=iso3,
+                cache_dir=self.highways_config.s2_cache_dir
+            )
+
+            if cache_exists:
+                self.logger.info(f"  Using S2 cache for {iso3} (fast path)")
+                # Return None for osm object - not needed with S2 cache
+                # The actual loading happens per-city in _extract_highways
+                return None, {"source": "s2_cache", "iso3": iso3}
+
+            elif self.highways_config.auto_create_s2_cache:
+                self.logger.info(f"  S2 cache not found for {iso3}, creating (one-time preprocessing)...")
+
+                # Download PBF if needed
+                pbf_path, pbf_metadata = get_cached_pbf(
+                    region=region,
+                    cache_dir=self.highways_config.pbf_cache_dir,
+                    force_redownload=self.highways_config.force_redownload,
+                    max_age_days=self.highways_config.max_cache_age_days
+                )
+
+                # Create S2 cache
+                cache_metadata = partition_pbf_to_s2_cache(
+                    pbf_path=pbf_path,
+                    cache_dir=self.highways_config.s2_cache_dir,
+                    country_iso3=iso3,
+                    s2_level=self.highways_config.s2_level,
+                    overwrite=False
+                )
+
+                self.logger.info(f"  ✓ S2 cache created: {cache_metadata['num_cells']} cells")
+                return None, {"source": "s2_cache", "iso3": iso3}
+
+        # Fall back to traditional PBF loading
+        self.logger.info(f"  Loading PBF for {iso3} (slow path - consider enabling S2 cache)...")
         pbf_path, metadata = get_cached_pbf(
             region=region,
             cache_dir=self.highways_config.pbf_cache_dir,
             force_redownload=self.highways_config.force_redownload,
             max_age_days=self.highways_config.max_cache_age_days
         )
-        
+
         osm = pyrosm.OSM(str(pbf_path))
         highways_data = osm.get_network(network_type="all")
-        
+
         if highways_data is None or len(highways_data) == 0:
             raise ExtractionError(f"No highways found in {region} PBF")
-        
+
         self.logger.info(f"  Loaded {len(highways_data):,} highway segments")
-        return highways_data, osm
+        return highways_data, metadata
 
     
     def _clip_highways(self, pbf_data: gpd.GeoDataFrame, geometry) -> gpd.GeoDataFrame:
@@ -397,24 +448,67 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             by_country[iso3].append((geom, name))
         return by_country
 
-    def _extract_highways(self, pbf_data, geometry):
-        """Extract and filter highways for a single geometry."""
-        highways = self._clip_highways(pbf_data, geometry)
-        
+    def _extract_highways(self, pbf_data, geometry, iso3: str):
+        """
+        Extract and filter highways for a single geometry.
+
+        Args:
+            pbf_data: Pre-loaded highways (PBF mode) or None (S2 cache mode)
+            geometry: City boundary geometry
+            iso3: Country ISO3 code (used for S2 cache lookup)
+
+        Returns:
+            GeoDataFrame of filtered highways
+        """
+        # Load highways based on mode
+        if pbf_data is None:
+            # S2 cache mode - load only relevant cells for this city
+            from geoworkflow.utils.osm_utils import clip_highways_to_aoi
+            from geoworkflow.utils.osm_cache_utils import get_highways_from_s2_cache
+
+            # S2 requires WGS84 coordinates - convert geometry if needed
+            temp_aoi_for_s2 = gpd.GeoDataFrame({'geometry': [geometry]}, crs=self.aoi_crs)
+            if temp_aoi_for_s2.crs != "EPSG:4326":
+                temp_aoi_for_s2 = temp_aoi_for_s2.to_crs("EPSG:4326")
+            geometry_wgs84 = temp_aoi_for_s2.geometry.iloc[0]
+
+            # Load highways from S2 cache (only cells covering this city)
+            highways_from_cache = get_highways_from_s2_cache(
+                country_iso3=iso3,
+                aoi_geometry=geometry_wgs84,
+                cache_dir=self.highways_config.s2_cache_dir,
+                buffer_meters=self.highways_config.buffer_aoi_meters
+            )
+
+            # S2 cache returns highways that MAY intersect - still need to clip precisely
+            temp_aoi = gpd.GeoDataFrame({'geometry': [geometry]}, crs=self.aoi_crs)
+            if temp_aoi.crs != highways_from_cache.crs:
+                temp_aoi = temp_aoi.to_crs(highways_from_cache.crs)
+
+            highways = clip_highways_to_aoi(
+                highways_from_cache,
+                temp_aoi,
+                buffer_meters=0,  # Already buffered in S2 query if needed
+                use_spatial_index=self.highways_config.use_spatial_index
+            )
+        else:
+            # PBF mode - clip from pre-loaded country data
+            highways = self._clip_highways(pbf_data, geometry)
+
         if len(highways) == 0:
             raise ExtractionError("No highways found")
-        
+
         if self.highways_config.highway_types != "all":
             highways = filter_highways_by_type(highways, self.highways_config.highway_types)
-        
+
         if self.highways_config.include_attributes != "all":
             highways = select_highway_attributes(highways, self.highways_config.include_attributes)
-        
+
         highways = clean_highway_attributes(highways)
         highways = validate_highway_geometries(highways)
         highways = deduplicate_highways(highways)
         highways = calculate_highway_length(highways)
-        
+
         return highways
 
     def _export(self, highways, name, iso3):

@@ -76,7 +76,42 @@ class OSMHighwaysConfig(BaseModel):
             "None = no age warning. User must manually decide if too old."
         )
     )
-    
+
+    # ==================== S2 CACHE OPTIONS ====================
+    use_s2_cache: bool = Field(
+        default=True,
+        description=(
+            "Use S2-partitioned cache for fast queries (recommended). "
+            "If cache doesn't exist, will fall back to PBF loading or create cache. "
+            "S2 cache provides 10-100x speedup for repeated extractions."
+        )
+    )
+
+    s2_cache_dir: Path = Field(
+        default=Path(__file__).resolve().parents[4] / "data" / ".cache" / "osm_s2",
+        description="Directory to store S2-partitioned highway cache"
+    )
+
+    s2_level: int = Field(
+        default=6,
+        ge=4,
+        le=8,
+        description=(
+            "S2 cell level for spatial partitioning. "
+            "Level 6 (~1.27° cells) balances file count and query speed. "
+            "Higher levels = smaller cells, more files, finer spatial resolution."
+        )
+    )
+
+    auto_create_s2_cache: bool = Field(
+        default=True,
+        description=(
+            "Automatically create S2 cache if it doesn't exist. "
+            "First run will be slower (preprocessing), subsequent runs are fast. "
+            "Set to False to only use existing caches."
+        )
+    )
+
     # ==================== HIGHWAY FILTERING ====================
     highway_types: Union[List[str], Literal["all"]] = Field(
         default="all",
@@ -209,7 +244,15 @@ class OSMHighwaysConfig(BaseModel):
         v = v.expanduser()  # Expand ~ to home directory
         v.mkdir(parents=True, exist_ok=True)
         return v
-    
+
+    @field_validator('s2_cache_dir')
+    @classmethod
+    def validate_s2_cache_dir(cls, v: Path) -> Path:
+        """Create S2 cache directory if it doesn't exist."""
+        v = v.expanduser()  # Expand ~ to home directory
+        v.mkdir(parents=True, exist_ok=True)
+        return v
+
     @field_validator('highway_types')
     @classmethod
     def validate_highway_types(cls, v: Union[List[str], str]) -> Union[List[str], str]:

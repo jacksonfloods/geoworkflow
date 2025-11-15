@@ -1,0 +1,148 @@
+================================================================================
+                    ARCHITECTURE COMPARISON DIAGRAM
+================================================================================
+
+CURRENT APPROACH (SLOW):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  City 1              City 2              City 3         ...  City 1000    │
+│  ↓                   ↓                   ↓                     ↓          │
+│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────┐ │
+│  │ Load Kenya  │     │ Load Kenya  │     │ Load Kenya  │     │ Load... │ │
+│  │ PBF (380MB) │     │ PBF (380MB) │     │ PBF (380MB) │     │ Kenya   │ │
+│  │ (30 sec)    │     │ (30 sec)    │     │ (30 sec)    │     │ (30 sec)│ │
+│  └──────┬──────┘     └──────┬──────┘     └──────┬──────┘     └────┬────┘ │
+│         │                   │                   │                 │       │
+│         ↓                   ↓                   ↓                 ↓       │
+│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────┐ │
+│  │ Scan ALL    │     │ Scan ALL    │     │ Scan ALL    │     │ Scan... │ │
+│  │ 300K hwys   │     │ 300K hwys   │     │ 300K hwys   │     │ 300K    │ │
+│  │ (50 sec)    │     │ (50 sec)    │     │ (50 sec)    │     │ (50 sec)│ │
+│  └──────┬──────┘     └──────┬──────┘     └──────┬──────┘     └────┬────┘ │
+│         │                   │                   │                 │       │
+│         ↓                   ↓                   ↓                 ↓       │
+│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────┐ │
+│  │ Clip to     │     │ Clip to     │     │ Clip to     │     │ Clip... │ │
+│  │ boundary    │     │ boundary    │     │ boundary    │     │ to geo  │ │
+│  │ (20 sec)    │     │ (20 sec)    │     │ (20 sec)    │     │ (20 sec)│ │
+│  └──────┬──────┘     └──────┬──────┘     └──────┬──────┘     └────┬────┘ │
+│
+│  TOTAL: 30+50+20 = 100 seconds per city × 1000 cities = 27+ HOURS
+│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+PROPOSED APPROACH (FAST) - PHASE 1:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│              ┌─ LOAD ONCE ─┐                                             │
+│              │              │                                             │
+│              ↓              ↓                                             │
+│  ┌──────────────────────────────────┐                                   │
+│  │ Load Kenya PBF (380MB) ONCE      │                                   │
+│  │ (30 sec)                         │                                   │
+│  └──────────┬───────────────────────┘                                   │
+│             │                                                            │
+│             ↓                                                            │
+│  ┌──────────────────────────────────┐                                   │
+│  │ Build Indices (ONCE):            │                                   │
+│  │ - R-tree spatial index           │                                   │
+│  │ - S2 cell index                  │                                   │
+│  │ (60 sec)                         │                                   │
+│  └──────────┬───────────────────────┘                                   │
+│             │                                                            │
+│     ┌───────┴───────┬───────────┬────────────┬───────────┐             │
+│     │               │           │            │           │             │
+│     ↓               ↓           ↓            ↓           ↓             │
+│  City 1          City 2      City 3       ...        City 1000      │
+│ (2 sec)         (2 sec)     (2 sec)              (2 sec)            │
+│ - S2 filter     - S2 filter - S2 filter         - S2 filter        │
+│ - R-tree query  - R-tree Q  - R-tree Q         - R-tree Q         │
+│ - Precise clip  - Precise   - Precise          - Precise          │
+│                   clip       clip               clip               │
+│
+│  TOTAL: 30+60 + (2×1000) = 2,090 seconds = 35 MINUTES
+│  SPEEDUP: 27 hours / 35 min = 46x FASTER!
+│
+│  More realistically with overhead: 45 minutes (still 36x faster)
+│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+DATA FLOW COMPARISON:
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│ CURRENT (Bottleneck: Many PBF loads)                                        │
+│                                                                              │
+│  kenya.pbf (380 MB)                                                         │
+│      ↓ (Load × 1000)                                                        │
+│  [Memory: 300K highways]                                                    │
+│      ├→ City 1 query                                                        │
+│      ├→ City 2 query                                                        │
+│      ├→ City 3 query                                                        │
+│      └→ City 1000 query                                                     │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ PROPOSED (Bottleneck: Single PBF load, indexed queries)                     │
+│                                                                              │
+│  kenya.pbf (380 MB)                                                         │
+│      ↓ (Load × 1)                                                           │
+│  [Memory: 300K highways + S2 index + R-tree]                                │
+│      ├→ City 1 query (S2 pre-filter 20K → R-tree 5K → exact 200)           │
+│      ├→ City 2 query (S2 pre-filter 18K → R-tree 4K → exact 180)           │
+│      ├→ City 3 query (S2 pre-filter 22K → R-tree 6K → exact 220)           │
+│      └→ City 1000 query (...)                                              │
+│                                                                              │
+│  Key difference:                                                            │
+│  - Load PBF: 1 time (was N times)                                          │
+│  - Per-city: Only query candidates (not all highways)                      │
+│  - Memory: Same total, but not reloading PBF                               │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+MULTI-COUNTRY SCENARIO:
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│ 5 Countries × 200 cities each = 1000 total cities                           │
+│                                                                              │
+│ CURRENT TIME ESTIMATE:                                                      │
+│ ─────────────────────────────────────────                                   │
+│ Kenya (380 MB):    30+50+20 = 100 sec/city × 200 = 5.5 hours              │
+│ Tanzania (280 MB): 30+50+20 = 100 sec/city × 200 = 5.5 hours              │
+│ Uganda (120 MB):   30+40+20 = 90 sec/city × 200 = 5 hours                 │
+│ Rwanda (20 MB):    30+20+15 = 65 sec/city × 200 = 3.6 hours               │
+│ Burundi (15 MB):   30+20+15 = 65 sec/city × 200 = 3.6 hours               │
+│                                                                              │
+│ TOTAL: ~23 hours                                                            │
+│                                                                              │
+│ PROPOSED TIME ESTIMATE:                                                     │
+│ ─────────────────────────────────                                           │
+│ Kenya:    (30 + 60 initial + 2×200 queries) = 520 sec = 8.6 min           │
+│ Tanzania: (25 + 50 initial + 2×200 queries) = 475 sec = 7.9 min           │
+│ Uganda:   (15 + 30 initial + 2×200 queries) = 445 sec = 7.4 min           │
+│ Rwanda:   (10 + 20 initial + 2×200 queries) = 430 sec = 7.2 min           │
+│ Burundi:  (10 + 20 initial + 2×200 queries) = 430 sec = 7.2 min           │
+│                                                                              │
+│ TOTAL: ~38 minutes                                                          │
+│                                                                              │
+│ SPEEDUP: 23 hours / 38 minutes = 36x FASTER!                               │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+KEY METRICS:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│ Metric                  Current      Phase 1      Improvement             │
+│ ─────────────────────────────────────────────────────────────────────────   │
+│ PBF loads               1000         1            1000x reduction         │
+│ Time/city               100 sec      2 sec        50x reduction           │
+│ Total time (1000)       27 hours     35 min       46x speedup            │
+│ Memory per city         380 MB       0 MB         Shared memory           │
+│ Implementation time     N/A          2 days       Low effort              │
+│ Code complexity         N/A          Medium       Moderate                │
+│ Infrastructure cost     $0           $0           No additional cost      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘

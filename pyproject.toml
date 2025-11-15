@@ -140,6 +140,7 @@ extraction = [
     "fsspec>=2023.1.0",
     "pandas>=2.0.0",
     "tqdm>=4.65.0",
+    "pyarrow>=12.0.0",  # Required for GeoParquet S2 cache
 ]
 
 
