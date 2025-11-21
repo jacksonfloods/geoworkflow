@@ -348,15 +348,19 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
                 # Set up region geometry and S2 covering for this city
                 self.region_gdf = temp_gdf
                 if self.region_gdf.crs != "EPSG:4326":
+                    self.logger.debug(f"Reprojecting {name} from {self.region_gdf.crs} to EPSG:4326 for S2")
                     self.region_gdf = self.region_gdf.to_crs("EPSG:4326")
 
+                # Get the reprojected geometry for S2 calculations
+                geom_wgs84 = self.region_gdf.geometry.iloc[0]
+
                 # Create prepared geometry for fast intersection testing
-                self.prepared_geometry = prep(geom)
+                self.prepared_geometry = prep(geom_wgs84)  # ← FIXED: Use WGS84 geometry
 
                 # Calculate S2 covering for this city
                 from geoworkflow.utils.s2_utils import get_bounding_box_s2_covering_tokens
                 self.s2_tokens = get_bounding_box_s2_covering_tokens(
-                    geom,
+                    geom_wgs84, 
                     level=self.gcs_config.s2_level
                 )
 
