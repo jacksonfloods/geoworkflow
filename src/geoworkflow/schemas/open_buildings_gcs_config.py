@@ -4,7 +4,7 @@ Configuration model for GCS-based Open Buildings extraction.
 This configuration supports direct Google Cloud Storage access for
 building footprint extraction from the Open Buildings v3 dataset.
 """
-from typing import Optional, Literal
+from typing import Optional, Literal, Union, List
 from pathlib import Path
 from pydantic import BaseModel, Field, field_validator
 
@@ -26,14 +26,27 @@ class OpenBuildingsGCSConfig(BaseModel):
     """
     
     # ==================== Required Inputs ====================
-    aoi_file: Path = Field(
+    aoi_file: Union[Path, str] = Field(
         ...,
-        description="Area of Interest boundary file (GeoJSON, Shapefile, etc.)"
+        description="Area of Interest boundary file (GeoJSON, Shapefile, etc.) or 'africapolis' for batch mode"
     )
-    
+
     output_dir: Path = Field(
         ...,
         description="Output directory for extracted buildings"
+    )
+
+    # ==================== Batch Processing (AFRICAPOLIS mode) ====================
+    country: Optional[Union[List[str], str]] = Field(
+        default=None,
+        description="ISO3 country code(s) for batch processing. Use 'all' for all countries, "
+                    "list of codes like ['GHA', 'TGO'], or None for single AOI mode."
+    )
+
+    city: Optional[List[str]] = Field(
+        default=None,
+        description="Optional list of city names to filter when using AFRICAPOLIS batch mode. "
+                    "If None, processes all cities in specified countries."
     )
     
     # ==================== Data Source Settings ====================
@@ -128,11 +141,16 @@ class OpenBuildingsGCSConfig(BaseModel):
     # ==================== Validators ====================
     @field_validator('aoi_file')
     @classmethod
-    def validate_aoi_exists(cls, v: Path) -> Path:
-        """Validate that AOI file exists."""
-        if not v.exists():
-            raise ValueError(f"AOI file not found: {v}")
-        return v
+    def validate_aoi(cls, v):
+        """Convert string to Path if not AfricaPolis keyword."""
+        if isinstance(v, str) and v.lower() == "africapolis":
+            return v.lower()  # Normalize to lowercase
+
+        # Otherwise treat as path
+        path = Path(v) if isinstance(v, str) else v
+        if not path.exists():
+            raise ValueError(f"AOI file not found: {path}")
+        return path
     
     @field_validator('service_account_key')
     @classmethod

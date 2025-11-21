@@ -107,7 +107,21 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
         self.s2_tokens: List[str] = []
         self.output_file: Optional[Path] = None
         self.buildings_extracted: int = 0
-        
+
+    def _get_path_config_keys(self) -> List[str]:
+        """
+        Get list of configuration keys that should contain paths.
+
+        Excludes aoi_file when in africapolis batch mode.
+        """
+        base_keys = ["output_dir", "service_account_key"]
+
+        # Only validate aoi_file as a path if NOT in africapolis mode
+        if not self._is_africapolis_mode():
+            base_keys.append("aoi_file")
+
+        return base_keys
+
     def _validate_custom_inputs(self) -> Dict[str, Any]:
         """Validate GCS-specific requirements."""
         validation_result = {
@@ -116,14 +130,14 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
             "warnings": [],
             "info": {}
         }
-        
+
         # Check required libraries
         if not HAS_REQUIRED_LIBS:
             validation_result["errors"].append(
                 "Required libraries missing. Install with: "
                 "pip install geopandas shapely"
             )
-        
+
         # Check for GCS dependencies
         try:
             import gcsfs
@@ -133,19 +147,24 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
                 f"GCS extraction dependencies missing: {e}\n"
                 "Install with: pip install geoworkflow[extraction]"
             )
-        
-        # Validate AOI file exists and is readable
-        if not self.gcs_config.aoi_file.exists():
-            validation_result["errors"].append(
-                f"AOI file not found: {self.gcs_config.aoi_file}"
-            )
+
+        # Skip AOI file validation if in africapolis mode
+        if isinstance(self.gcs_config.aoi_file, str) and self.gcs_config.aoi_file == "africapolis":
+            validation_result["info"]["mode"] = "africapolis_batch"
+            self.logger.info("Africapolis batch mode detected")
         else:
-            try:
-                gpd.read_file(self.gcs_config.aoi_file)
-            except Exception as e:
+            # Validate AOI file exists and is readable for single-file mode only
+            if not self.gcs_config.aoi_file.exists():
                 validation_result["errors"].append(
-                    f"Cannot read AOI file: {e}"
+                    f"AOI file not found: {self.gcs_config.aoi_file}"
                 )
+            else:
+                try:
+                    gpd.read_file(self.gcs_config.aoi_file)
+                except Exception as e:
+                    validation_result["errors"].append(
+                        f"Cannot read AOI file: {e}"
+                    )
         
         # Validate output directory
         try:
@@ -191,8 +210,14 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
                 use_anonymous=self.gcs_config.use_anonymous_access
             )
             setup_info["components"].append("gcs_client")
-            
-            # Load and prepare AOI
+
+            # Skip AOI setup for batch mode - each city will be processed individually
+            if self._is_africapolis_mode():
+                setup_info["mode"] = "africapolis_batch"
+                self.logger.info("Batch mode - AOI setup will occur per city")
+                return setup_info
+
+            # Load and prepare AOI for single-city mode
             self.region_gdf = gpd.read_file(self.gcs_config.aoi_file)
             if self.region_gdf.crs != "EPSG:4326":
                 self.logger.info(f"Reprojecting AOI from {self.region_gdf.crs} to EPSG:4326")
@@ -230,32 +255,195 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
             
         except Exception as e:
             raise ConfigurationError(f"Failed to setup GCS processing: {e}")
-        
+
         return setup_info
 
-    def process_data(self) -> ProcessingResult:
-        """Execute the building extraction process."""
+    def _is_africapolis_mode(self) -> bool:
+        """Check if processor is in AFRICAPOLIS batch mode."""
+        return (isinstance(self.gcs_config.aoi_file, str) and
+                self.gcs_config.aoi_file == "africapolis")
+
+    def _load_batch_geometries(self):
+        """Load agglomerations from AFRICAPOLIS dataset."""
+        from geoworkflow.utils.config_loader import ConfigLoader
+
+        agglo_path = ConfigLoader.get_africapolis_path()
+        columns = ConfigLoader.get_africapolis_columns()
+
+        if not agglo_path.exists():
+            raise FileNotFoundError(f"AFRICAPOLIS file not found: {agglo_path}")
+
+        agglomerations = gpd.read_file(agglo_path)
+        self.aoi_crs = agglomerations.crs
+
+        filtered = self._filter_agglomerations(agglomerations, columns)
+
+        # Return list of (geometry, name, iso3)
+        return [
+            (row.geometry, row[columns["name"]], row[columns["iso3"]])
+            for _, row in filtered.iterrows()
+        ]
+
+    def _load_single_geometry(self):
+        """Load single AOI geometry from file."""
+        aoi_gdf = gpd.read_file(self.gcs_config.aoi_file)
+        self.aoi_crs = aoi_gdf.crs
+        name = self.gcs_config.aoi_file.stem
+        country_code = "UNKNOWN"
+        return [(aoi_gdf.union_all(), name, country_code)]
+
+    def _filter_agglomerations(self, gdf: gpd.GeoDataFrame, columns: dict) -> gpd.GeoDataFrame:
+        """Filter agglomerations by country and city."""
+        filtered = gdf.copy()
+
+        # Filter by country
+        if self.gcs_config.country:
+            if isinstance(self.gcs_config.country, str):
+                if self.gcs_config.country.lower() == "all":
+                    pass
+                else:
+                    filtered = filtered[filtered[columns["iso3"]] == self.gcs_config.country]
+            elif isinstance(self.gcs_config.country, list):
+                filtered = filtered[filtered[columns["iso3"]].isin(self.gcs_config.country)]
+
+        # Filter by city
+        if self.gcs_config.city:
+            filtered = filtered[filtered[columns["name"]].isin(self.gcs_config.city)]
+
+        if len(filtered) == 0:
+            raise ValueError(
+                f"No agglomerations match filters: "
+                f"country={self.gcs_config.country}, city={self.gcs_config.city}"
+            )
+
+        return filtered
+
+    def _process_batch(self, geometries):
+        """Process multiple geometries in batch mode."""
+        from geoworkflow.schemas.processing_result import BatchProcessResult
+
+        succeeded = []
+        failed = {}
+        all_output_files = []
+
+        for geom, name, country_code in geometries:
+            try:
+                self.logger.info(f"Processing {name} ({country_code})...")
+
+                # Store original config
+                original_aoi = self.gcs_config.aoi_file
+                original_output_dir = self.gcs_config.output_dir
+
+                # Create temp AOI for this city
+                temp_aoi = self.resource_manager.create_temp_file(suffix=".geojson")
+                temp_gdf = gpd.GeoDataFrame([{"name": name}], geometry=[geom], crs=self.aoi_crs)
+                temp_gdf.to_file(temp_aoi, driver="GeoJSON")
+
+                # Update config
+                self.gcs_config.aoi_file = temp_aoi
+                city_output_dir = original_output_dir / f"{name.replace(' ', '_').lower()}_buildings"
+                city_output_dir.mkdir(parents=True, exist_ok=True)
+                self.gcs_config.output_dir = city_output_dir
+
+                # Set up region geometry and S2 covering for this city
+                self.region_gdf = temp_gdf
+                if self.region_gdf.crs != "EPSG:4326":
+                    self.region_gdf = self.region_gdf.to_crs("EPSG:4326")
+
+                # Create prepared geometry for fast intersection testing
+                self.prepared_geometry = prep(geom)
+
+                # Calculate S2 covering for this city
+                from geoworkflow.utils.s2_utils import get_bounding_box_s2_covering_tokens
+                self.s2_tokens = get_bounding_box_s2_covering_tokens(
+                    geom,
+                    level=self.gcs_config.s2_level
+                )
+
+                # Update output file path for this city
+                self.output_file = self.gcs_config.get_output_file_path()
+
+                # Reset building counter
+                self.buildings_extracted = 0
+
+                # Process using original single-city logic
+                result = self._process_single_aoi()
+
+                # Restore config
+                self.gcs_config.aoi_file = original_aoi
+                self.gcs_config.output_dir = original_output_dir
+
+                if result.success:
+                    succeeded.append(name)
+                    if result.output_paths:
+                        all_output_files.extend(result.output_paths)
+                else:
+                    error_msg = result.message or "Unknown error - no message provided"
+                    self.logger.error(f"Processing failed for {name}: {error_msg}")
+                    failed[name] = error_msg
+
+            except Exception as e:
+                import traceback
+                error_msg = f"{type(e).__name__}: {str(e)}" if str(e) else f"{type(e).__name__} (no message)"
+                self.logger.error(f"Failed to process {name}: {error_msg}")
+                self.logger.debug(f"Traceback: {traceback.format_exc()}")
+                failed[name] = error_msg
+
+        return BatchProcessResult(
+            success=len(succeeded) > 0,
+            total_count=len(geometries),
+            succeeded_count=len(succeeded),
+            failed_count=len(failed),
+            succeeded=succeeded,
+            failed=failed,
+            output_files=all_output_files
+        )
+
+    def process_data(self):
+        """
+        Execute building extraction.
+
+        Handles both single-city and batch processing modes.
+        """
+        try:
+            if self._is_africapolis_mode():
+                self.logger.info("Running in AFRICAPOLIS batch mode")
+                geometries = self._load_batch_geometries()
+                return self._process_batch(geometries)
+            else:
+                self.logger.info("Running in single-city mode")
+                return self._process_single_aoi()
+
+        except Exception as e:
+            self.logger.error(f"Processing failed: {e}", exc_info=True)
+            return ProcessingResult(
+                success=False,
+                message=f"Processing failed: {str(e)}"
+            )
+
+    def _process_single_aoi(self) -> ProcessingResult:
+        """Process single AOI - original process_data logic."""
         result = ProcessingResult(success=True)
-        
+
         try:
             # Create output directory
             self.gcs_config.output_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Initialize output file based on format
             if self.gcs_config.export_format == "csv":
                 self._initialize_csv_output()
             else:
                 # For GeoJSON/Shapefile, collect all buildings then export
                 pass
-            
+
             # Download and filter buildings in parallel
             self.logger.info("Downloading and filtering buildings from GCS...")
             self._download_and_filter_buildings()
-            
+
             # Finalize output based on format
             if self.gcs_config.export_format != "csv":
                 self._finalize_vector_output()
-            
+
             # Generate success message
             result.message = (
                 f"Successfully extracted {self.buildings_extracted:,} buildings "
@@ -263,19 +451,19 @@ class OpenBuildingsGCSProcessor(TemplateMethodProcessor, GeospatialProcessorMixi
             )
             result.output_paths = [self.output_file]
             result.processed_count = self.buildings_extracted
-            
+
             # Add metrics
             self.add_metric("buildings_extracted", self.buildings_extracted)
             self.add_metric("s2_cells_processed", len(self.s2_tokens))
             self.add_metric("confidence_threshold", self.gcs_config.confidence_threshold)
-            
+
             self.logger.info(result.message)
-            
+
         except Exception as e:
             result.success = False
             result.message = f"Extraction failed: {e}"
             self.logger.error(result.message, exc_info=True)
-        
+
         return result
 
     def _initialize_csv_output(self) -> None:
