@@ -71,6 +71,7 @@ def detect_month_from_filename(
     if patterns is None:
         # Common patterns for month detection
         patterns = [
+            r"\.(\d{4})(\d{2})-\d{6}\.(?:tif|TIF)$",  # YYYYMM-YYYYMM.tif (e.g., .201901-201901.tif)
             r"_(\d{4})_(\d{2})(?:_|\.)(?:tif|TIF)$",  # YYYY_MM.tif
             r"_(\d{4})-(\d{2})(?:_|\.)(?:tif|TIF)$",  # YYYY-MM.tif
             r"_(\d{2})(?:_|\.)(?:tif|TIF)$",          # _MM.tif (end of filename)
