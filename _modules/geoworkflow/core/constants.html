@@ -1,0 +1,795 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>geoworkflow.core.constants &#8212; AfricaPolis GeoWorkflow 1.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=1e84bb91" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=4ebf8126"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/geoworkflow/core/constants';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">AfricaPolis GeoWorkflow</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">geoworkflow.core.constants</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for geoworkflow.core.constants</h1><div class="highlight"><pre>
+<span></span><span class="c1">#/src/geoworkflow/core/constants.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Global constants for the geoworkflow package.</span>
+
+<span class="sd">This module contains constants used throughout the package including</span>
+<span class="sd">file extensions, coordinate reference systems, and default values.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># File Extensions and Patterns</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Supported raster file extensions</span>
+<span class="n">RASTER_EXTENSIONS</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;.tiff&#39;</span><span class="p">,</span> <span class="s1">&#39;.geotif&#39;</span><span class="p">,</span> <span class="s1">&#39;.geotiff&#39;</span><span class="p">,</span> 
+    <span class="s1">&#39;.TIF&#39;</span><span class="p">,</span> <span class="s1">&#39;.TIFF&#39;</span><span class="p">,</span> <span class="s1">&#39;.GEOTIF&#39;</span><span class="p">,</span> <span class="s1">&#39;.GEOTIFF&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;.netcdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.hdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.h5&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># Supported vector file extensions</span>
+<span class="n">VECTOR_EXTENSIONS</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;.shp&#39;</span><span class="p">,</span> <span class="s1">&#39;.geojson&#39;</span><span class="p">,</span> <span class="s1">&#39;.gpkg&#39;</span><span class="p">,</span> <span class="s1">&#39;.gml&#39;</span><span class="p">,</span> <span class="s1">&#39;.kml&#39;</span><span class="p">,</span> <span class="s1">&#39;.kmz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;.SHP&#39;</span><span class="p">,</span> <span class="s1">&#39;.GEOJSON&#39;</span><span class="p">,</span> <span class="s1">&#39;.GPKG&#39;</span><span class="p">,</span> <span class="s1">&#39;.GML&#39;</span><span class="p">,</span> <span class="s1">&#39;.KML&#39;</span><span class="p">,</span> <span class="s1">&#39;.KMZ&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># Supported archive extensions</span>
+<span class="n">ARCHIVE_EXTENSIONS</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;.tar&#39;</span><span class="p">,</span> <span class="s1">&#39;.tar.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;.tgz&#39;</span><span class="p">,</span> <span class="s1">&#39;.tar.bz2&#39;</span><span class="p">,</span> <span class="s1">&#39;.tbz2&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;.ZIP&#39;</span><span class="p">,</span> <span class="s1">&#39;.TAR&#39;</span><span class="p">,</span> <span class="s1">&#39;.TAR.GZ&#39;</span><span class="p">,</span> <span class="s1">&#39;.TGZ&#39;</span><span class="p">,</span> <span class="s1">&#39;.TAR.BZ2&#39;</span><span class="p">,</span> <span class="s1">&#39;.TBZ2&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># Default file patterns</span>
+<span class="n">DEFAULT_RASTER_PATTERN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.tif&quot;</span>
+<span class="n">DEFAULT_VECTOR_PATTERN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.{shp,geojson,gpkg,kml}&quot;</span>
+<span class="n">DEFAULT_ARCHIVE_PATTERN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.zip&quot;</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Coordinate Reference Systems</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Common CRS codes used in African geospatial work</span>
+<div class="viewcode-block" id="CommonCRS">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.constants.CommonCRS">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommonCRS</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Common coordinate reference systems for African geospatial data.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Geographic coordinate systems</span>
+    <span class="n">WGS84</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span>
+    <span class="n">WGS84_UTM_33S</span> <span class="o">=</span> <span class="s2">&quot;EPSG:32733&quot;</span>  <span class="c1"># Common for Southern Africa</span>
+    <span class="n">WGS84_UTM_34S</span> <span class="o">=</span> <span class="s2">&quot;EPSG:32734&quot;</span>  <span class="c1"># Common for Southern/Eastern Africa</span>
+    
+    <span class="c1"># Projected coordinate systems</span>
+    <span class="n">AFRICA_ALBERS</span> <span class="o">=</span> <span class="s2">&quot;ESRI:102022&quot;</span>  <span class="c1"># Africa Albers Equal Area Conic</span>
+    <span class="n">AFRICA_LAMBERT</span> <span class="o">=</span> <span class="s2">&quot;ESRI:102023&quot;</span>  <span class="c1"># Africa Lambert Conformal Conic</span>
+    
+    <span class="c1"># Web Mercator (for web mapping)</span>
+    <span class="n">WEB_MERCATOR</span> <span class="o">=</span> <span class="s2">&quot;EPSG:3857&quot;</span></div>
+
+
+
+<span class="c1"># Default CRS for processing</span>
+<span class="n">DEFAULT_CRS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CommonCRS</span><span class="o">.</span><span class="n">WGS84</span>
+<span class="n">DEFAULT_PROCESSING_CRS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CommonCRS</span><span class="o">.</span><span class="n">AFRICA_ALBERS</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Processing Stages</span>
+<span class="c1"># ============================================================================</span>
+
+<div class="viewcode-block" id="ProcessingStage">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.constants.ProcessingStage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessingStage</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Processing stages in the geoworkflow pipeline.&quot;&quot;&quot;</span>
+    
+    <span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;00_source&quot;</span>
+    <span class="n">EXTRACTED</span> <span class="o">=</span> <span class="s2">&quot;01_extracted&quot;</span>
+    <span class="n">CLIPPED</span> <span class="o">=</span> <span class="s2">&quot;02_clipped&quot;</span>
+    <span class="n">PROCESSED</span> <span class="o">=</span> <span class="s2">&quot;03_processed&quot;</span>
+    <span class="n">ANALYSIS_READY</span> <span class="o">=</span> <span class="s2">&quot;04_analysis_ready&quot;</span></div>
+
+
+
+<span class="c1"># Stage directories</span>
+<span class="n">STAGE_DIRECTORIES</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ProcessingStage</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ProcessingStage</span><span class="o">.</span><span class="n">SOURCE</span><span class="p">:</span> <span class="s2">&quot;00_source/archives&quot;</span><span class="p">,</span>
+    <span class="n">ProcessingStage</span><span class="o">.</span><span class="n">EXTRACTED</span><span class="p">:</span> <span class="s2">&quot;01_extracted&quot;</span><span class="p">,</span>
+    <span class="n">ProcessingStage</span><span class="o">.</span><span class="n">CLIPPED</span><span class="p">:</span> <span class="s2">&quot;02_clipped&quot;</span><span class="p">,</span>
+    <span class="n">ProcessingStage</span><span class="o">.</span><span class="n">PROCESSED</span><span class="p">:</span> <span class="s2">&quot;03_processed&quot;</span><span class="p">,</span>
+    <span class="n">ProcessingStage</span><span class="o">.</span><span class="n">ANALYSIS_READY</span><span class="p">:</span> <span class="s2">&quot;04_analysis_ready&quot;</span>
+<span class="p">}</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Data Type Categories</span>
+<span class="c1"># ============================================================================</span>
+
+<div class="viewcode-block" id="DataType">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.constants.DataType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data type categories for processing decisions.&quot;&quot;&quot;</span>
+    
+    <span class="n">RASTER</span> <span class="o">=</span> <span class="s2">&quot;raster&quot;</span>
+    <span class="n">VECTOR</span> <span class="o">=</span> <span class="s2">&quot;vector&quot;</span>
+    <span class="n">ARCHIVE</span> <span class="o">=</span> <span class="s2">&quot;archive&quot;</span>
+    <span class="n">NETCDF</span> <span class="o">=</span> <span class="s2">&quot;netcdf&quot;</span>
+    <span class="n">OTHER</span> <span class="o">=</span> <span class="s2">&quot;other&quot;</span></div>
+
+
+
+<span class="c1"># Data source categories for specialized processing</span>
+<div class="viewcode-block" id="DataSource">
+<a class="viewcode-back" href="../../../api-reference/core.html#geoworkflow.core.constants.DataSource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataSource</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Known data sources with specialized processing requirements.&quot;&quot;&quot;</span>
+    
+    <span class="n">COPERNICUS</span> <span class="o">=</span> <span class="s2">&quot;copernicus&quot;</span>
+    <span class="n">ODIAC</span> <span class="o">=</span> <span class="s2">&quot;odiac&quot;</span>
+    <span class="n">PM25</span> <span class="o">=</span> <span class="s2">&quot;pm25&quot;</span>
+    <span class="n">AFRICA_POLIS</span> <span class="o">=</span> <span class="s2">&quot;africa_polis&quot;</span>
+    <span class="n">LANDSAT</span> <span class="o">=</span> <span class="s2">&quot;landsat&quot;</span>
+    <span class="n">MODIS</span> <span class="o">=</span> <span class="s2">&quot;modis&quot;</span>
+    <span class="n">SENTINEL</span> <span class="o">=</span> <span class="s2">&quot;sentinel&quot;</span>
+    <span class="n">OTHER</span> <span class="o">=</span> <span class="s2">&quot;other&quot;</span></div>
+
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Visualization Constants</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Default visualization parameters</span>
+<span class="n">DEFAULT_VISUALIZATION_CONFIG</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;colormap&quot;</span><span class="p">:</span> <span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;classification_method&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;n_classes&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;dpi&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+    <span class="s2">&quot;figure_width&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="s2">&quot;figure_height&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;show_colorbar&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;add_basemap&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;basemap_source&quot;</span><span class="p">:</span> <span class="s2">&quot;CartoDB.Positron&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;raster_alpha&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span>
+    <span class="s2">&quot;basemap_alpha&quot;</span><span class="p">:</span> <span class="mf">0.7</span>
+<span class="p">}</span>
+
+<span class="c1"># Land cover color schemes (UN LCCS)</span>
+<span class="n">LAND_COVER_COLORS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;#000000&quot;</span><span class="p">,</span>     <span class="c1"># No Data</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;#ffff64&quot;</span><span class="p">,</span>    <span class="c1"># Cropland</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="s2">&quot;#aaf0f0&quot;</span><span class="p">,</span>    <span class="c1"># Forest</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="s2">&quot;#dcf064&quot;</span><span class="p">,</span>    <span class="c1"># Grassland</span>
+    <span class="mi">40</span><span class="p">:</span> <span class="s2">&quot;#c8c8c8&quot;</span><span class="p">,</span>    <span class="c1"># Shrubland</span>
+    <span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;#006400&quot;</span><span class="p">,</span>    <span class="c1"># Wetlands</span>
+    <span class="mi">60</span><span class="p">:</span> <span class="s2">&quot;#ffb432&quot;</span><span class="p">,</span>    <span class="c1"># Settlement</span>
+    <span class="mi">70</span><span class="p">:</span> <span class="s2">&quot;#ffc85a&quot;</span><span class="p">,</span>    <span class="c1"># Bare/sparse vegetation</span>
+    <span class="mi">80</span><span class="p">:</span> <span class="s2">&quot;#0064c8&quot;</span><span class="p">,</span>    <span class="c1"># Water bodies</span>
+    <span class="mi">90</span><span class="p">:</span> <span class="s2">&quot;#ffffff&quot;</span>     <span class="c1"># Snow/ice</span>
+<span class="p">}</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Processing Defaults</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Default buffer distances (in kilometers)</span>
+<span class="n">DEFAULT_BUFFER_KM</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span>
+
+<span class="c1"># Default resampling methods</span>
+<span class="n">DEFAULT_RESAMPLING_CATEGORICAL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nearest&quot;</span>
+<span class="n">DEFAULT_RESAMPLING_CONTINUOUS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cubic&quot;</span>
+
+<span class="c1"># Memory and performance settings</span>
+<span class="n">DEFAULT_CHUNK_SIZE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">DEFAULT_MAX_WORKERS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">DEFAULT_TIMEOUT_SECONDS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span>  <span class="c1"># 1 hour</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Logging Configuration</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Log levels</span>
+<span class="n">LOG_LEVELS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;INFO&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;WARNING&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s2">&quot;ERROR&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">&quot;CRITICAL&quot;</span><span class="p">:</span> <span class="mi">50</span>
+<span class="p">}</span>
+
+<span class="n">DEFAULT_LOG_LEVEL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+<span class="n">DEFAULT_LOG_FORMAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># File Size Limits</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Maximum file sizes for different operations (in bytes)</span>
+<span class="n">MAX_MEMORY_RASTER_SIZE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 1 GB</span>
+<span class="n">MAX_VISUALIZATION_SIZE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>    <span class="c1"># 100 MB</span>
+
+<span class="c1"># Downsampling thresholds</span>
+<span class="n">DOWNSAMPLE_THRESHOLD_PIXELS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span> <span class="o">*</span> <span class="mi">10000</span>   <span class="c1"># 100 million pixels</span>
+
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Application Metadata</span>
+<span class="c1"># ============================================================================</span>
+
+<span class="c1"># Package information</span>
+<span class="n">PACKAGE_NAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;geoworkflow&quot;</span>
+<span class="n">PACKAGE_VERSION</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span>
+<span class="n">PACKAGE_AUTHOR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Geoworkflow Team&quot;</span>
+
+<span class="c1"># Default project structure</span>
+<span class="n">DEFAULT_PROJECT_STRUCTURE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logs&quot;</span><span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cache&quot;</span><span class="p">:</span> <span class="s2">&quot;data/cache&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Google Earth Engine Constants</span>
+<span class="c1"># ============================================================================</span>
+<span class="n">EARTH_ENGINE_DATASETS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;open_buildings_v3&#39;</span><span class="p">:</span> <span class="s1">&#39;GOOGLE/Research/open-buildings/v3/polygons&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;open_buildings_temporal_v1&#39;</span><span class="p">:</span> <span class="s1">&#39;GOOGLE/Research/open-buildings-temporal/v1/polygons&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># Default Earth Engine settings</span>
+<span class="n">DEFAULT_EARTH_ENGINE_TIMEOUT</span> <span class="o">=</span> <span class="mi">1800</span>  <span class="c1"># 30 minutes in seconds</span>
+<span class="n">DEFAULT_BUILDING_CONFIDENCE</span> <span class="o">=</span> <span class="mf">0.75</span>
+<span class="n">DEFAULT_MIN_BUILDING_AREA</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># square meters</span>
+<span class="n">DEFAULT_MAX_BUILDING_AREA</span> <span class="o">=</span> <span class="mf">100000.0</span>  <span class="c1"># square meters</span>
+<span class="n">DEFAULT_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">1000</span>
+
+
+<span class="c1"># Earth Engine quota and retry settings</span>
+<span class="n">DEFAULT_EE_RETRY_ATTEMPTS</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">DEFAULT_EE_RETRY_DELAY</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># seconds</span>
+<span class="n">MAX_EE_FEATURES_PER_REQUEST</span> <span class="o">=</span> <span class="mi">5000</span>
+
+<span class="c1"># Common Earth Engine error patterns for academic-friendly messages</span>
+<span class="n">EE_ERROR_PATTERNS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;authentication&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;authentication&#39;</span><span class="p">,</span> <span class="s1">&#39;unauthorized&#39;</span><span class="p">,</span> <span class="s1">&#39;credentials&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;quota&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;quota&#39;</span><span class="p">,</span> <span class="s1">&#39;limit&#39;</span><span class="p">,</span> <span class="s1">&#39;rate limit&#39;</span><span class="p">,</span> <span class="s1">&#39;too many requests&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;timeout&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;deadline&#39;</span><span class="p">,</span> <span class="s1">&#39;cancelled&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;geometry&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;invalid geometry&#39;</span><span class="p">,</span> <span class="s1">&#39;self-intersection&#39;</span><span class="p">,</span> <span class="s1">&#39;too complex&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Grid-based export settings (for bypassing 5000 feature limit)</span>
+<span class="n">GRID_EXPORT_THRESHOLD</span> <span class="o">=</span> <span class="mi">4000</span>        <span class="c1"># Switch to grid processing above this count</span>
+<span class="n">BASE_GRID_SIZE_M</span> <span class="o">=</span> <span class="mi">1500</span>             <span class="c1"># Default grid cell size in meters</span>
+<span class="n">SUBDIVISION_THRESHOLD</span> <span class="o">=</span> <span class="mi">4800</span>        <span class="c1"># When to subdivide dense cells  </span>
+<span class="n">MAX_FEATURES_PER_CELL</span> <span class="o">=</span> <span class="mi">5000</span>        <span class="c1"># Hard EE limit per request</span>
+<span class="n">MIN_CELL_SIZE_M</span> <span class="o">=</span> <span class="mi">50</span>               <span class="c1"># Minimum subdivision size in meters</span>
+<span class="n">MAX_SUBDIVISION_DEPTH</span> <span class="o">=</span> <span class="mi">6</span>           <span class="c1"># Prevent infinite recursion</span>
+<span class="n">DEFAULT_GRID_WORKERS</span> <span class="o">=</span> <span class="mi">4</span>            <span class="c1"># Parallel processing threads</span>
+<span class="n">GRID_CRS_METRIC</span> <span class="o">=</span> <span class="s2">&quot;ESRI:102022&quot;</span>     <span class="c1"># Africa Albers for metric calculations</span>
+
+<span class="c1"># Grid processing chunk sizes</span>
+<span class="n">GRID_PROGRESS_UPDATE_INTERVAL</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Log progress every N cells</span>
+<span class="n">GRID_BATCH_SIZE</span> <span class="o">=</span> <span class="mi">25</span>               <span class="c1"># Cells per worker batch</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, AfricaPolis Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

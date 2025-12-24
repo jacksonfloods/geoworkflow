@@ -1,0 +1,920 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Installation &#8212; AfricaPolis GeoWorkflow 1.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1e84bb91" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=4ebf8126"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/installation';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quick Start" href="quickstart.html" />
+    <link rel="prev" title="Getting Started" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">AfricaPolis GeoWorkflow</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first-workflow.html">Basic Workflow Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration Guide</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Getting Started</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Installation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>Before installing GeoWorkflow, you’ll need to set up your development environment with the following software:</p>
+<section id="system-requirements">
+<h3>System Requirements<a class="headerlink" href="#system-requirements" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Operating System</strong>: Windows 10+, macOS 10.14+, or Linux</p></li>
+<li><p><strong>RAM</strong>: Minimum 8GB (16GB recommended for large datasets)</p></li>
+<li><p><strong>Disk Space</strong>: At least 5GB free space for software and dependencies</p></li>
+<li><p><strong>Python</strong>: Version 3.8 or higher (3.10 recommended)</p></li>
+</ul>
+</section>
+<section id="required-software">
+<h3>Required Software<a class="headerlink" href="#required-software" title="Link to this heading">#</a></h3>
+<ol class="arabic">
+<li><p><strong>Python 3.10</strong></p>
+<ul>
+<li><p><strong>Download</strong>: <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a></p></li>
+<li><p><strong>Installation</strong>:</p>
+<ul class="simple">
+<li><p><strong>Windows</strong>: Download the installer and check “Add Python to PATH” during installation</p></li>
+<li><p><strong>macOS</strong>: Download the installer or use Homebrew: <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">python&#64;3.10</span></code></p></li>
+<li><p><strong>Linux</strong>: Use your package manager: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python3.10</span></code> (Ubuntu/Debian)</p></li>
+</ul>
+</li>
+<li><p><strong>Verify installation</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>--version<span class="w">  </span><span class="c1"># Should show Python 3.8 or higher</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p><strong>Conda (Anaconda or Miniconda)</strong></p>
+<p>We <strong>strongly recommend</strong> using Conda for dependency management, as it handles complex geospatial libraries (GDAL, GEOS, PROJ) much better than pip alone.</p>
+<p><strong>Option A: Miniconda (Recommended - Smaller Download)</strong></p>
+<ul class="simple">
+<li><p><strong>Download</strong>: <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a></p></li>
+<li><p><strong>Size</strong>: ~50MB installer</p></li>
+<li><p><strong>What it includes</strong>: Minimal conda installation + Python</p></li>
+</ul>
+<p><strong>Option B: Anaconda (Full Distribution)</strong></p>
+<ul class="simple">
+<li><p><strong>Download</strong>: <a class="reference external" href="https://www.anaconda.com/download">https://www.anaconda.com/download</a></p></li>
+<li><p><strong>Size</strong>: ~500MB installer</p></li>
+<li><p><strong>What it includes</strong>: Conda + Python + 250+ pre-installed packages + Anaconda Navigator GUI</p></li>
+</ul>
+<p><strong>Installation Steps</strong>:</p>
+<p><strong>Windows</strong>:</p>
+<ol class="arabic simple">
+<li><p>Download the Windows installer (.exe)</p></li>
+<li><p>Run the installer</p></li>
+<li><p>Accept defaults (recommended to add to PATH when prompted)</p></li>
+<li><p>Restart your terminal/command prompt</p></li>
+</ol>
+<p><strong>macOS</strong>:</p>
+<ol class="arabic simple">
+<li><p>Download the macOS installer (.pkg or .sh)</p></li>
+<li><p>For .pkg: Double-click and follow prompts</p></li>
+<li><p>For .sh: Run <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">Miniconda3-latest-MacOSX-x86_64.sh</span></code></p></li>
+<li><p>Restart your terminal</p></li>
+</ol>
+<p><strong>Linux</strong>:</p>
+<ol class="arabic simple">
+<li><p>Download the Linux installer (.sh)</p></li>
+<li><p>Run: <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">Miniconda3-latest-Linux-x86_64.sh</span></code></p></li>
+<li><p>Follow the prompts</p></li>
+<li><p>Restart your terminal or run <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/.bashrc</span></code></p></li>
+</ol>
+<p><strong>Verify Conda Installation</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>--version<span class="w">  </span><span class="c1"># Should show conda 4.x.x or higher</span>
+conda<span class="w"> </span>info<span class="w">       </span><span class="c1"># Shows detailed conda information</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Git (for cloning the repository)</strong></p>
+<ul class="simple">
+<li><p><strong>Download</strong>: <a class="reference external" href="https://git-scm.com/downloads">https://git-scm.com/downloads</a></p></li>
+<li><p><strong>Windows</strong>: Use Git for Windows installer</p></li>
+<li><p><strong>macOS</strong>: Included with Xcode Command Line Tools or use Homebrew: <code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">git</span></code></p></li>
+<li><p><strong>Linux</strong>: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">git</span></code> (Ubuntu/Debian)</p></li>
+</ul>
+<p><strong>Verify Git Installation</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>--version<span class="w">  </span><span class="c1"># Should show git version 2.x.x or higher</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="optional-but-recommended">
+<h3>Optional but Recommended<a class="headerlink" href="#optional-but-recommended" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Visual Studio Code</strong>: <a class="reference external" href="https://code.visualstudio.com/">https://code.visualstudio.com/</a> - Excellent Python IDE with Jupyter support</p></li>
+<li><p><strong>Git GUI Client</strong>: GitKraken, GitHub Desktop, or SourceTree for easier Git operations</p></li>
+</ul>
+</section>
+</section>
+<section id="installation-steps">
+<h2>Installation Steps<a class="headerlink" href="#installation-steps" title="Link to this heading">#</a></h2>
+<section id="automated-installation-recommended">
+<h3>Automated Installation (Recommended)<a class="headerlink" href="#automated-installation-recommended" title="Link to this heading">#</a></h3>
+<p>We provide an automated installation script that handles all the steps below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download and run the installer</span>
+curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/jacksonfloods/geoworkflow/main/install.sh<span class="w"> </span>-o<span class="w"> </span>install.sh
+chmod<span class="w"> </span>+x<span class="w"> </span>install.sh
+./install.sh
+</pre></div>
+</div>
+<p>The script will:</p>
+<ul class="simple">
+<li><p>Install Miniconda (if not present)</p></li>
+<li><p>Install Git (if not present)</p></li>
+<li><p>Clone the repository</p></li>
+<li><p>Create the conda environment</p></li>
+<li><p>Install GeoWorkflow package</p></li>
+<li><p>Verify the installation</p></li>
+</ul>
+<p>Skip to <span class="xref std std-ref">verify-installation</span> if using the automated installer.</p>
+</section>
+<section id="manual-installation-using-conda">
+<h3>Manual Installation Using Conda<a class="headerlink" href="#manual-installation-using-conda" title="Link to this heading">#</a></h3>
+<p>This is the preferred installation method as it handles all geospatial dependencies automatically.</p>
+<p><strong>Step 1: Clone the Repository</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to where you want to install</span>
+<span class="nb">cd</span><span class="w"> </span>~/Projects<span class="w">  </span><span class="c1"># or C:\Users\YourName\Projects on Windows</span>
+
+<span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jacksonfloods/geoworkflow.git
+<span class="nb">cd</span><span class="w"> </span>geoworkflow
+</pre></div>
+</div>
+<p><strong>Step 2: Create Conda Environment</strong></p>
+<p>This will install Python 3.10 and all required geospatial libraries (GDAL, GEOS, PROJ, etc.):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create environment from environment.yml</span>
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+</pre></div>
+</div>
+<p>This process may take 5-15 minutes as it downloads and installs all dependencies (~2GB).</p>
+<p><strong>Step 3: Activate the Environment</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Activate the environment</span>
+conda<span class="w"> </span>activate<span class="w"> </span>geoworkflow
+
+<span class="c1"># Your prompt should now show (geoworkflow) prefix</span>
+<span class="c1"># Example: (geoworkflow) user@computer:~/geoworkflow$</span>
+</pre></div>
+</div>
+<p><strong>Step 4: Install GeoWorkflow Package</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install in development/editable mode</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+<p><strong>Step 5: Verify Installation</strong></p>
+<div class="highlight-bash notranslate" id="verify-installation"><div class="highlight"><pre><span></span><span class="c1"># Test the installation</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import geoworkflow; print(&#39;GeoWorkflow installed successfully!&#39;)&quot;</span>
+
+<span class="c1"># Check that key dependencies are available</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import geopandas, rasterio, xarray; print(&#39;Geospatial libraries OK!&#39;)&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>First-time Conda users</strong>: The conda environment must be activated every time you open a new terminal session:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>geoworkflow
+</pre></div>
+</div>
+<p>To check which environment is active: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">list</span></code> (active environment has a * next to it)</p>
+</div>
+</section>
+<section id="alternative-using-pip-only-advanced-users">
+<h3>Alternative: Using pip Only (Advanced Users)<a class="headerlink" href="#alternative-using-pip-only-advanced-users" title="Link to this heading">#</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Installing with pip alone is <strong>not recommended</strong> for most users, as it requires you to manually install GDAL, GEOS, and PROJ system libraries. Use this only if you cannot use conda.</p>
+</div>
+<p><strong>For Ubuntu/Debian Linux</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install system dependencies</span>
+sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>python3-dev<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>libgdal-dev<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>libgeos-dev<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>libproj-dev<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>libspatialindex-dev
+
+<span class="c1"># Clone and install</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jacksonfloods/geoworkflow.git
+<span class="nb">cd</span><span class="w"> </span>geoworkflow
+
+<span class="c1"># Create virtual environment</span>
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+
+<span class="c1"># Install with all dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[all]&quot;</span>
+</pre></div>
+</div>
+<p><strong>For macOS with Homebrew</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install system dependencies</span>
+brew<span class="w"> </span>install<span class="w"> </span>gdal<span class="w"> </span>geos<span class="w"> </span>proj
+
+<span class="c1"># Clone and install</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jacksonfloods/geoworkflow.git
+<span class="nb">cd</span><span class="w"> </span>geoworkflow
+
+<span class="c1"># Create virtual environment</span>
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+
+<span class="c1"># Install with all dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[all]&quot;</span>
+</pre></div>
+</div>
+<p><strong>Windows pip installation is not recommended</strong> - please use conda on Windows.</p>
+</section>
+</section>
+<section id="troubleshooting-installation">
+<h2>Troubleshooting Installation<a class="headerlink" href="#troubleshooting-installation" title="Link to this heading">#</a></h2>
+<section id="common-issues-and-solutions">
+<h3>Common Issues and Solutions<a class="headerlink" href="#common-issues-and-solutions" title="Link to this heading">#</a></h3>
+<p><strong>Issue</strong>: <code class="docutils literal notranslate"><span class="pre">conda:</span> <span class="pre">command</span> <span class="pre">not</span> <span class="pre">found</span></code> after installation</p>
+<p><strong>Solution</strong>:</p>
+<ol class="arabic simple">
+<li><p>Close and reopen your terminal</p></li>
+<li><p>If still not found, manually add conda to PATH:</p>
+<ul class="simple">
+<li><p><strong>Windows</strong>: Add <code class="docutils literal notranslate"><span class="pre">C:\Users\YourName\miniconda3\Scripts</span></code> to system PATH</p></li>
+<li><p><strong>macOS/Linux</strong>: Add <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PATH=&quot;$HOME/miniconda3/bin:$PATH&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.zshrc</span></code></p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Issue</strong>: <code class="docutils literal notranslate"><span class="pre">Solving</span> <span class="pre">environment:</span> <span class="pre">failed</span> <span class="pre">with</span> <span class="pre">initial</span> <span class="pre">frozen</span> <span class="pre">solve</span></code></p>
+<p><strong>Solution</strong>: Try creating the environment with a more relaxed solver:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--set<span class="w"> </span>channel_priority<span class="w"> </span>flexible
+conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+</pre></div>
+</div>
+<p><strong>Issue</strong>: <code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">'osgeo'</span></code> (GDAL not found)</p>
+<p><strong>Solution</strong>: Ensure you’re using the conda environment, not system Python:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>geoworkflow
+which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Should point to conda environment</span>
+</pre></div>
+</div>
+<p><strong>Issue</strong>: Environment creation is very slow or hangs</p>
+<p><strong>Solution</strong>:</p>
+<ol class="arabic">
+<li><p>Update conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">update</span> <span class="pre">-n</span> <span class="pre">base</span> <span class="pre">conda</span></code></p></li>
+<li><p>Use mamba (faster solver):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>mamba
+mamba<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>Issue</strong>: <code class="docutils literal notranslate"><span class="pre">Permission</span> <span class="pre">denied</span></code> errors during installation</p>
+<p><strong>Solution</strong>:</p>
+<ul class="simple">
+<li><p>Don’t use <code class="docutils literal notranslate"><span class="pre">sudo</span></code> with conda</p></li>
+<li><p>Ensure you have write permissions to the installation directory</p></li>
+<li><p>On Windows, run terminal as Administrator if needed</p></li>
+</ul>
+<p><strong>Issue</strong>: Conflicts with existing Python installation</p>
+<p><strong>Solution</strong>: Use conda’s isolated environment - it won’t interfere with system Python:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check Python location before activation</span>
+which<span class="w"> </span>python<span class="w">  </span><span class="c1"># System Python</span>
+
+<span class="c1"># Activate conda environment</span>
+conda<span class="w"> </span>activate<span class="w"> </span>geoworkflow
+which<span class="w"> </span>python<span class="w">  </span><span class="c1"># Should now be conda&#39;s Python</span>
+</pre></div>
+</div>
+</section>
+<section id="getting-help">
+<h3>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading">#</a></h3>
+<p>If you encounter issues not covered here:</p>
+<ol class="arabic simple">
+<li><p>Check existing <a class="reference external" href="https://github.com/jacksonfloods/geoworkflow/issues">GitHub Issues</a></p></li>
+<li><p>Review the <span class="xref std std-doc">../user_guide/how-to/troubleshooting</span> guide</p></li>
+<li><p>Open a new issue with:</p>
+<ul class="simple">
+<li><p>Your operating system and version</p></li>
+<li><p>Python version (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">--version</span></code>)</p></li>
+<li><p>Conda version (<code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">--version</span></code>)</p></li>
+<li><p>Complete error message</p></li>
+<li><p>Steps to reproduce</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<p>Once installation is complete, proceed to:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="quickstart.html"><span class="doc">Quick Start</span></a> - Your first GeoWorkflow pipeline</p></li>
+<li><p><a class="reference internal" href="configuration.html"><span class="doc">Configuration Guide</span></a> - Understanding configuration files</p></li>
+<li><p><a class="reference internal" href="first-workflow.html"><span class="doc">Basic Workflow Tutorial</span></a> - Complete tutorial walkthrough</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Getting Started</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="quickstart.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Quick Start</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#system-requirements">System Requirements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#required-software">Required Software</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-but-recommended">Optional but Recommended</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-steps">Installation Steps</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automated-installation-recommended">Automated Installation (Recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-installation-using-conda">Manual Installation Using Conda</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-using-pip-only-advanced-users">Alternative: Using pip Only (Advanced Users)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting-installation">Troubleshooting Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#common-issues-and-solutions">Common Issues and Solutions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/jacksonfloods/geoworkflow/edit/main/docs/source/getting_started/installation.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/getting_started/installation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, AfricaPolis Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

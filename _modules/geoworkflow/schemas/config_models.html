@@ -1,0 +1,1257 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>geoworkflow.schemas.config_models &#8212; AfricaPolis GeoWorkflow 1.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=1e84bb91" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=4ebf8126"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/geoworkflow/schemas/config_models';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/logo.png" class="logo__image only-light" alt=""/>
+    <img src="../../../_static/logo.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">AfricaPolis GeoWorkflow</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../getting_started/index.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api_reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_guide/index.html">
+    Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow">
+    GitHub Repository
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/jacksonfloods/geoworkflow/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://labs.aap.cornell.edu/stephan-schmidts-research-group/team">
+    Cornell AAP Research Group
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/jacksonfloods/geoworkflow" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">geoworkflow.schemas.config_models</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for geoworkflow.schemas.config_models</h1><div class="highlight"><pre>
+<span></span><span class="c1"># File: src/geoworkflow/schemas/config_models.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Configuration models for the geoworkflow package using Pydantic v2.</span>
+
+<span class="sd">This module defines all configuration schemas used throughout the workflow,</span>
+<span class="sd">providing type safety, validation, and documentation for configuration options.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span>
+
+<span class="c1"># Grid processing constants with fallback values</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">geoworkflow.core.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">GRID_EXPORT_THRESHOLD</span><span class="p">,</span> <span class="n">BASE_GRID_SIZE_M</span><span class="p">,</span> <span class="n">DEFAULT_GRID_WORKERS</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Fallback values if constants file isn&#39;t available</span>
+    <span class="n">GRID_EXPORT_THRESHOLD</span> <span class="o">=</span> <span class="mi">4000</span>
+    <span class="n">BASE_GRID_SIZE_M</span> <span class="o">=</span> <span class="mi">1500</span>  
+    <span class="n">DEFAULT_GRID_WORKERS</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not import grid constants: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Using fallback values.&quot;</span><span class="p">)</span>
+
+    
+<div class="viewcode-block" id="BaseConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.BaseConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base configuration class with common settings.&quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span><span class="p">,</span>  <span class="c1"># Don&#39;t allow extra fields</span>
+        <span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Validate on assignment</span>
+        <span class="n">use_enum_values</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Use enum values in serialization</span>
+        <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Allow Path and other types</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="LogLevel">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.LogLevel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogLevel</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logging levels.&quot;&quot;&quot;</span>
+    <span class="n">DEBUG</span> <span class="o">=</span> <span class="s2">&quot;DEBUG&quot;</span>
+    <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s2">&quot;WARNING&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span>
+    <span class="n">CRITICAL</span> <span class="o">=</span> <span class="s2">&quot;CRITICAL&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ResamplingMethod">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.ResamplingMethod">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResamplingMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resampling methods for raster operations.&quot;&quot;&quot;</span>
+    <span class="n">NEAREST</span> <span class="o">=</span> <span class="s2">&quot;nearest&quot;</span>
+    <span class="n">BILINEAR</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span>
+    <span class="n">CUBIC</span> <span class="o">=</span> <span class="s2">&quot;cubic&quot;</span>
+    <span class="n">CUBIC_SPLINE</span> <span class="o">=</span> <span class="s2">&quot;cubic_spline&quot;</span>
+    <span class="n">LANCZOS</span> <span class="o">=</span> <span class="s2">&quot;lanczos&quot;</span>
+    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="s2">&quot;average&quot;</span>
+    <span class="n">MODE</span> <span class="o">=</span> <span class="s2">&quot;mode&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ClassificationMethod">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.ClassificationMethod">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClassificationMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classification methods for visualization.&quot;&quot;&quot;</span>
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+    <span class="n">EQUAL_INTERVAL</span> <span class="o">=</span> <span class="s2">&quot;equal_interval&quot;</span>
+    <span class="n">QUANTILE</span> <span class="o">=</span> <span class="s2">&quot;quantile&quot;</span>
+    <span class="n">JENKS</span> <span class="o">=</span> <span class="s2">&quot;jenks&quot;</span>
+    <span class="n">LOG</span> <span class="o">=</span> <span class="s2">&quot;log&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="NoDataDetectionMethod">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.NoDataDetectionMethod">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NoDataDetectionMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;NoData detection methods.&quot;&quot;&quot;</span>
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+    <span class="n">METADATA_ONLY</span> <span class="o">=</span> <span class="s2">&quot;metadata_only&quot;</span>
+    <span class="n">COMMON_VALUES</span> <span class="o">=</span> <span class="s2">&quot;common_values&quot;</span>
+    <span class="n">STATISTICAL</span> <span class="o">=</span> <span class="s2">&quot;statistical&quot;</span></div>
+
+
+<div class="viewcode-block" id="OpenBuildingsDataset">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsDataset">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpenBuildingsDataset</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open Buildings dataset versions.&quot;&quot;&quot;</span>
+    <span class="n">V3</span> <span class="o">=</span> <span class="s2">&quot;v3&quot;</span>
+    <span class="n">TEMPORAL_V1</span> <span class="o">=</span> <span class="s2">&quot;temporal_v1&quot;</span>  <span class="c1"># For future enhancement</span></div>
+
+
+
+<div class="viewcode-block" id="BuildingExportFormat">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.BuildingExportFormat">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BuildingExportFormat</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export formats for building data.&quot;&quot;&quot;</span>
+    <span class="n">GEOJSON</span> <span class="o">=</span> <span class="s2">&quot;geojson&quot;</span>
+    <span class="n">SHAPEFILE</span> <span class="o">=</span> <span class="s2">&quot;shapefile&quot;</span>
+    <span class="n">CSV</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="EarthEngineAuthMethod">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.EarthEngineAuthMethod">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EarthEngineAuthMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Earth Engine authentication methods.&quot;&quot;&quot;</span>
+    <span class="n">SERVICE_ACCOUNT</span> <span class="o">=</span> <span class="s2">&quot;service_account&quot;</span>
+    <span class="n">USER_CREDENTIALS</span> <span class="o">=</span> <span class="s2">&quot;user_credentials&quot;</span>
+    <span class="n">DEFAULT</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="AOIConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.AOIConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AOIConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for Area of Interest operations.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Source specification</span>
+    <span class="n">input_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to administrative boundaries file&quot;</span><span class="p">)</span>
+    <span class="n">country_name_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;NAME_0&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Column name containing country names&quot;</span><span class="p">)</span>
+    <span class="n">countries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of country names&quot;</span><span class="p">)</span>
+    <span class="n">use_all_countries</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use all countries in the boundaries file&quot;</span><span class="p">)</span>
+    <span class="n">buffer_km</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Buffer distance in kilometers&quot;</span><span class="p">)</span>
+    <span class="n">dissolve_boundaries</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dissolve country boundaries into single polygon&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Output configuration  </span>
+    <span class="n">output_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output file path for AOI&quot;</span><span class="p">)</span>
+    <span class="n">output_crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output coordinate reference system&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">simplify_tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Geometry simplification tolerance&quot;</span><span class="p">)</span>
+    <span class="n">validate_geometry</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Validate geometry after processing&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Data Source Configuration</span>
+<div class="viewcode-block" id="DataSourceConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.DataSourceConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataSourceConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for data sources.&quot;&quot;&quot;</span>
+    
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Data source name&quot;</span><span class="p">)</span>
+    <span class="n">source_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of data source&quot;</span><span class="p">)</span>
+    <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Download URL&quot;</span><span class="p">)</span>
+    <span class="n">local_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Local file path&quot;</span><span class="p">)</span>
+    <span class="n">credentials</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Authentication credentials&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Download options</span>
+    <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">8192</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Download chunk size in bytes&quot;</span><span class="p">)</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Download timeout in seconds&quot;</span><span class="p">)</span>
+    <span class="n">retry_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of retry attempts&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Extraction Configuration</span>
+<div class="viewcode-block" id="ExtractionConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.ExtractionConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractionConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for archive extraction operations.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Input specification</span>
+    <span class="n">zip_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Single ZIP file to extract&quot;</span><span class="p">)</span>
+    <span class="n">zip_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Folder containing ZIP files&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Output configuration</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output directory for extracted files&quot;</span><span class="p">)</span>
+    <span class="n">preserve_structure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Preserve directory structure&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">overwrite_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Overwrite existing extracted files&quot;</span><span class="p">)</span>
+    <span class="n">cleanup_archives</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Remove archives after extraction&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># File filtering</span>
+    <span class="n">file_patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;File patterns to extract&quot;</span><span class="p">)</span>
+    <span class="n">exclude_patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Patterns to exclude&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ClippingConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.ClippingConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClippingConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for spatial clipping operations.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Input/Output (using notebook-compatible field names)</span>
+    <span class="n">input_directory</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input directory containing files to clip&quot;</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output directory for clipped files&quot;</span><span class="p">)</span>
+    <span class="n">aoi_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Area of Interest file for clipping&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">raster_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;*.tif&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Pattern to match raster files&quot;</span><span class="p">)</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Process subdirectories recursively&quot;</span><span class="p">)</span>
+    <span class="n">overwrite_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Overwrite existing clipped files&quot;</span><span class="p">)</span>
+    <span class="n">all_touched</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include pixels touched by geometry&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># CRS handling</span>
+    <span class="n">target_crs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Target CRS for output&quot;</span><span class="p">)</span>
+    <span class="n">reproject_aoi</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Reproject AOI to match data CRS&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># File filtering</span>
+    <span class="n">file_extensions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;File extensions to process&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Enhanced Alignment Configuration with NoData Detection</span>
+<div class="viewcode-block" id="AlignmentConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.AlignmentConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AlignmentConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for raster alignment operations with enhanced nodata handling.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Core alignment settings</span>
+    <span class="n">reference_raster</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Reference raster for alignment&quot;</span><span class="p">)</span>
+    <span class="n">input_directory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input directory containing rasters&quot;</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output directory for aligned rasters&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">resampling_method</span><span class="p">:</span> <span class="n">ResamplingMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ResamplingMethod</span><span class="o">.</span><span class="n">CUBIC</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Resampling method&quot;</span><span class="p">)</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Process subdirectories recursively&quot;</span><span class="p">)</span>
+    <span class="n">skip_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Skip files that already exist&quot;</span><span class="p">)</span>
+    <span class="n">preserve_directory_structure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Preserve input directory structure&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Enhanced NoData Detection Options</span>
+    <span class="n">auto_detect_nodata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Automatically detect nodata values when metadata is missing&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nodata_detection_method</span><span class="p">:</span> <span class="n">NoDataDetectionMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">NoDataDetectionMethod</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Method for nodata detection&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nodata_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Validate detected nodata values for reliability&quot;</span>
+    <span class="p">)</span>
+    <span class="n">force_nodata_redetection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Force re-detection even when cached metadata exists&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nodata_cache_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Cache detected nodata values in raster metadata&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># CRS handling</span>
+    <span class="n">target_crs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Target CRS (uses reference if None)&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># File filtering</span>
+    <span class="n">file_extensions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;.tiff&#39;</span><span class="p">],</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;File extensions to process&quot;</span>
+    <span class="p">)</span>
+    
+<div class="viewcode-block" id="AlignmentConfig.validate_reference_raster_exists">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.AlignmentConfig.validate_reference_raster_exists">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;reference_raster&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_reference_raster_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference raster does not exist: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+</div>
+
+
+
+<span class="c1"># Statistical Enrichment Configuration</span>
+<div class="viewcode-block" id="StatisticalEnrichmentConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.StatisticalEnrichmentConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StatisticalEnrichmentConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for statistical enrichment operations.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Input/Output</span>
+    <span class="n">input_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Directory containing aligned rasters&quot;</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output directory for enriched data&quot;</span><span class="p">)</span>
+    <span class="n">aoi_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;AOI file for statistical analysis&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Statistics to compute</span>
+    <span class="n">compute_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Compute mean values&quot;</span><span class="p">)</span>
+    <span class="n">compute_median</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Compute median values&quot;</span><span class="p">)</span>
+    <span class="n">compute_std</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Compute standard deviation&quot;</span><span class="p">)</span>
+    <span class="n">compute_percentiles</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Compute percentiles&quot;</span><span class="p">)</span>
+    <span class="n">percentiles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">75</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Percentiles to compute&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">use_masks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Use nodata masks in calculations&quot;</span><span class="p">)</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Process subdirectories recursively&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Output format</span>
+    <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output format (csv, json, xlsx)&quot;</span><span class="p">)</span>
+    <span class="n">include_geometry</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include geometry in output&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Visualization Configuration</span>
+<div class="viewcode-block" id="VisualizationConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.VisualizationConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VisualizationConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for data visualization.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Input/Output</span>
+    <span class="n">input_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input directory containing data&quot;</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output directory for visualizations&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Visualization options</span>
+    <span class="n">create_images</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create raster images&quot;</span><span class="p">)</span>
+    <span class="n">create_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create statistical plots&quot;</span><span class="p">)</span>
+    <span class="n">create_maps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create interactive maps&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Image settings</span>
+    <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Image resolution in DPI&quot;</span><span class="p">)</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">((</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Figure size in inches&quot;</span><span class="p">)</span>
+    <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Default colormap&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Classification</span>
+    <span class="n">classification_method</span><span class="p">:</span> <span class="n">ClassificationMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">ClassificationMethod</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Data classification method&quot;</span>
+    <span class="p">)</span>
+    <span class="n">n_classes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of classes&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">downsample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Downsample large rasters for visualization&quot;</span><span class="p">)</span>
+    <span class="n">max_pixels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum pixels for visualization&quot;</span><span class="p">)</span>
+    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Overwrite existing visualizations&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Map options</span>
+    <span class="n">include_basemap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include basemap in maps&quot;</span><span class="p">)</span>
+    <span class="n">basemap_alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Basemap transparency&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Processing Configuration</span>
+<div class="viewcode-block" id="ProcessingConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.ProcessingConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessingConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main processing configuration.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Processing stages</span>
+    <span class="n">stages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Processing stages to run&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Resource management</span>
+    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of worker processes&quot;</span><span class="p">)</span>
+    <span class="n">memory_limit_gb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Memory limit in GB&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Error handling</span>
+    <span class="n">stop_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stop pipeline on error&quot;</span><span class="p">)</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Logging level&quot;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="ProcessingConfig.validate_stages">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.ProcessingConfig.validate_stages">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;stages&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_stages</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="n">valid_stages</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extract&quot;</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="s2">&quot;align&quot;</span><span class="p">,</span> <span class="s2">&quot;integrate&quot;</span><span class="p">,</span> <span class="s2">&quot;enrich&quot;</span><span class="p">,</span> <span class="s2">&quot;visualize&quot;</span><span class="p">}</span>
+        <span class="n">invalid_stages</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="n">valid_stages</span>
+        <span class="k">if</span> <span class="n">invalid_stages</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid stages: </span><span class="si">{</span><span class="n">invalid_stages</span><span class="si">}</span><span class="s2">. Valid stages: </span><span class="si">{</span><span class="n">valid_stages</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+</div>
+
+
+
+<span class="c1"># Workflow Configuration</span>
+<div class="viewcode-block" id="WorkflowConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.WorkflowConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkflowConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete workflow configuration.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Metadata</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Workflow name&quot;</span><span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Workflow description&quot;</span><span class="p">)</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Workflow version&quot;</span><span class="p">)</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Creation timestamp&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Core components</span>
+    <span class="n">aoi</span><span class="p">:</span> <span class="n">AOIConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;AOI configuration&quot;</span><span class="p">)</span>
+    <span class="n">processing</span><span class="p">:</span> <span class="n">ProcessingConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Processing configuration&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Data sources</span>
+    <span class="n">data_sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataSourceConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Data source configurations&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Stage configurations (optional - only needed if stage is enabled)</span>
+    <span class="n">extraction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ExtractionConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Extraction configuration&quot;</span><span class="p">)</span>
+    <span class="n">clipping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClippingConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Clipping configuration&quot;</span><span class="p">)</span>
+    <span class="n">alignment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AlignmentConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Alignment configuration&quot;</span><span class="p">)</span>
+    <span class="n">enrichment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StatisticalEnrichmentConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enrichment configuration&quot;</span><span class="p">)</span>
+    <span class="n">visualization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VisualizationConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Visualization configuration&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Directory paths</span>
+    <span class="n">base_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">(),</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Base working directory&quot;</span><span class="p">)</span>
+    <span class="n">source_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Source data directory&quot;</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Main output directory&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Derived directories</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extracted_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;extracted&quot;</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clipped_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;clipped&quot;</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">aligned_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;aligned&quot;</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">processed_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;processed&quot;</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analysis_ready_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;analysis_ready&quot;</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">aoi_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;aoi&quot;</span>
+    
+<div class="viewcode-block" id="WorkflowConfig.validate_stage_dependencies">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.WorkflowConfig.validate_stage_dependencies">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_stage_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that required stage configurations are provided.&quot;&quot;&quot;</span>
+        <span class="n">stage_configs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">extraction</span><span class="p">,</span>
+            <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clipping</span><span class="p">,</span>
+            <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alignment</span><span class="p">,</span>
+            <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">enrichment</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">visualization</span>
+        <span class="p">}</span>
+        
+        <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processing</span><span class="o">.</span><span class="n">stages</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">stage_configs</span> <span class="ow">and</span> <span class="n">stage_configs</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stage &#39;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">&#39; is enabled but no configuration provided&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    
+<div class="viewcode-block" id="WorkflowConfig.get_stage_config">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.WorkflowConfig.get_stage_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stage_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseConfig</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get configuration for a specific stage.&quot;&quot;&quot;</span>
+        <span class="n">stage_configs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;extract&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">extraction</span><span class="p">,</span>
+            <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clipping</span><span class="p">,</span>
+            <span class="s2">&quot;align&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alignment</span><span class="p">,</span>
+            <span class="s2">&quot;enrich&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">enrichment</span><span class="p">,</span>
+            <span class="s2">&quot;visualize&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">visualization</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">stage_configs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">stage_name</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="WorkflowConfig.has_stage">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.WorkflowConfig.has_stage">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a stage is included in the workflow.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">stage_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processing</span><span class="o">.</span><span class="n">stages</span></div>
+
+    
+<div class="viewcode-block" id="WorkflowConfig.to_yaml">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.WorkflowConfig.to_yaml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save workflow configuration to YAML file.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+        
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;created_at&#39;</span><span class="p">})</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="WorkflowConfig.from_yaml">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.WorkflowConfig.from_yaml">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">&#39;WorkflowConfig&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load workflow configuration from YAML file.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+        
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">config_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">)</span></div>
+</div>
+
+    
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpenBuildingsExtractionConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for Open Buildings dataset extraction via Earth Engine.&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Required inputs (user must provide)</span>
+    <span class="n">aoi_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Area of Interest boundary file&quot;</span><span class="p">)</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output directory for extracted buildings&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Authentication (flexible options for academic teams)</span>
+    <span class="n">service_account_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to service account key JSON file&quot;</span>
+    <span class="p">)</span>
+    <span class="n">service_account_email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Service account email address (required when using service_account auth)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Google Cloud Project ID (can be inferred from service account)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">auth_method</span><span class="p">:</span> <span class="n">EarthEngineAuthMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">EarthEngineAuthMethod</span><span class="o">.</span><span class="n">SERVICE_ACCOUNT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Authentication method to use&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Core extraction settings with sensible defaults</span>
+    <span class="n">dataset_version</span><span class="p">:</span> <span class="n">OpenBuildingsDataset</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">OpenBuildingsDataset</span><span class="o">.</span><span class="n">V3</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Open Buildings dataset version&quot;</span>
+    <span class="p">)</span>
+    <span class="n">confidence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">0.75</span><span class="p">,</span> 
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum building confidence threshold (0.5-1.0)&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Building filtering</span>
+    <span class="n">min_area_m2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">10.0</span><span class="p">,</span> 
+        <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum building area in m²&quot;</span>
+    <span class="p">)</span>
+    <span class="n">max_area_m2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">100000.0</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum building area in m² (None for no limit)&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Export options</span>
+    <span class="n">export_format</span><span class="p">:</span> <span class="n">BuildingExportFormat</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">BuildingExportFormat</span><span class="o">.</span><span class="n">GEOJSON</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Export format for building data&quot;</span>
+    <span class="p">)</span>
+    <span class="n">include_confidence</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include confidence scores in output&quot;</span>
+    <span class="p">)</span>
+    <span class="n">include_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include calculated area in output&quot;</span>
+    <span class="p">)</span>
+    <span class="n">include_plus_codes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Include Google Plus Codes in output&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Processing limits</span>
+    <span class="n">max_features</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of features to export (None for no limit)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">1000</span><span class="p">,</span> 
+        <span class="n">ge</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Processing chunk size for large extractions&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Grid processing options (for large datasets - NEW)</span>
+    <span class="n">enable_grid_processing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enable automatic grid processing for large datasets&quot;</span>
+    <span class="p">)</span>
+    <span class="n">grid_size_m</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">BASE_GRID_SIZE_M</span><span class="p">,</span>  <span class="c1"># Using constant as default</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Grid cell size in meters for parallel processing&quot;</span>
+    <span class="p">)</span>
+    <span class="n">grid_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">DEFAULT_GRID_WORKERS</span><span class="p">,</span>  <span class="c1"># Using constant as default</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of parallel workers for grid processing&quot;</span>
+    <span class="p">)</span>
+    <span class="n">grid_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">GRID_EXPORT_THRESHOLD</span><span class="p">,</span>  <span class="c1"># Using constant as default</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Feature count threshold to trigger grid processing&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Processing options</span>
+    <span class="n">overwrite_existing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Overwrite existing output files&quot;</span>
+    <span class="p">)</span>
+    <span class="n">create_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create spatial index for output data&quot;</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Timeout and retry settings</span>
+    <span class="n">timeout_minutes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">30</span><span class="p">,</span> 
+        <span class="n">ge</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Timeout for Earth Engine operations in minutes&quot;</span>
+    <span class="p">)</span>
+    <span class="n">retry_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">3</span><span class="p">,</span> 
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">le</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Number of retry attempts for failed operations&quot;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig.validate_aoi_file_exists">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig.validate_aoi_file_exists">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;aoi_file&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_aoi_file_exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that AOI file exists.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AOI file does not exist: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+
+
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig.validate_service_account_key">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig.validate_service_account_key">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;service_account_key&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_service_account_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate service account key file if provided.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Service account key file does not exist: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+
+
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig.validate_confidence_threshold">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig.validate_confidence_threshold">[docs]</a>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;confidence_threshold&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_confidence_threshold</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate confidence threshold and provide guidance.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">0.7</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Confidence threshold </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> is below 0.7. &quot;</span>
+                <span class="s2">&quot;Lower thresholds may include low-quality building detections.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span></div>
+
+
+    
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig.validate_authentication_setup">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig.validate_authentication_setup">[docs]</a>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_authentication_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate authentication configuration.&quot;&quot;&quot;</span>
+        <span class="c1"># Validate service account authentication requirements</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_method</span> <span class="o">==</span> <span class="n">EarthEngineAuthMethod</span><span class="o">.</span><span class="n">SERVICE_ACCOUNT</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_account_key</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;service_account_key is required when using SERVICE_ACCOUNT auth method&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_account_email</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;service_account_email is required when using SERVICE_ACCOUNT auth method&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># If service account is specified, ensure it&#39;s the right auth method</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_account_key</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">auth_method</span> <span class="o">!=</span> <span class="n">EarthEngineAuthMethod</span><span class="o">.</span><span class="n">SERVICE_ACCOUNT</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Service account key provided but auth_method is not &#39;service_account&#39;. &quot;</span>
+                <span class="s2">&quot;Setting auth_method to &#39;service_account&#39;.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auth_method</span> <span class="o">=</span> <span class="n">EarthEngineAuthMethod</span><span class="o">.</span><span class="n">SERVICE_ACCOUNT</span>
+        
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig.get_output_file_path">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig.get_output_file_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the full output file path based on configuration.&quot;&quot;&quot;</span>
+        <span class="n">extension_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">BuildingExportFormat</span><span class="o">.</span><span class="n">GEOJSON</span><span class="p">:</span> <span class="s2">&quot;geojson&quot;</span><span class="p">,</span>
+            <span class="n">BuildingExportFormat</span><span class="o">.</span><span class="n">SHAPEFILE</span><span class="p">:</span> <span class="s2">&quot;shp&quot;</span><span class="p">,</span>
+            <span class="n">BuildingExportFormat</span><span class="o">.</span><span class="n">CSV</span><span class="p">:</span> <span class="s2">&quot;csv&quot;</span>
+        <span class="p">}</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">extension_map</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">export_format</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;open_buildings.</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+    
+<div class="viewcode-block" id="OpenBuildingsExtractionConfig.get_academic_setup_guidance">
+<a class="viewcode-back" href="../../../api-reference/schemas.html#geoworkflow.schemas.config_models.OpenBuildingsExtractionConfig.get_academic_setup_guidance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_academic_setup_guidance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get setup guidance for academic users.&quot;&quot;&quot;</span>
+        <span class="n">guidance</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Earth Engine Setup for Academic Users:</span>
+
+<span class="s2">1. Get Earth Engine Access:</span>
+<span class="s2">- Visit: https://earthengine.google.com/signup/</span>
+<span class="s2">- Select &#39;Register for a noncommercial use account&#39;</span>
+<span class="s2">- Provide academic institution details</span>
+<span class="s2">- Wait for approval (usually 1-2 days)</span>
+
+<span class="s2">2. Setup Authentication:</span>
+<span class="s2">- Option A: Service Account (Recommended for teams)</span>
+<span class="s2">    * Go to Google Cloud Console</span>
+<span class="s2">    * Create/select project</span>
+<span class="s2">    * Enable Earth Engine API</span>
+<span class="s2">    * Create service account with Earth Engine permissions</span>
+<span class="s2">    * Download JSON key file</span>
+<span class="s2">    * Set service_account_key in config</span>
+
+<span class="s2">- Option B: User Credentials</span>
+<span class="s2">    * Run: earthengine authenticate</span>
+<span class="s2">    * Follow browser authentication</span>
+<span class="s2">    * Credentials stored automatically</span>
+
+<span class="s2">3. Configuration Tips:</span>
+<span class="s2">- Start with small AOIs for testing</span>
+<span class="s2">- Use confidence_threshold &gt;= 0.75 for reliable results</span>
+<span class="s2">- Set max_features for large areas to avoid timeouts</span>
+<span class="s2">- Higher confidence = fewer but more reliable buildings</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">guidance</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+</div>
+
+    
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, AfricaPolis Team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
