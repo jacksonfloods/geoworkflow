@@ -4,9 +4,11 @@ from .open_buildings_gcs_config import (
     OpenBuildingsGCSConfig,
     OpenBuildingsGCSPointsConfig,
 )
+from .satellite_imagery_config import SatelliteImageryConfig
 
 __all__ = [
     'OpenBuildingsExtractionConfig',
     'OpenBuildingsGCSConfig',
     'OpenBuildingsGCSPointsConfig',
+    'SatelliteImageryConfig',
 ]
