@@ -1,0 +1,39 @@
+/* Custom styling for AfricaPolis GeoWorkflow documentation */
+
+/* Make cards more prominent on homepage */
+.sd-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sd-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Adjust card padding */
+.sd-card-body {
+    padding: 1.5rem;
+}
+
+/* Style code blocks */
+div.highlight {
+    border-radius: 4px;
+    margin: 1em 0;
+}
+
+/* Custom note/warning boxes */
+.admonition {
+    border-radius: 4px;
+}
+
+/* Better table styling */
+table.docutils {
+    border: none;
+    border-collapse: collapse;
+}
+
+table.docutils th {
+    background-color: var(--pst-color-primary);
+    color: white;
+}
