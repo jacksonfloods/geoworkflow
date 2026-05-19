@@ -14,7 +14,7 @@ from typing import List, Optional, Dict, Any
 import logging
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry import LineString
+from shapely.geometry import LineString, box
 from shapely import wkt
 from shapely.ops import linemerge
 
@@ -291,7 +291,8 @@ def clip_highways_to_aoi(
     highways_gdf: gpd.GeoDataFrame,
     aoi_geometry,
     buffer_meters: float = 0.0
-) -> gpd.GeoDataFrame:
+,
+    use_spatial_index: bool = True) -> gpd.GeoDataFrame:
     """
     Clip highway geometries to AOI boundary.
     
@@ -299,6 +300,7 @@ def clip_highways_to_aoi(
         highways_gdf: GeoDataFrame of highways
         aoi_geometry: Shapely geometry or GeoDataFrame
         buffer_meters: Buffer AOI by N meters before clipping
+        use_spatial_index: Use R-tree spatial index for pre-filtering (default: True)
         
     Returns:
         Clipped GeoDataFrame
@@ -347,9 +349,53 @@ def clip_highways_to_aoi(
             # Already in metric CRS, buffer directly
             aoi_geom = aoi_geom.buffer(buffer_meters)
     
+    # ==================== SPATIAL PRE-FILTERING ====================
+    # Phase 1: Bounding Box Filter
+    # Quickly eliminate highways that can't possibly intersect the AOI
+    from shapely.geometry import box
+    aoi_bounds = aoi_geom.bounds  # (minx, miny, maxx, maxy)
+    bbox = box(*aoi_bounds)
+    
+    # Use bounding box for fast initial filter
+    bbox_filter = highways_gdf.geometry.intersects(bbox)
+    highways_filtered = highways_gdf[bbox_filter].copy()
+    
+    bbox_reduction = 100 * (1 - len(highways_filtered) / len(highways_gdf)) if len(highways_gdf) > 0 else 0
+    logger.info(
+        f"Bounding box pre-filter: {len(highways_gdf)} → {len(highways_filtered)} "
+        f"({bbox_reduction:.1f}% reduction)"
+    )
+    
+    # Phase 2: R-tree Spatial Index Query
+    # Use spatial index for more precise candidate selection
+    if use_spatial_index and len(highways_filtered) > 0:
+        try:
+            # GeoPandas automatically creates/uses spatial index with .sindex
+            # Query returns indices of geometries that intersect the AOI
+            possible_matches_idx = highways_filtered.sindex.query(
+                aoi_geom,
+                predicate="intersects"
+            )
+            
+            # Filter to only the candidate highways
+            highways_candidates = highways_filtered.iloc[possible_matches_idx].copy()
+            
+            rtree_reduction = 100 * (1 - len(highways_candidates) / len(highways_filtered)) if len(highways_filtered) > 0 else 0
+            logger.info(
+                f"R-tree spatial index: {len(highways_filtered)} → {len(highways_candidates)} "
+                f"({rtree_reduction:.1f}% additional reduction)"
+            )
+            
+            highways_filtered = highways_candidates
+            
+        except Exception as e:
+            logger.warning(f"Spatial index query failed: {e}. Proceeding without R-tree filter.")
+    
+    # Phase 3: Precise Clipping (only on pre-filtered candidates)
+    # Now perform expensive intersection only on the reduced candidate set
     # Now both geometries are guaranteed to be in the same CRS
     # Clip geometries
-    clipped = highways_gdf.copy()
+    clipped = highways_filtered.copy()
     clipped['geometry'] = clipped.geometry.intersection(aoi_geom)
     
     # Remove empty results from clip

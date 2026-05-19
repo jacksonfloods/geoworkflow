@@ -33,6 +33,7 @@ Example:
 
 from __future__ import annotations
 from typing import Dict, Any, Optional, List, Union
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import logging
 from datetime import datetime
@@ -153,6 +154,20 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         self.highways_filtered: Optional[gpd.GeoDataFrame] = None
         self.output_file: Optional[Path] = None
 
+    def _get_max_workers(self) -> int:
+        """
+        Determine optimal number of parallel workers for threading.
+        
+        Since we're using threads (not processes), we can use more workers
+        than CPU cores because:
+        1. Spatial operations release the GIL (implemented in C++)
+        2. I/O operations are truly parallel
+        3. No memory serialization overhead
+        
+        Returns 4 workers as a good balance for most systems.
+        """
+        return 4  # Good default for thread-based parallelism
+
     def process(self):
         if self._is_africapolis_mode():
             geometries = self._load_batch_geometries()  # Returns list of (geom, name, iso3)
@@ -168,14 +183,49 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         return isinstance(self.highways_config.aoi_file, str) and self.highways_config.aoi_file == "africapolis"
     
 
+    def _process_single_geometry(self, pbf_data: 'gpd.GeoDataFrame', 
+                                  geometry, name: str, iso3: str) -> tuple:
+        """
+        Process a single geometry (agglomeration) - thread-safe.
+        
+        This method is designed to be called by multiple threads concurrently.
+        Since we're using threads (not processes), pbf_data is shared memory
+        and NOT serialized/copied. This is efficient for large GeoDataFrames.
+        
+        Thread safety notes:
+        - pbf_data is read-only, so safe to share
+        - _extract_highways creates new objects (no mutation)
+        - _export writes to unique files (no conflicts)
+        
+        Args:
+            pbf_data: Pre-loaded highway network for the country (shared across threads)
+            geometry: Geometry to clip to
+            name: Name of the agglomeration
+            iso3: Country ISO3 code
+            
+        Returns:
+            Tuple of (name, success, error_message)
+        """
+        try:
+            highways = self._extract_highways(pbf_data, geometry)
+            self._export(highways, name, iso3)
+            return (name, True, None)
+        except Exception as e:
+            return (name, False, str(e))
+
+
     def _process_geometries(self, geometries:list):
-        """Process all geometries grouped by country."""
+        """Process all geometries grouped by country with thread-based parallelization."""
         succeeded = []
         failed = {}
 
         by_country = self._group_by_country(geometries)
+        max_workers = self._get_max_workers()
+        
+        self.logger.info(f"Processing with {max_workers} parallel threads (shared memory)")
 
         for iso3, geom_list in by_country.items():
+            # Load PBF once per country - shared across all threads
             try:
                 pbf_data, _ = self._load_country_pbf(iso3)
             except Exception as e:
@@ -183,14 +233,30 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                     failed[name] = f"PBF load failed: {str(e)}"
                 continue
             
-            for geom, name in geom_list:
-                try:
-                    highways = self._extract_highways(pbf_data,geom)
-                    self._export(highways, name, iso3)
-                    succeeded.append(name)
-                except Exception as e:
-                    failed[name] = str(e)
-                    self.logger.error(f"✗ {name}: {e}")
+            # Process geometries in parallel using threads
+            # Key advantage: pbf_data is SHARED (not copied) across threads
+            self.logger.info(f"  Processing {len(geom_list)} geometries for {iso3}...")
+            
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # Submit all tasks - pbf_data is passed by reference (shared memory)
+                future_to_name = {
+                    executor.submit(
+                        self._process_single_geometry, 
+                        pbf_data, geom, name, iso3
+                    ): name
+                    for geom, name in geom_list
+                }
+                
+                # Collect results as they complete
+                for future in as_completed(future_to_name):
+                    name, success, error_msg = future.result()
+                    
+                    if success:
+                        succeeded.append(name)
+                        self.logger.info(f"  ✓ {name}")
+                    else:
+                        failed[name] = error_msg
+                        self.logger.error(f"  ✗ {name}: {error_msg}")
         
         # Return appropriate result type
         if self._is_africapolis_mode():
@@ -264,7 +330,12 @@ class OSMHighwaysProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             temp_aoi = temp_aoi.to_crs(pbf_data.crs)
         
         buffer_meters = self.highways_config.buffer_aoi_meters or 0
-        clipped = clip_highways_to_aoi(pbf_data, temp_aoi, buffer_meters=buffer_meters)
+        clipped = clip_highways_to_aoi(
+            pbf_data, 
+            temp_aoi, 
+            buffer_meters=buffer_meters,
+            use_spatial_index=self.highways_config.use_spatial_index
+        )
         return clipped
     
     def _get_driver(self) -> str:

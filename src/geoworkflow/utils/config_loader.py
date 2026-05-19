@@ -49,3 +49,27 @@ class ConfigLoader:
                 "name": config["africapolis"].get("name_column", "Agglomeration_Name")
             }
         return {"iso3": "ISO3", "name": "Agglomeration_Name"}
+
+    @staticmethod
+    def get_africa_boundaries_path() -> Path:
+        """Get africa_boundaries.gpkg path from config or use default."""
+        config = ConfigLoader.load_config()
+
+        if "africa_boundaries" in config and "path" in config["africa_boundaries"]:
+            path_str = config["africa_boundaries"]["path"]
+            return Path(path_str).expanduser()
+
+        # Fallback default
+        default_path = Path(__file__).parent.parent.parent.parent.parent / "data" / "00_source" / "boundaries" / "africa_boundaries.gpkg"
+        return default_path
+
+    @staticmethod
+    def get_africa_boundaries_columns() -> Dict[str, str]:
+        """Get column names for Africa boundaries filtering."""
+        config = ConfigLoader.load_config()
+        if "africa_boundaries" in config:
+            return {
+                "iso3": config["africa_boundaries"].get("iso3_column", "ISO"),
+                "name": config["africa_boundaries"].get("name_column", "NAME_0")
+            }
+        return {"iso3": "ISO", "name": "NAME_0"}
