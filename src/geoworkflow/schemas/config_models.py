@@ -291,6 +291,32 @@ class GridStatisticsConfig(BaseConfig):
         return v
 
 
+# Grid NetCDF Configuration (Pipeline 2: tidy table -> per-agglomeration cube)
+class GridNetCDFConfig(BaseConfig):
+    """Configuration for building a hexagon (cell, time) NetCDF cube."""
+
+    input_file: Path = Field(..., description="Tidy Parquet from Pipeline 1")
+    grid_file: Path = Field(..., description="Hex grid vector (geometry -> centroids, q/r)")
+    output_file: Path = Field(..., description="Output NetCDF (.nc) path")
+
+    statistics: List[str] = Field(
+        default_factory=lambda: ["weighted_mean"],
+        description="Which statistic(s) from the table to include. One -> data "
+                    "vars named by variable (PM25); many -> variable_statistic.",
+    )
+
+    grid_id_column: str = Field("GridID", description="Stable per-hex id column")
+    title: Optional[str] = Field(None, description="Dataset title attribute (e.g. agglomeration)")
+    skip_existing: bool = Field(False, description="Skip if output_file already exists")
+
+    @field_validator("statistics")
+    @classmethod
+    def validate_statistics_nonempty(cls, v):
+        if not v:
+            raise ValueError("At least one statistic must be requested")
+        return v
+
+
 # Statistical Enrichment Configuration
 class StatisticalEnrichmentConfig(BaseConfig):
     """Configuration for statistical enrichment operations."""
