@@ -227,6 +227,35 @@ class AlignmentConfig(BaseConfig):
         return v
 
 
+# Hex Grid Configuration
+class HexGridConfig(BaseConfig):
+    """Configuration for hexagonal grid generation."""
+
+    aoi_file: Path = Field(..., description="Path to AOI GeoJSON or GeoPackage")
+    output_file: Path = Field(..., description="Output path for hex grid GeoJSON")
+    side_length: float = Field(150.0, gt=0, description="Hex side length in meters")
+    orientation: str = Field("flat_top", description="Hex orientation (flat_top only)")
+    output_crs: str = Field("EPSG:4326", description="Output coordinate reference system")
+    grid_origin_x: float = Field(
+        -3000000.0,
+        description="Global grid alignment origin X in meters (ESRI:102022). "
+                    "Default covers Sub-Saharan Africa."
+    )
+    grid_origin_y: float = Field(
+        -2000000.0,
+        description="Global grid alignment origin Y in meters (ESRI:102022). "
+                    "Default covers Sub-Saharan Africa."
+    )
+    skip_existing: bool = Field(False, description="Skip processing if output file already exists")
+
+    @field_validator('orientation')
+    @classmethod
+    def validate_orientation(cls, v):
+        if v != "flat_top":
+            raise ValueError(f"Only 'flat_top' orientation is supported, got: {v}")
+        return v
+
+
 # Statistical Enrichment Configuration
 class StatisticalEnrichmentConfig(BaseConfig):
     """Configuration for statistical enrichment operations."""

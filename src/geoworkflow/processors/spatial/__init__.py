@@ -10,11 +10,14 @@ This module provides processors for spatial operations including:
 from .clipper import ClippingProcessor, clip_data
 from .aligner import AlignmentProcessor, align_rasters
 from .masker import MaskingProcessor
+from .hexgrid import HexGridProcessor, create_hex_grid_processor
 
 __all__ = [
-    "ClippingProcessor", 
+    "ClippingProcessor",
     "clip_data",
     "AlignmentProcessor",
     "align_rasters",
-    "MaskingProcessor"
+    "MaskingProcessor",
+    "HexGridProcessor",
+    "create_hex_grid_processor",
 ]
