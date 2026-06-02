@@ -28,6 +28,60 @@ output_dir = Path("../data/satellite")
 # output_dir = Path("./outputs")
 ```
 
+## Hexagonal raster pipelines (grid statistics → NetCDF)
+
+Two composable pipelines summarize rasters onto hexagonal grids and pack the
+result into a per-agglomeration NetCDF cube. They run separately or in tandem
+(see `examples/full_pipeline_example.py`).
+
+```
+AOI ─HexGridProcessor─▶ hex grid ─GridStatisticsProcessor─▶ tidy Parquet ─GridToNetCDFProcessor─▶ (cell, time) .nc
+```
+
+**Pipeline 1 — `GridStatisticsProcessor`** (`processors/integration/grid_statistics.py`):
+hex grid + any mix of GeoTIFF/netCDF rasters → a tidy long table
+`GridID, variable, time, statistic, value, units`. Statistics are
+**coverage-weighted via exactextract** (a hex smaller than a pixel still gets
+that pixel's value — `rasterstats` returns null there, so do not use it here).
+
+```python
+from geoworkflow.processors.integration.grid_statistics import compute_grid_statistics
+compute_grid_statistics(
+    grid_file="../data/grids/dar_es_salaam_hex.geojson",
+    raster_inputs=["../data/global/PM25/2019", "../data/global/odiac/2019"],
+    output_file="../data/grid_stats/dar.parquet",
+    statistics=["weighted_mean", "max"],   # or percentile_90, median, stdev, ...
+)
+```
+
+Add a statistic with `@register_statistic` in `core/statistics.py` (op-backed or
+a reducer over per-cell values+coverage).
+
+**Pipeline 2 — `GridToNetCDFProcessor`** (`processors/integration/netcdf_builder.py`):
+tidy Parquet + grid geometry → NetCDF with dims `(cell, time)`, `cell` indexed by
+`GridID`, `lat`/`lon`/`q`/`r` per-cell coords, one data var per variable.
+
+```python
+from geoworkflow.processors.integration.netcdf_builder import build_grid_netcdf
+build_grid_netcdf("../data/grid_stats/dar.parquet",
+                  "../data/grids/dar_es_salaam_hex.geojson",
+                  "../data/cubes/dar.nc", title="Dar es Salaam")
+```
+
+Query it with `geoworkflow.utils.hexcube` (`select_month`, `annual_mean`,
+`month_across_years`, `monthly_climatology`, `city_mean`, `nearest_cell`,
+`to_geodataframe`).
+
+**Dataset registry.** A file's variable / time / CRS / units are resolved from
+`geoworkflow/config/raster_datasets.json` plus the user's
+`data/raster_datasets.json` (glob `match`, regex/static/coord `time`). Adding a
+dataset needs **no code change** — edit the JSON, then verify before a big run:
+
+```bash
+geoworkflow datasets list
+geoworkflow datasets test odiac2024_1km_excl_intl_2101.tif   # -> odiac, 2021-01
+```
+
 ## Earth Engine Configuration
 
 This project uses Google Earth Engine. The GCP project ID is:
