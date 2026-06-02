@@ -101,3 +101,6 @@ dependencies:
       # Installed via pip wheel: the conda-forge solve for this leaf package
       # blew up in our env, and the manylinux wheel bundles its own GEOS.
       - exactextract>=0.3.0
+      # Parquet I/O for the grid-statistics tidy tables. The wheel vendors its
+      # own Arrow libs and links no conda geo native libs (audited safe).
+      - pyarrow>=14.0.0

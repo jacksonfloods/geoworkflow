@@ -63,6 +63,7 @@ geospatial = [
     "geopy>=2.3.0",
     "rasterstats>=0.18.0",
     "exactextract>=0.3.0",
+    "pyarrow>=14.0.0",
 ]
 
 dev = [

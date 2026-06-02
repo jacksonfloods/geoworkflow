@@ -256,6 +256,41 @@ class HexGridConfig(BaseConfig):
         return v
 
 
+# Grid Statistics Configuration (Pipeline 1: raster -> per-hex tidy table)
+class GridStatisticsConfig(BaseConfig):
+    """Configuration for summarizing rasters into hex-grid zonal statistics."""
+
+    grid_file: Path = Field(..., description="Hex grid vector (one agglomeration)")
+    raster_inputs: List[Path] = Field(
+        ..., description="Raster files and/or directories (GeoTIFF and netCDF)"
+    )
+    output_file: Path = Field(..., description="Output tidy Parquet path")
+
+    statistics: List[str] = Field(
+        default_factory=lambda: ["weighted_mean"],
+        description="Statistic names (see geoworkflow.core.statistics).",
+    )
+
+    dataset_registry: Optional[Path] = Field(
+        None, description="Optional user raster_datasets.json (merged over defaults)"
+    )
+    dataset: Optional[str] = Field(
+        None, description="Force a single registry entry for all inputs (skip matching)"
+    )
+
+    grid_id_column: str = Field("GridID", description="Stable per-hex id column")
+    default_crs: str = Field("EPSG:4326", description="CRS assumed when a raster declares none")
+    recursive: bool = Field(True, description="Recurse into input directories")
+    skip_existing: bool = Field(False, description="Skip if output_file already exists")
+
+    @field_validator("statistics")
+    @classmethod
+    def validate_statistics_nonempty(cls, v):
+        if not v:
+            raise ValueError("At least one statistic must be requested")
+        return v
+
+
 # Statistical Enrichment Configuration
 class StatisticalEnrichmentConfig(BaseConfig):
     """Configuration for statistical enrichment operations."""
