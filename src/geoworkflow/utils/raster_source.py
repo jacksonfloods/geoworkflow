@@ -233,11 +233,20 @@ def _netcdf_slices(
                                var, path.name)
                 continue
 
-            crs = (spec.crs if spec and spec.crs else None)
-            file_crs = da.rio.crs if hasattr(da, "rio") else None
-            crs = str(file_crs) if file_crs else (crs or default_crs)
+            # Normalize to north-up BEFORE any rioxarray ops. Many netCDFs (e.g.
+            # the PM2.5 grid) store latitude ascending, which yields a positive
+            # pixel-height (south-up) transform that GeoTIFF/exactextract
+            # mishandle (flipped extents, all-NaN results). sortby is a plain
+            # xarray op; doing it here avoids dropping rio's spatial-dim metadata.
+            yvals = np.asarray(da[yname].values)
+            if yvals.ndim == 1 and yvals.size > 1 and yvals[0] < yvals[-1]:
+                da = da.sortby(yname, ascending=False)
 
             da = da.rio.set_spatial_dims(x_dim=xname, y_dim=yname, inplace=False)
+            file_crs = da.rio.crs
+            crs = str(file_crs) if file_crs else (
+                spec.crs if spec and spec.crs else default_crs
+            )
             da = da.rio.write_crs(crs)
 
             if aoi_gdf is not None:

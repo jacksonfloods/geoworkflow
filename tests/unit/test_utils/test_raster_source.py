@@ -118,6 +118,24 @@ class TestGeoTIFF:
 # --------------------------------------------------------------------------
 
 class TestNetCDF:
+    def test_ascending_latitude_normalized_to_north_up(self, temp_dir, grid_10):
+        # netCDFs that store latitude ascending (like the real PM2.5 grid) must
+        # be flipped so the slice transform is north-up (negative pixel height);
+        # otherwise exactextract sees inverted extents and returns all-NaN.
+        h, w = grid_10.shape
+        lats = np.arange(0.5, h + 0.5, 1.0)   # ASCENDING
+        lons = np.arange(0.5, w + 0.5, 1.0)
+        path = temp_dir / "ascending.nc"
+        xr.DataArray(grid_10, dims=("lat", "lon"),
+                     coords={"lat": lats, "lon": lons}, name="v") \
+            .to_dataset().to_netcdf(path)
+        reg = DatasetRegistry({
+            "v": RasterDatasetSpec(name="v", match="ascending.nc",
+                                   variable="v", crs="EPSG:4326")
+        })
+        s = list(open_raster_slices(path, registry=reg))[0]
+        assert s.transform.e < 0, "slice should be north-up after normalization"
+
     def test_netcdf_2d_default_registry_pm25(self, temp_dir, grid_10):
         # Name matches the packaged pm25 entry; no in-file CRS or time dim.
         path = _write_netcdf_2d(
