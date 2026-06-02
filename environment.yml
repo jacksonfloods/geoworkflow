@@ -97,3 +97,7 @@ dependencies:
       - geopy>=2.3.0
       - pyepsg>=0.4.0
       - rasterstats>=0.18.0
+      # Coverage-weighted zonal statistics (area-weighted means for hex grids).
+      # Installed via pip wheel: the conda-forge solve for this leaf package
+      # blew up in our env, and the manylinux wheel bundles its own GEOS.
+      - exactextract>=0.3.0
