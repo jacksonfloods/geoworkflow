@@ -156,6 +156,9 @@ config/auth/
 !*template*.json
 !*example*.json
 
+# Packaged data shipped with the source must be tracked (not user configs)
+!src/geoworkflow/config/*.json
+
 # Specific notebook outputs (if needed)
 notebooks/accra_extraction_summary.json
 

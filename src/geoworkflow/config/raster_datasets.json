@@ -1,0 +1,37 @@
+{
+  "datasets": [
+    {
+      "name": "pm25",
+      "description": "WashU monthly surface PM2.5 (CNN), global 0.01deg, netCDF.",
+      "match": "*CNNPM25*.nc",
+      "variable": "PM25",
+      "crs": "EPSG:4326",
+      "units": "ug/m3",
+      "time": { "regex": "\\.(?P<year>\\d{4})(?P<month>\\d{2})-\\d{6}\\.nc$" }
+    },
+    {
+      "name": "odiac",
+      "description": "ODIAC2024 monthly fossil-fuel CO2 emissions, 1 km, GeoTIFF. The trailing _YYMM is the data month; the leading 2024 is the product version.",
+      "match": "odiac*_*.tif",
+      "variable": "odiac_co2",
+      "units": "gC/m2/day",
+      "time": { "regex": "_(?P<year2>\\d{2})(?P<month>\\d{2})\\.tif$" }
+    },
+    {
+      "name": "worldpop_2020",
+      "description": "WorldPop constrained population 2020, 100 m, static GeoTIFF.",
+      "match": "*ppp_100m_2020_constrained.tif",
+      "variable": "population",
+      "units": "people",
+      "time": { "static": "2020-01" }
+    },
+    {
+      "name": "copernicus_landcover_2019",
+      "description": "Copernicus PROBA-V discrete land-cover classes 2019, 100 m, static categorical GeoTIFF.",
+      "match": "PROBAV*.tif",
+      "variable": "landcover",
+      "categorical": true,
+      "time": { "static": "2019-01" }
+    }
+  ]
+}

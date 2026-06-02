@@ -160,7 +160,7 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-geoworkflow = ["py.typed", "config/*.yaml", "templates/*.yaml"]
+geoworkflow = ["py.typed", "config/*.yaml", "config/*.json", "templates/*.yaml"]
 
 # Black configuration
 [tool.black]
