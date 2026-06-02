@@ -74,9 +74,47 @@ config = SatelliteImageryConfig(
 )
 ```
 
-## Dependencies
+## Environment & dependencies
 
-If imports fail, install missing packages:
+This project runs in a **conda** environment (`environment.yml`, env name `geoworkflow`).
+Conda manages the compiled geospatial stack — GDAL, GEOS, PROJ, HDF5, and the
+libraries that link them (rasterio, geopandas, shapely, fiona, xarray). **Never
+`pip install` those, or anything that links them**, into this env.
+
+### Mixing pip and conda — the rule
+
+`pip install` *into* a conda env is safe only when the package is:
+
+- **pure Python** (e.g. `click`, `pydantic`, `pyyaml`, `s2sphere`, `gcsfs`,
+  `earthengine-api`), or
+- a **manylinux wheel that vendors its own native libs** (self-contained, with
+  hash-mangled SONAMEs, so it can't clash with conda's copies).
+
+It is **risky** when the package is compiled to **dynamically link conda's**
+GDAL/GEOS/PROJ/HDF5 (e.g. `pip install rasterio` / `fiona` / `gdal`, or any
+`--no-binary` source build). Two copies of the same native library in one process
+cause intermittent segfaults. Keep those **conda-managed**: add them to
+`environment.yml` and recreate/update the env instead of using pip.
+
+### Audit any pip install into the env
+
+After `pip install <pkg>`, check what its compiled extensions link against:
+
 ```bash
-pip install s2sphere gcsfs earthengine-api
+ldd "$(python -c 'import <pkg>, os; print(os.path.dirname(<pkg>.__file__))')"/*.so \
+    | grep -iE "geos|gdal|proj|hdf5"
 ```
+
+- Hits resolve to a vendored `*.libs/` dir (or only system libs) → **safe**.
+- Hits resolve to `…/envs/geoworkflow/lib/libgdal…` etc. → the package is
+  borrowing conda's native libs → **mixing risk; install it from conda-forge
+  instead**.
+
+Record every pip-installed dependency in the `pip:` section of `environment.yml`
+so the env stays reproducible. Full rationale: docs → Installation → "Adding new
+dependencies (pip vs conda)".
+
+**Worked example.** `exactextract` (coverage-weighted zonal stats) was added via
+pip wheel because its conda-forge solve hung. `ldd` confirmed it vendors its own
+GEOS (`exactextract.libs/libgeos-*.so`, RPATH `$ORIGIN/../exactextract.libs`) and
+links no conda native lib — so it is safe and isolated from conda's GEOS.

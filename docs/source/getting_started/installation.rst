@@ -240,6 +240,63 @@ Alternative: Using pip Only (Advanced Users)
 
 **Windows pip installation is not recommended** - please use conda on Windows.
 
+Adding New Dependencies (pip vs conda)
+---------------------------------------
+
+GeoWorkflow's environment is **conda-managed**. Conda installs the compiled
+geospatial stack — GDAL, GEOS, PROJ, HDF5 — and the libraries that link them
+(rasterio, geopandas, shapely, fiona, xarray). When you need a new package,
+choose the channel deliberately:
+
+* **Pure-Python packages** (e.g. ``click``, ``pydantic``, ``pyyaml``) are safe to
+  ``pip install`` into the conda env.
+* **Compiled wheels that vendor their own native libraries** (self-contained
+  ``manylinux`` wheels) are also safe — they ship hash-mangled copies of their
+  dependencies that cannot clash with conda's.
+* **Packages compiled to link conda's GDAL/GEOS/PROJ/HDF5** (e.g.
+  ``pip install rasterio`` / ``fiona`` / ``gdal``, or any ``--no-binary`` build)
+  are **not** safe to mix. Loading two copies of the same native library into one
+  Python process causes intermittent segfaults. Install these from
+  **conda-forge** (add them to ``environment.yml``) instead of pip.
+
+.. note::
+
+   **For AI coding assistants and new contributors:** before adding a dependency
+   with pip, confirm it falls in one of the two safe categories above. Prefer
+   conda-forge for anything geospatial or otherwise compiled. Record every pip
+   dependency in the ``pip:`` section of ``environment.yml`` so the environment
+   stays reproducible.
+
+Auditing a pip install
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+After installing a package with pip, inspect what its compiled extensions link
+against:
+
+.. code-block:: bash
+
+   # Replace <pkg> with the import name, e.g. exactextract
+   ldd "$(python -c 'import <pkg>, os; print(os.path.dirname(<pkg>.__file__))')"/*.so \
+       | grep -iE "geos|gdal|proj|hdf5"
+
+Interpret the result:
+
+* Matches resolve to a vendored ``*.libs/`` directory, or only to system
+  libraries (``libc``, ``libstdc++`` …) → **safe**, the wheel is self-contained.
+* Matches resolve into the conda env (``.../envs/geoworkflow/lib/libgdal...``) →
+  the package is borrowing conda's native libraries → **mixing risk**; remove it
+  and install from conda-forge instead.
+
+**Example — exactextract.** ``exactextract`` (used for coverage-weighted zonal
+statistics) is installed via its pip wheel because the conda-forge solve for it
+hung in our environment. Auditing it shows it vendors its own GEOS::
+
+   $ ldd .../site-packages/exactextract/_exactextract*.so | grep -i geos
+   libgeos_c-2ed73de6.so.1.20.5 => .../exactextract/../exactextract.libs/libgeos_c-2ed73de6.so.1.20.5
+
+The hash-suffixed name and the private ``exactextract.libs`` directory confirm it
+is isolated from conda's GEOS, so the pip install is safe.
+
 Troubleshooting Installation
 -----------------------------
 
