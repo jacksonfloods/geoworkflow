@@ -2,6 +2,8 @@
 Unit tests for HexGridProcessor.
 """
 
+import re
+
 import pytest
 from pathlib import Path
 
@@ -156,9 +158,9 @@ class TestHexGridProcessor:
 
         gdf = gpd.read_file(output_file)
         sample_id = gdf["GridID"].iloc[0]
-        assert len(sample_id) == len("SSA_HQ+0000000_R+0000000")
-        assert sample_id.startswith("SSA_HQ")
-        assert "_R" in sample_id
+        # GridID format is f"SSA_HQ{q:+07d}_R{r:+07d}" -> sign + 6 zero-padded
+        # digits each, matching production data (e.g. "SSA_HQ+014562_R+005142").
+        assert re.fullmatch(r"SSA_HQ[+-]\d{6}_R[+-]\d{6}", sample_id), sample_id
 
     def test_missing_aoi_file(self, temp_dir):
         from geoworkflow.processors.spatial import HexGridProcessor

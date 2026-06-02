@@ -18,16 +18,13 @@ All config classes inherit from the Pydantic one, so the factory functions refer
 
 ---
 
-## 2. Test infrastructure is broken
+## 2. Test infrastructure is broken — RESOLVED
 
-**Symptom:** All 9 existing test files fail to collect under pytest with `ModuleNotFoundError: No module named 'geoworkflow.X'`. Smoke-importing the package in a Python REPL works fine.
+**Symptom:** All 9 existing test files failed to collect under pytest with `ModuleNotFoundError: No module named 'geoworkflow.X'`. Smoke-importing the package in a Python REPL worked fine.
 
-**Root cause:** The repo directory is named `geoworkflow/`, same as the package. Pytest's auto-discovery walks up from test files, finds `tests/__init__.py`, treats `tests` as a subpackage, and imports the conftest as `geoworkflow.tests.conftest`. The repo root gets added to `sys.path` as if it were the `geoworkflow` package, shadowing the real one in `src/geoworkflow/`.
+**Root cause:** A stale duplicate `__init__.py` sat at the repo root (a copy of `src/geoworkflow/__init__.py`). Pytest's auto-discovery walked up the `tests/` package chain, reached that root `__init__.py`, treated the whole repo as a package, and inserted the *parent* dir (the shared workspace root) onto `sys.path`. There, the root `__init__.py` was importable as `geoworkflow` — a broken package with no submodules — shadowing the real one in `src/geoworkflow/`.
 
-**Fix directions** (pick one):
-- Remove `__init__.py` files from `tests/` and its subdirectories so pytest uses rootdir-based discovery
-- Rename the repo directory to something other than `geoworkflow` (e.g. `geoworkflow-repo`)
-- Switch pytest to `--import-mode=importlib` AND restructure tests to not be a package
+**Resolution:** Removed the stray repo-root `__init__.py`. The editable install's `.pth` points at `src/`, so runtime imports are unaffected and pytest now collects against the real package.
 
 ---
 
