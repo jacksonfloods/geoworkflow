@@ -25,7 +25,10 @@ except ImportError:
 pytestmark = pytest.mark.skipif(not HAS_LIBS, reason="zonal stack not available")
 
 if HAS_LIBS:
-    from geoworkflow.utils.zonal_utils import compute_zonal_statistics
+    from geoworkflow.utils.zonal_utils import (
+        compute_zonal_statistics, compute_zonal_statistics_stacked,
+        compute_zonal_statistics_coverage_reuse,
+    )
 
 
 @pytest.fixture
@@ -117,3 +120,80 @@ class TestCrsAndEdges:
         with rasterio.open(raster_2x2) as src:
             out = compute_zonal_statistics(src, hexes, ["weighted_mean"])
         assert len(out) == 3
+
+
+class TestStacked:
+    def test_stacked_matches_single_band(self, raster_2x2, hexes):
+        # A 2-band stack: band 0 == the reference raster, band 1 == reference + 1.
+        with rasterio.open(raster_2x2) as ds:
+            a = ds.read(1)
+            transform, crs, nodata = ds.transform, ds.crs, ds.nodata
+        stack = np.stack([a, a + 1.0]).astype("float32")
+        out = compute_zonal_statistics_stacked(
+            stack, transform, crs, nodata, hexes, ["weighted_mean", "max"],
+            ["t0", "t1"], include_cols=["GridID"],
+        )
+        single = compute_zonal_statistics(
+            raster_2x2, hexes, ["weighted_mean", "max"], include_cols=["GridID"]
+        )
+        s_wm = single.set_index("GridID")["weighted_mean"]
+        b0 = out[(out.band == "t0") & (out.statistic == "weighted_mean")].set_index("GridID")["value"]
+        b1 = out[(out.band == "t1") & (out.statistic == "weighted_mean")].set_index("GridID")["value"]
+        # band 0 reproduces the single-band engine exactly
+        assert np.allclose(b0.reindex(s_wm.index).to_numpy(), s_wm.to_numpy(), equal_nan=True)
+        # band 1 is band 0 + 1 wherever defined
+        m = ~np.isnan(b0.to_numpy())
+        assert np.allclose(b1.to_numpy()[m], b0.to_numpy()[m] + 1.0)
+        # tidy shape: 3 hexes x 2 bands x 2 stats
+        assert len(out) == 3 * 2 * 2
+
+    def test_rejects_reducer_stats(self, raster_2x2, hexes):
+        with rasterio.open(raster_2x2) as ds:
+            stack = np.stack([ds.read(1)]).astype("float32")
+            transform, crs, nodata = ds.transform, ds.crs, ds.nodata
+        with pytest.raises(ValueError):
+            compute_zonal_statistics_stacked(
+                stack, transform, crs, nodata, hexes, ["range"], ["t0"]
+            )
+
+
+class TestCoverageReuse:
+    def test_matches_exactextract_incl_per_band_nan(self, temp_dir, raster_2x2, hexes):
+        with rasterio.open(raster_2x2) as ds:
+            a = ds.read(1)
+            transform, crs = ds.transform, ds.crs
+        # band 0 = a (no nodata); band 1 = a but with the value-30 cell set to NaN.
+        b1 = a.copy().astype("float32")
+        b1[1, 1] = np.nan
+        stack = np.stack([a.astype("float32"), b1])
+
+        out = compute_zonal_statistics_coverage_reuse(
+            stack, transform, crs, None, hexes, ["weighted_mean"], ["t0", "t1"],
+            include_cols=["GridID"],
+        )
+
+        # band t0 reproduces the single-band exactextract engine on `a`
+        s0 = compute_zonal_statistics(raster_2x2, hexes, ["weighted_mean"],
+                                      include_cols=["GridID"]).set_index("GridID")["weighted_mean"]
+        b0 = out[out.band == "t0"].set_index("GridID")["value"]
+        assert np.allclose(b0.reindex(s0.index).to_numpy(), s0.to_numpy(), equal_nan=True)
+
+        # band t1 must equal exactextract run directly on the NaN raster (gold standard)
+        nan_path = temp_dir / "b1.tif"
+        prof = dict(driver="GTiff", height=2, width=2, count=1, dtype="float32",
+                    crs=crs, transform=transform, nodata=float("nan"))
+        with rasterio.open(nan_path, "w", **prof) as dst:
+            dst.write(b1, 1)
+        s1 = compute_zonal_statistics(nan_path, hexes, ["weighted_mean"],
+                                      include_cols=["GridID"]).set_index("GridID")["weighted_mean"]
+        b1res = out[out.band == "t1"].set_index("GridID")["value"]
+        assert np.allclose(b1res.reindex(s1.index).to_numpy(), s1.to_numpy(), equal_nan=True)
+
+    def test_rejects_unsupported_ops(self, raster_2x2, hexes):
+        with rasterio.open(raster_2x2) as ds:
+            stack = np.stack([ds.read(1)]).astype("float32")
+            transform, crs = ds.transform, ds.crs
+        with pytest.raises(ValueError):
+            compute_zonal_statistics_coverage_reuse(
+                stack, transform, crs, None, hexes, ["max"], ["t0"]
+            )

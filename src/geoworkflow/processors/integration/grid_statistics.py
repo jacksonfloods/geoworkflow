@@ -23,6 +23,7 @@ import logging
 
 try:
     import geopandas as gpd
+    import numpy as np
     import pandas as pd
     HAS_GEOSPATIAL_LIBS = True
 except ImportError:
@@ -38,6 +39,18 @@ from geoworkflow.utils.resource_utils import ensure_directory
 
 # Tidy output column order.
 TIDY_COLUMNS = ["variable", "time", "statistic", "value", "units"]
+
+
+def _slices_stackable(slices) -> bool:
+    """True if all slices share grid + dtype so they can stack into one multi-band image."""
+    ref = slices[0]
+    return all(
+        s.array.shape == ref.array.shape
+        and s.array.dtype == ref.array.dtype
+        and s.transform == ref.transform
+        and str(s.crs) == str(ref.crs)
+        for s in slices
+    )
 
 
 class GridStatisticsProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
@@ -140,8 +153,12 @@ class GridStatisticsProcessor(TemplateMethodProcessor, GeospatialProcessorMixin)
         cfg = self.grid_stats_config
 
         # Import here so the module imports even without the raster stack.
+        from collections import defaultdict
         from geoworkflow.utils.raster_source import open_raster_slices
-        from geoworkflow.utils.zonal_utils import compute_zonal_statistics
+        from geoworkflow.utils.zonal_utils import (
+            compute_zonal_statistics, compute_zonal_statistics_stacked,
+            compute_zonal_statistics_coverage_reuse, COVERAGE_REUSE_OPS,
+        )
 
         if cfg.skip_existing and cfg.output_file.exists():
             result.skipped_count = 1
@@ -154,46 +171,79 @@ class GridStatisticsProcessor(TemplateMethodProcessor, GeospatialProcessorMixin)
         slices_done = 0
         variables_seen = set()
 
-        slices = open_raster_slices(
-            [Path(p) for p in cfg.raster_inputs],
-            aoi=self.grid_gdf,
-            registry=self.registry,
-            dataset=cfg.dataset,
-            default_crs=cfg.default_crs,
-            recursive=cfg.recursive,
-        )
-
-        for sl in track_progress(slices, description="Summarizing rasters", quiet=False):
-            if sl.is_empty:
-                self.logger.warning("Empty slice for %s (%s); skipping.",
-                                    sl.variable, sl.source_path)
-                continue
-            with sl.open() as ds:
-                wide = compute_zonal_statistics(
-                    ds, self.grid_gdf, cfg.statistics, include_cols=[gid]
-                )
-            tidy = wide.melt(
-                id_vars=[gid], value_vars=cfg.statistics,
-                var_name="statistic", value_name="value",
-            )
-            tidy["variable"] = sl.variable
-            # Build time/units as explicit-dtype columns (datetime64 + object) so
-            # that slices with no time/units don't produce ambiguous all-NA
-            # columns that trip pandas' concat dtype-inference deprecation.
-            tidy["time"] = pd.to_datetime(pd.Series([sl.time] * len(tidy), index=tidy.index))
-            tidy["units"] = pd.array([sl.units] * len(tidy), dtype="object")
-            frames.append(tidy)
-
-            slices_done += 1
-            variables_seen.add(sl.variable)
-            result.processed_count += 1
-            self.update_progress(1, f"{sl.variable} {sl.time}")
-
-        if not frames:
+        # Materialize the slices (each holds a small AOI-clipped array), then group
+        # by variable. Monthly slices of one variable that share a grid are stacked
+        # into a single multi-band exactextract pass -- coverage is computed once
+        # and reused across all months, which is ~N times faster than per-file.
+        all_slices = [
+            sl for sl in open_raster_slices(
+                [Path(p) for p in cfg.raster_inputs],
+                aoi=self.grid_gdf, registry=self.registry, dataset=cfg.dataset,
+                default_crs=cfg.default_crs, recursive=cfg.recursive,
+            ) if not sl.is_empty
+        ]
+        if not all_slices:
             raise ProcessingError(
                 "No raster slices produced any statistics. Check raster_inputs, "
                 "the AOI overlap, and the dataset registry."
             )
+
+        # Choose the fastest valid path per variable:
+        #   coverage-reuse (compute coverage once, reduce all bands in numpy) when
+        #     every stat is a coverage-reducible op (weighted_mean/sum/count);
+        #   stacked (one exactextract pass over all bands) for other op-stats;
+        #   single-band per slice otherwise (reducers, singletons, non-stackable).
+        resolved = resolve_statistics(cfg.statistics)
+        op_only = all(not s.is_reducer for s in resolved)
+        coverage_reuse_ok = all(
+            (not s.is_reducer) and s.exactextract_op in COVERAGE_REUSE_OPS
+            for s in resolved
+        )
+
+        by_variable: Dict[str, list] = defaultdict(list)
+        for sl in all_slices:
+            by_variable[sl.variable].append(sl)
+
+        for variable, var_slices in by_variable.items():
+            units = var_slices[0].units
+            tidy = None
+            if len(var_slices) > 1 and _slices_stackable(var_slices):
+                ref = var_slices[0]
+                stack = np.stack([s.array for s in var_slices])
+                labels = [s.time for s in var_slices]
+                if coverage_reuse_ok:
+                    tidy = compute_zonal_statistics_coverage_reuse(
+                        stack, ref.transform, ref.crs, ref.nodata, self.grid_gdf,
+                        cfg.statistics, labels, include_cols=[gid])
+                elif op_only:
+                    tidy = compute_zonal_statistics_stacked(
+                        stack, ref.transform, ref.crs, ref.nodata, self.grid_gdf,
+                        cfg.statistics, labels, include_cols=[gid])
+                if tidy is not None:
+                    tidy = tidy.rename(columns={"band": "time"})
+                    tidy["time"] = pd.to_datetime(tidy["time"])
+
+            if tidy is None:
+                parts = []
+                for sl in var_slices:
+                    with sl.open() as ds:
+                        wide = compute_zonal_statistics(
+                            ds, self.grid_gdf, cfg.statistics, include_cols=[gid]
+                        )
+                    part = wide.melt(id_vars=[gid], value_vars=cfg.statistics,
+                                     var_name="statistic", value_name="value")
+                    part["time"] = pd.to_datetime(
+                        pd.Series([sl.time] * len(part), index=part.index))
+                    parts.append(part)
+                tidy = pd.concat(parts, ignore_index=True)
+
+            tidy["variable"] = variable
+            tidy["units"] = pd.array([units] * len(tidy), dtype="object")
+            frames.append(tidy)
+            variables_seen.add(variable)
+            slices_done += len(var_slices)
+            result.processed_count += len(var_slices)
+            self.update_progress(len(var_slices), variable)
 
         combined = pd.concat(frames, ignore_index=True)
         combined = combined[[gid, *TIDY_COLUMNS]]

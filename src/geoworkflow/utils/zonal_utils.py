@@ -22,6 +22,7 @@ try:
     import geopandas as gpd  # noqa: F401  (used for type context / CRS handling)
     import pandas as pd
     import rasterio
+    from rasterio.io import MemoryFile
     from exactextract import exact_extract
     HAS_ZONAL_LIBS = True
 except ImportError:  # pragma: no cover - exercised only in minimal installs
@@ -159,3 +160,221 @@ def compute_zonal_statistics(
             ]
 
     return out
+
+
+def compute_zonal_statistics_stacked(
+    stack: "np.ndarray",
+    transform,
+    crs,
+    nodata,
+    vectors: "gpd.GeoDataFrame",
+    stat_names: List[str],
+    band_labels: list,
+    *,
+    include_cols: Optional[List[str]] = None,
+    reproject: bool = True,
+) -> "pd.DataFrame":
+    """Coverage-weighted zonal stats over a multi-band stack, in one exactextract pass.
+
+    Stacks N single-band rasters that share the same grid (e.g. monthly slices of
+    one variable, all clipped to the same AOI) into one N-band image. exactextract
+    computes the polygon coverage **once** and reuses it across all bands, so this
+    is ~N times faster than calling :func:`compute_zonal_statistics` N times.
+
+    Args:
+        stack: 3-D array ``(n_bands, height, width)``.
+        transform, crs, nodata: shared georeferencing of the stack.
+        vectors: polygons (the hex grid); reprojected to ``crs`` if needed.
+        stat_names: statistic names. **Only op-backed stats** are supported here;
+            reducer-backed stats must use the single-band engine.
+        band_labels: one label per band (e.g. the timestamps), length ``n_bands``.
+        include_cols: vector attribute columns to carry through (e.g. ``["GridID"]``).
+
+    Returns:
+        Tidy long DataFrame: ``include_cols`` + ``band`` (the label) + ``statistic``
+        + ``value`` — one row per (feature, band, statistic).
+    """
+    if not HAS_ZONAL_LIBS:
+        raise ImportError(
+            "Zonal statistics require exactextract, rasterio, geopandas and pandas."
+        )
+    if stack.ndim != 3:
+        raise ValueError(f"stack must be 3-D (n_bands, h, w); got shape {stack.shape}")
+    n_bands = stack.shape[0]
+    if len(band_labels) != n_bands:
+        raise ValueError(f"band_labels ({len(band_labels)}) must match n_bands ({n_bands})")
+
+    stats = resolve_statistics(stat_names)
+    if any(s.is_reducer for s in stats):
+        raise ValueError(
+            "compute_zonal_statistics_stacked supports only op-backed statistics; "
+            "use compute_zonal_statistics for reducer-backed ones."
+        )
+    include_cols = list(include_cols or [])
+
+    ee_ops: List[str] = []
+    seen: set[str] = set()
+    for s in stats:
+        if s.exactextract_op not in seen:
+            ee_ops.append(s.exactextract_op)
+            seen.add(s.exactextract_op)
+
+    profile = {
+        "driver": "GTiff",
+        "height": int(stack.shape[1]),
+        "width": int(stack.shape[2]),
+        "count": n_bands,
+        "dtype": stack.dtype,
+        "crs": crs,
+        "transform": transform,
+    }
+    if nodata is not None:
+        profile["nodata"] = nodata
+
+    with MemoryFile() as memfile:
+        with memfile.open(**profile) as dst:
+            dst.write(stack)
+        with memfile.open() as src:
+            vecs = vectors
+            if (
+                reproject
+                and src.crs is not None
+                and vectors.crs is not None
+                and str(vectors.crs) != str(src.crs)
+            ):
+                vecs = vectors.to_crs(src.crs)
+            raw = exact_extract(src, vecs, ee_ops, output="pandas", include_cols=include_cols)
+
+    base = {c: raw[c].to_numpy() for c in include_cols}
+    frames = []
+    for i in range(n_bands):
+        for s in stats:
+            col = f"band_{i + 1}_{_op_to_column(s.exactextract_op)}"
+            frames.append(pd.DataFrame({
+                **base,
+                "band": band_labels[i],
+                "statistic": s.name,
+                "value": raw[col].to_numpy(),
+            }))
+    return pd.concat(frames, ignore_index=True)
+
+
+# Ops reconstructable from (coverage, values) in numpy, so the polygon coverage
+# can be computed once and reused across all bands.
+COVERAGE_REUSE_OPS = {"mean", "sum", "count"}
+
+
+def compute_zonal_statistics_coverage_reuse(
+    stack: "np.ndarray",
+    transform,
+    crs,
+    nodata,
+    vectors: "gpd.GeoDataFrame",
+    stat_names: List[str],
+    band_labels: list,
+    *,
+    include_cols: Optional[List[str]] = None,
+    reproject: bool = True,
+) -> "pd.DataFrame":
+    """Multi-band coverage-weighted stats, computing the polygon coverage ONCE.
+
+    exactextract's coverage (which cells each polygon overlaps, and the fraction)
+    is geometry-only and band-independent. We compute it a single time (via a dummy
+    all-valid band, so every covered cell is returned) and then reduce every band in
+    vectorized numpy. For N bands this is ~N times faster than re-running exactextract
+    per band, because the expensive polygon-vs-grid coverage is not repeated.
+
+    Per-band nodata is handled correctly: a cell masked (NaN / nodata) in one band can
+    still be valid in another, so the weighted mean's denominator excludes only the
+    cells that are nodata *in that band*.
+
+    Supports the reducible ops in :data:`COVERAGE_REUSE_OPS` (weighted_mean/mean, sum,
+    count). For other stats use :func:`compute_zonal_statistics_stacked`.
+
+    Returns a tidy long DataFrame: ``include_cols`` + ``band`` + ``statistic`` + ``value``.
+    """
+    if not HAS_ZONAL_LIBS:
+        raise ImportError(
+            "Zonal statistics require exactextract, rasterio, geopandas and pandas."
+        )
+    if stack.ndim != 3:
+        raise ValueError(f"stack must be 3-D (n_bands, h, w); got shape {stack.shape}")
+    n_bands, height, width = stack.shape
+    if len(band_labels) != n_bands:
+        raise ValueError(f"band_labels ({len(band_labels)}) must match n_bands ({n_bands})")
+
+    stats = resolve_statistics(stat_names)
+    if any(s.is_reducer or s.exactextract_op not in COVERAGE_REUSE_OPS for s in stats):
+        raise ValueError(
+            "coverage-reuse supports only weighted_mean/mean, sum and count; "
+            "use compute_zonal_statistics_stacked for other statistics."
+        )
+    include_cols = list(include_cols or [])
+
+    # 1) Coverage computed ONCE on a dummy all-valid band (so all covered cells appear).
+    dummy = np.ones((height, width), dtype="float32")
+    profile = {"driver": "GTiff", "height": height, "width": width, "count": 1,
+               "dtype": "float32", "crs": crs, "transform": transform}
+    with MemoryFile() as memfile:
+        with memfile.open(**profile) as dst:
+            dst.write(dummy, 1)
+        with memfile.open() as src:
+            vecs = vectors
+            if (reproject and src.crs is not None and vectors.crs is not None
+                    and str(vectors.crs) != str(src.crs)):
+                vecs = vectors.to_crs(src.crs)
+            cov = exact_extract(src, vecs, ["cell_id", "coverage"],
+                                output="pandas", include_cols=include_cols)
+
+    n_poly = len(cov)
+    cell_lists = cov["cell_id"].to_numpy()
+    cov_lists = cov["coverage"].to_numpy()
+    lengths = np.fromiter((len(c) for c in cell_lists), dtype=np.int64, count=n_poly)
+    if lengths.sum():
+        all_cells = np.concatenate([np.asarray(c, np.int64) for c in cell_lists])
+        all_cov = np.concatenate([np.asarray(c, np.float64) for c in cov_lists])
+        poly_idx = np.repeat(np.arange(n_poly), lengths)
+    else:
+        all_cells = np.empty(0, np.int64)
+        all_cov = np.empty(0, np.float64)
+        poly_idx = np.empty(0, np.int64)
+
+    # 2) Gather every band's values at the covered cells once.
+    stack_flat = stack.reshape(n_bands, height * width).astype(np.float64)
+    vals_all = stack_flat[:, all_cells] if all_cells.size else np.empty((n_bands, 0))
+    nodata_is_nan = nodata is None or (isinstance(nodata, float) and np.isnan(nodata))
+    want = {s.exactextract_op for s in stats}
+
+    base = {c: cov[c].to_numpy() for c in include_cols}
+    frames = []
+    for bi in range(n_bands):
+        if all_cells.size:
+            v = vals_all[bi]
+            valid = ~np.isnan(v)
+            if not nodata_is_nan:
+                valid &= (v != nodata)
+            cov_valid = np.where(valid, all_cov, 0.0)
+            den = np.bincount(poly_idx, weights=cov_valid, minlength=n_poly)
+            num = np.bincount(poly_idx, weights=np.where(valid, all_cov * v, 0.0),
+                              minlength=n_poly)
+        else:
+            den = np.zeros(n_poly)
+            num = np.zeros(n_poly)
+
+        per_op = {}
+        with np.errstate(invalid="ignore", divide="ignore"):
+            if "mean" in want:
+                per_op["mean"] = np.where(den > 0, num / den, np.nan)
+            if "sum" in want:
+                per_op["sum"] = np.where(den > 0, num, np.nan)
+            if "count" in want:
+                per_op["count"] = den
+
+        for s in stats:
+            frames.append(pd.DataFrame({
+                **base,
+                "band": band_labels[bi],
+                "statistic": s.name,
+                "value": per_op[s.exactextract_op],
+            }))
+    return pd.concat(frames, ignore_index=True)
