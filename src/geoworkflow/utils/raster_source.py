@@ -164,7 +164,9 @@ def _geotiff_slices(
     default_crs: str,
 ) -> List[RasterSlice]:
     with rasterio.open(path) as src:
-        crs = src.crs or (spec.crs if spec else None) or default_crs
+        # A registry `crs` is authoritative: it overrides a file's (possibly
+        # mislabeled) CRS tag, then falls back to the file's CRS, then default_crs.
+        crs = (spec.crs if spec and spec.crs else None) or src.crs or default_crs
         nodata = src.nodata if src.nodata is not None else (spec.nodata if spec else None)
 
         if aoi_gdf is not None:
@@ -243,9 +245,11 @@ def _netcdf_slices(
                 da = da.sortby(yname, ascending=False)
 
             da = da.rio.set_spatial_dims(x_dim=xname, y_dim=yname, inplace=False)
+            # A registry `crs` is authoritative (overrides the file's tag), then the
+            # file's own CRS, then default_crs.
             file_crs = da.rio.crs
-            crs = str(file_crs) if file_crs else (
-                spec.crs if spec and spec.crs else default_crs
+            crs = (spec.crs if spec and spec.crs else None) or (
+                str(file_crs) if file_crs else default_crs
             )
             da = da.rio.write_crs(crs)
 
