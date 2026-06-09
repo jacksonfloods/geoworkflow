@@ -151,7 +151,26 @@ class GridToNetCDFProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
     # Cube construction
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _is_annual(times: "pd.Series") -> bool:
+        """Auto-detect annual cadence: >=2 distinct years, all on Jan 1, one per year.
+
+        A multi-year Jan-1 series (e.g. land cover 2020 & 2021) is unambiguously
+        yearly. A *single* Jan timestamp is ambiguous (it could be January of a
+        monthly series), so single-year annual products must be declared via
+        ``annual_variables`` rather than inferred.
+        """
+        t = pd.to_datetime(times).dropna()
+        if t.empty:
+            return False
+        all_jan1 = bool(((t.dt.month == 1) & (t.dt.day == 1)).all())
+        one_per_year = t.nunique() == t.dt.year.nunique()
+        return all_jan1 and one_per_year and t.dt.year.nunique() >= 2
+
     def _build_dataset(self) -> "xr.Dataset":
+        from collections import defaultdict
+        from geoworkflow.core.legends import DEFAULT_LEGENDS
+
         cfg = self.netcdf_config
         gid = cfg.grid_id_column
         df = self.table
@@ -161,9 +180,8 @@ class GridToNetCDFProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         # geometry), so the cube aligns with the hexagons even if the table is
         # missing rows for some cells.
         cell_ids = grid[gid].astype(str).tolist()
-
-        # Compute centroids in a projected CRS (UTM) then reproject to lon/lat,
-        # avoiding the inaccurate-geographic-centroid warning.
+        # Centroids in a projected CRS (UTM) then reproject to lon/lat, avoiding the
+        # inaccurate-geographic-centroid warning.
         projected = grid.to_crs(grid.estimate_utm_crs())
         cent = gpd.GeoSeries(projected.geometry.centroid, crs=projected.crs).to_crs("EPSG:4326")
         coords: Dict[str, Any] = {
@@ -176,51 +194,87 @@ class GridToNetCDFProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             if axial in grid.columns:
                 coords[axial] = ("cell", grid[axial].to_numpy())
 
-        # Time axis from the non-null times in the table.
-        times = pd.to_datetime(df["time"]).dropna()
-        has_time = not times.empty
-        time_index = np.sort(times.unique()) if has_time else None
-        if has_time:
+        # Present (variable, statistic) pairs, filtered to requested statistics,
+        # grouped per variable.
+        stats_filter = set(cfg.statistics) if cfg.statistics else None
+        all_pairs = sorted(set(zip(df["variable"], df["statistic"])))
+        var_stats: Dict[str, List[str]] = defaultdict(list)
+        for v, s in all_pairs:
+            if stats_filter is None or s in stats_filter:
+                var_stats[v].append(s)
+        if not var_stats:
+            raise ProcessingError(
+                f"No (variable, statistic) combinations found for {cfg.statistics}. "
+                f"Table has: {all_pairs}"
+            )
+
+        # Classify each variable's cadence and build the (up to two) time axes:
+        # monthly variables share `time`; annual variables share `year`.
+        annual_override = set(cfg.annual_variables or [])
+        cadence: Dict[str, str] = {}
+        monthly_times: set = set()
+        annual_years: set = set()
+        for v in var_stats:
+            vtimes = df.loc[df["variable"] == v, "time"]
+            t = pd.to_datetime(vtimes).dropna()
+            if t.empty:
+                cadence[v] = "static"          # no time at all -> (cell,)
+            elif (v in annual_override) or self._is_annual(vtimes):
+                cadence[v] = "annual"
+                annual_years.update(int(y) for y in t.dt.year.unique())
+            else:
+                cadence[v] = "monthly"
+                monthly_times.update(t.unique())
+
+        time_index = np.sort(np.array(list(monthly_times))) if monthly_times else None
+        year_index = np.sort(np.array(list(annual_years), dtype=int)) if annual_years else None
+        if time_index is not None:
             coords["time"] = time_index
+        if year_index is not None:
+            coords["year"] = year_index
 
-        stats = list(cfg.statistics)
-        multi_stat = len(stats) > 1
-        available = set(zip(df["variable"], df["statistic"]))
-
+        # One data var per (variable, statistic). A variable with a single statistic
+        # keeps its bare name (PM25); with several it is suffixed (landcover_variety).
         data_vars: Dict[str, Any] = {}
-        units_by_var: Dict[str, Any] = {}
-
-        for variable in sorted(df["variable"].unique()):
-            for statistic in stats:
-                if (variable, statistic) not in available:
-                    continue
-                sub = df[(df["variable"] == variable) & (df["statistic"] == statistic)]
-                name = f"{variable}_{statistic}" if multi_stat else str(variable)
-                if has_time:
-                    pivot = sub.pivot_table(
-                        index=gid, columns="time", values="value", aggfunc="first"
-                    ).reindex(index=cell_ids, columns=time_index)
-                    data_vars[name] = (("cell", "time"), pivot.to_numpy())
-                else:
+        var_meta: Dict[str, Dict[str, Any]] = {}
+        for v, slist in var_stats.items():
+            multi = len(slist) > 1
+            for s in slist:
+                sub = df[(df["variable"] == v) & (df["statistic"] == s)]
+                name = f"{v}_{s}" if multi else str(v)
+                if cadence[v] == "static":
                     series = sub.set_index(gid)["value"].reindex(cell_ids)
                     data_vars[name] = (("cell",), series.to_numpy())
-
+                elif cadence[v] == "annual":
+                    sub = sub.assign(_year=pd.to_datetime(sub["time"]).dt.year)
+                    pivot = sub.pivot_table(index=gid, columns="_year", values="value",
+                                            aggfunc="first").reindex(index=cell_ids, columns=year_index)
+                    data_vars[name] = (("cell", "year"), pivot.to_numpy())
+                else:
+                    pivot = sub.pivot_table(index=gid, columns="time", values="value",
+                                            aggfunc="first").reindex(index=cell_ids, columns=time_index)
+                    data_vars[name] = (("cell", "time"), pivot.to_numpy())
                 units = sub["units"].dropna().unique() if "units" in sub.columns else []
-                units_by_var[name] = units[0] if len(units) else None
-
-        if not data_vars:
-            raise ProcessingError(
-                f"No (variable, statistic) combinations found for {stats}. "
-                f"Table has: {sorted(available)}"
-            )
+                var_meta[name] = {"variable": v, "statistic": s,
+                                  "units": units[0] if len(units) else None}
 
         ds = xr.Dataset(data_vars=data_vars, coords=coords)
-        for name, units in units_by_var.items():
-            if units is not None:
-                ds[name].attrs["units"] = str(units)
-            ds[name].attrs["statistic"] = (
-                name.split("_")[-1] if multi_stat else stats[0]
-            )
+
+        # Per-variable CF attributes (units, statistic, long_name, categorical flags).
+        legends = {**DEFAULT_LEGENDS, **(cfg.legends or {})}
+        for name, meta in var_meta.items():
+            v, s = meta["variable"], meta["statistic"]
+            if meta["units"] is not None:
+                ds[name].attrs["units"] = str(meta["units"])
+            ds[name].attrs["statistic"] = s
+            if v in cfg.long_names:
+                ds[name].attrs["long_name"] = cfg.long_names[v]
+            # Class codes -> CF flag_values/flag_meanings, on the class-returning stat.
+            if s in ("majority", "minority", "mode") and v in legends:
+                leg = {int(k): str(val) for k, val in legends[v].items()}
+                codes = sorted(leg)
+                ds[name].attrs["flag_values"] = np.array(codes, dtype="int32")
+                ds[name].attrs["flag_meanings"] = " ".join(leg[c] for c in codes)
 
         ds.attrs["title"] = cfg.title or Path(cfg.grid_file).stem
         ds.attrs["source"] = "geoworkflow GridToNetCDFProcessor"
@@ -229,6 +283,8 @@ class GridToNetCDFProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         ds["cell"].attrs["long_name"] = "hexagon GridID"
         ds["lat"].attrs["units"] = "degrees_north"
         ds["lon"].attrs["units"] = "degrees_east"
+        if year_index is not None:
+            ds["year"].attrs["long_name"] = "year"
         return ds
 
 

@@ -309,6 +309,21 @@ class GridNetCDFConfig(BaseConfig):
     title: Optional[str] = Field(None, description="Dataset title attribute (e.g. agglomeration)")
     skip_existing: bool = Field(False, description="Skip if output_file already exists")
 
+    annual_variables: List[str] = Field(
+        default_factory=list,
+        description="Variables to place on an annual 'year' axis instead of the monthly "
+                    "'time' axis. Jan-1-only series are auto-detected; this forces it.",
+    )
+    legends: Dict[str, Dict[int, str]] = Field(
+        default_factory=dict,
+        description="Categorical class maps {variable: {code: name}} -> emitted as CF "
+                    "flag_values / flag_meanings on the majority variable.",
+    )
+    long_names: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Optional {variable: long_name} CF attribute per variable.",
+    )
+
     @field_validator("statistics")
     @classmethod
     def validate_statistics_nonempty(cls, v):

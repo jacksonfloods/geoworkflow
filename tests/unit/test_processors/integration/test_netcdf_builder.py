@@ -156,3 +156,47 @@ class TestHexcubeHelpers:
         assert any(c.startswith("PM25") for c in gdf.columns)
         assert len(gdf) == 3
         ds.close()
+
+
+class TestCombinedCube:
+    """B + CF metadata: monthly and annual variables in one cube."""
+
+    def test_monthly_and_annual_axes_with_cf_flags(self, temp_dir, grid_file):
+        # PM25 monthly (continuous) + landcover single-year categorical (majority).
+        rows = []
+        for t in ("2021-01", "2021-02"):
+            for i, gid in enumerate(("h0", "h1", "h2")):
+                rows.append((gid, "PM25", pd.Timestamp(t), "weighted_mean", 5.0 + i, "ug/m3"))
+        for gid, code in zip(("h0", "h1", "h2"), (50, 40, 80)):
+            rows.append((gid, "landcover", pd.Timestamp("2019-01-01"), "majority", float(code), None))
+        df = pd.DataFrame(rows, columns=["GridID", "variable", "time", "statistic", "value", "units"])
+        tbl = temp_dir / "combined.parquet"; df.to_parquet(tbl, index=False)
+        out = temp_dir / "combined.nc"
+        build_grid_netcdf(tbl, grid_file, out,
+                          statistics=["weighted_mean", "majority"],
+                          annual_variables=["landcover"])
+        ds = xr.open_dataset(out)
+        # Each variable on its own cadence axis, in one cube.
+        assert ds["PM25"].dims == ("cell", "time")
+        assert ds["landcover"].dims == ("cell", "year")
+        assert list(ds["year"].values) == [2019]
+        assert ds.sizes["time"] == 2
+        # Any 2019 query resolves through the annual axis.
+        assert int(ds["landcover"].sel(year=2019).sel(cell="h0").values) == 50
+        # CF flags make the categorical var self-describing (from DEFAULT_LEGENDS).
+        assert 50 in list(ds["landcover"].attrs["flag_values"])
+        assert "urban_built_up" in ds["landcover"].attrs["flag_meanings"].split()
+        ds.close()
+
+    def test_single_year_landcover_needs_override(self, temp_dir, grid_file):
+        # Without annual_variables, a single Jan-1 series stays on the monthly axis
+        # (one Jan timestamp is ambiguous).
+        rows = [(g, "landcover", pd.Timestamp("2019-01-01"), "majority", float(c), None)
+                for g, c in zip(("h0", "h1", "h2"), (50, 40, 80))]
+        df = pd.DataFrame(rows, columns=["GridID", "variable", "time", "statistic", "value", "units"])
+        tbl = temp_dir / "lc.parquet"; df.to_parquet(tbl, index=False)
+        out = temp_dir / "lc.nc"
+        build_grid_netcdf(tbl, grid_file, out, statistics=["majority"])
+        ds = xr.open_dataset(out)
+        assert ds["landcover"].dims == ("cell", "time")
+        ds.close()
