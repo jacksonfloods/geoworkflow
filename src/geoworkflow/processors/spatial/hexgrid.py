@@ -233,7 +233,10 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
     # ------------------------------------------------------------------
 
     def _generate_hex_grid(self, aoi_projected: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        """Generate hexagons covering the AOI bounds, then clip to AOI geometry."""
+        """Generate hexagons covering the AOI bounds, then keep those touching the AOI."""
+        import numpy as np
+        import shapely
+
         aoi_union = aoi_projected.geometry.union_all()
         min_x, min_y, max_x, max_y = aoi_union.bounds
 
@@ -253,7 +256,9 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
         hex_width = sl * math.sqrt(3)
         hex_height = sl * 2
 
-        records = []
+        # Enumerate candidate cells (bbox pre-filter), build their polygons.
+        candidates = []
+        polygons = []
         for r in range(min_r, max_r + 1):
             for q in range(min_q, max_q + 1):
                 cx, cy = _axial_to_cartesian(q, r, ox, oy, sl)
@@ -264,10 +269,22 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                     or cy + hex_height / 2 < min_y
                 ):
                     continue
-                poly = _make_hex_polygon(cx, cy, sl)
-                if poly.intersects(aoi_union):
-                    records.append({"GridID": _hex_id(q, r), "q": q, "r": r, "geometry": poly})
+                candidates.append((q, r))
+                polygons.append(_make_hex_polygon(cx, cy, sl))
 
+        # One vectorized intersects pass with the AOI as the *prepared subject*.
+        # GEOS only uses a prepared geometry's spatial index when it is the
+        # subject of the predicate; per-candidate `poly.intersects(aoi_union)`
+        # re-scans every AOI vertex each time (Nairobi, 304k vertices x 95k
+        # candidates: ~245 s). Prepared + vectorized: <1 s for the same input.
+        shapely.prepare(aoi_union)
+        mask = shapely.intersects(aoi_union, np.array(polygons, dtype=object))
+
+        records = [
+            {"GridID": _hex_id(q, r), "q": q, "r": r, "geometry": poly}
+            for (q, r), poly, keep in zip(candidates, polygons, mask)
+            if keep
+        ]
         if not records:
             raise ProcessingError("No hexagons generated — check AOI bounds and side_length")
 
