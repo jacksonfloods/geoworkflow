@@ -197,3 +197,19 @@ class TestCoverageReuse:
             compute_zonal_statistics_coverage_reuse(
                 stack, transform, crs, None, hexes, ["max"], ["t0"]
             )
+
+    @pytest.mark.parametrize("stat", ["sum", "count"])
+    def test_sum_count_match_exactextract(self, raster_2x2, hexes, stat):
+        # Equivalence for the other coverage-reuse ops (mean is covered above):
+        # the numpy reconstruction must equal exactextract run on the same band.
+        with rasterio.open(raster_2x2) as ds:
+            a = ds.read(1).astype("float32")
+            transform, crs = ds.transform, ds.crs
+        out = compute_zonal_statistics_coverage_reuse(
+            np.stack([a]), transform, crs, None, hexes, [stat], ["t0"],
+            include_cols=["GridID"],
+        )
+        ref = compute_zonal_statistics(raster_2x2, hexes, [stat],
+                                       include_cols=["GridID"]).set_index("GridID")[stat]
+        got = out.set_index("GridID")["value"].reindex(ref.index)
+        assert np.allclose(got.to_numpy(), ref.to_numpy(), equal_nan=True)

@@ -267,19 +267,29 @@ def load_dataset_registry(
     """Load the dataset registry, merging packaged defaults with user additions.
 
     Args:
-        user_registry: Path to a user JSON. If None, ``data/raster_datasets.json``
-            (relative to the working directory) is used when it exists.
+        user_registry: Path to a user JSON. If None, the ``GEOWORKFLOW_REGISTRY``
+            environment variable is used when set, else ``data/raster_datasets.json``
+            relative to the working directory. Prefer passing an explicit path
+            (or setting the env var) in scripts — the CWD-relative default only
+            works when running from the workspace root.
         use_defaults: Include the registry shipped inside the package.
 
     Returns:
         A :class:`DatasetRegistry`. User entries override packaged entries of the
         same name.
     """
+    import os
+
     specs: Dict[str, RasterDatasetSpec] = {}
     if use_defaults:
         specs.update(_load_packaged_defaults())
 
-    path = Path(user_registry) if user_registry is not None else DEFAULT_USER_REGISTRY
+    if user_registry is not None:
+        path = Path(user_registry)
+    elif os.environ.get("GEOWORKFLOW_REGISTRY"):
+        path = Path(os.environ["GEOWORKFLOW_REGISTRY"])
+    else:
+        path = DEFAULT_USER_REGISTRY
     if path.exists():
         payload = json.loads(path.read_text(encoding="utf-8"))
         for spec in _parse_specs(payload, str(path)):

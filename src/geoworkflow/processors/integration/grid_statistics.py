@@ -207,6 +207,12 @@ class GridStatisticsProcessor(TemplateMethodProcessor, GeospatialProcessorMixin)
 
         for variable, var_slices in by_variable.items():
             units = var_slices[0].units
+            unit_set = {s.units for s in var_slices}
+            if len(unit_set) > 1:
+                self.logger.warning(
+                    "Variable '%s' has inconsistent units across slices %s; "
+                    "using '%s'.", variable, sorted(map(str, unit_set)), units,
+                )
             tidy = None
             if len(var_slices) > 1 and _slices_stackable(var_slices):
                 ref = var_slices[0]
