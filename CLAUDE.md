@@ -1,4 +1,9 @@
-# Claude Code Instructions for geoworkflow
+# Agent instructions for geoworkflow
+
+Guidance for AI coding agents (Claude Code reads this as `CLAUDE.md`; Codex and
+others read `AGENTS.md`, which is a symlink to this file) **and** for human
+contributors. Start with [README.md](README.md) for the package overview;
+this file holds the working conventions.
 
 ## Project Structure
 
