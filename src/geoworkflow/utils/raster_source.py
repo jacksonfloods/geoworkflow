@@ -328,6 +328,7 @@ def open_raster_slices(
     dataset: Optional[str] = None,
     default_crs: str = "EPSG:4326",
     recursive: bool = True,
+    require_match: bool = False,
 ) -> Iterator[RasterSlice]:
     """Yield AOI-clipped single-band :class:`RasterSlice`s from raster inputs.
 
@@ -342,6 +343,10 @@ def open_raster_slices(
         dataset: Force a specific registry entry for every input (skip matching).
         default_crs: CRS to assume when a file declares none (e.g. PM2.5 netCDF).
         recursive: Recurse into subdirectories when an input is a directory.
+        require_match: Raise instead of inventing an ad-hoc variable when a file
+            matches no registry entry. The fallback (variable = filename stem,
+            no time) is convenient for exploration but silently pollutes
+            pipeline outputs, so processors enable this by default.
 
     Yields:
         :class:`RasterSlice` objects, one per (file, variable, timestep).
@@ -363,7 +368,7 @@ def open_raster_slices(
         logger.warning("No raster files found in inputs: %s", inputs)
 
     for path in files:
-        spec = _resolve_spec(registry, path, dataset)
+        spec = _resolve_spec(registry, path, dataset, require_match=require_match)
         ext = path.suffix.lower()
         if ext in _NETCDF_EXTS:
             file_slices = _netcdf_slices(path, spec, aoi_gdf, default_crs)
@@ -377,7 +382,8 @@ def open_raster_slices(
 
 
 def _resolve_spec(
-    registry: DatasetRegistry, path: Path, dataset: Optional[str]
+    registry: DatasetRegistry, path: Path, dataset: Optional[str],
+    *, require_match: bool = False,
 ) -> Optional[RasterDatasetSpec]:
     if dataset is not None:
         return registry.get(dataset)
@@ -388,7 +394,15 @@ def _resolve_spec(
             f"{exc} (file: {path}). Pass dataset=... to open_raster_slices."
         )
     if spec is None:
-        logger.info(
+        if require_match:
+            raise ValueError(
+                f"No dataset registry entry matches '{path.name}'. Either add an "
+                "entry to data/raster_datasets.json (verify with `geoworkflow "
+                "datasets test <filename>`), force one with dataset=..., or pass "
+                "require_match=False to accept ad-hoc variables (variable = "
+                "filename stem, no time)."
+            )
+        logger.warning(
             "No dataset registry entry matched %s; using filename stem as the "
             "variable and no time. Add an entry to data/raster_datasets.json to "
             "control this.", path.name,

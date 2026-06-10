@@ -74,7 +74,11 @@ Query it with `geoworkflow.utils.hexcube` (`select_month`, `annual_mean`,
 
 **Dataset registry.** A file's variable / time / CRS / units are resolved from
 `geoworkflow/config/raster_datasets.json` plus the user's
-`data/raster_datasets.json` (glob `match`, regex/static/coord `time`). Adding a
+`data/raster_datasets.json` (glob `match`, regex/static/coord `time`). A registry
+`crs` is authoritative (it corrects files with mislabeled CRS tags). **Strict by
+default:** an input file that matches no registry entry is an error — add an
+entry, force one with `dataset=...`, or pass `require_registry_match=False` to
+accept ad-hoc files (variable = filename stem, no time). Adding a
 dataset needs **no code change** — edit the JSON, then verify before a big run:
 
 ```bash

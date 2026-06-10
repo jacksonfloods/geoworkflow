@@ -147,7 +147,10 @@ class GridToNetCDFProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             "data_vars": list(ds.data_vars),
             "n_cells": int(ds.sizes["cell"]),
             "n_time": int(n_time),
-            "statistics": list(cfg.statistics),
+            # The statistics actually included (cfg.statistics=None means all).
+            "statistics": sorted({
+                str(ds[v].attrs.get("statistic")) for v in ds.data_vars
+            }),
         }
         return result
 
@@ -307,12 +310,16 @@ def build_grid_netcdf(
     statistics: Optional[List[str]] = None,
     **kwargs: Any,
 ) -> ProcessingResult:
-    """Convenience wrapper to build a hex cube in one call."""
+    """Convenience wrapper to build a hex cube in one call.
+
+    ``statistics=None`` (the default) includes every statistic present in the
+    table — nothing is dropped silently. Pass a list to keep only those.
+    """
     config = GridNetCDFConfig(
         input_file=Path(input_file),
         grid_file=Path(grid_file),
         output_file=Path(output_file),
-        statistics=statistics or ["weighted_mean"],
+        statistics=statistics,
         **kwargs,
     )
     return GridToNetCDFProcessor(config).process()

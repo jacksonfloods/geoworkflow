@@ -180,6 +180,7 @@ class GridStatisticsProcessor(TemplateMethodProcessor, GeospatialProcessorMixin)
                 [Path(p) for p in cfg.raster_inputs],
                 aoi=self.grid_gdf, registry=self.registry, dataset=cfg.dataset,
                 default_crs=cfg.default_crs, recursive=cfg.recursive,
+                require_match=cfg.require_registry_match,
             ) if not sl.is_empty
         ]
         if not all_slices:

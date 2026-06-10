@@ -282,13 +282,19 @@ class GridStatisticsConfig(BaseConfig):
     default_crs: str = Field("EPSG:4326", description="CRS assumed when a raster declares none")
     recursive: bool = Field(True, description="Recurse into input directories")
     skip_existing: bool = Field(False, description="Skip if output_file already exists")
+    require_registry_match: bool = Field(
+        True,
+        description="Error when an input file matches no dataset registry entry "
+                    "(instead of silently inventing a variable from the filename). "
+                    "Set False to allow ad-hoc files (variable = stem, no time).",
+    )
 
     @field_validator("statistics")
     @classmethod
     def validate_statistics_nonempty(cls, v):
         if not v:
             raise ValueError("At least one statistic must be requested")
-        return v
+        return list(dict.fromkeys(v))  # drop duplicates, keep order
 
 
 # Grid NetCDF Configuration (Pipeline 2: tidy table -> per-agglomeration cube)
@@ -299,10 +305,13 @@ class GridNetCDFConfig(BaseConfig):
     grid_file: Path = Field(..., description="Hex grid vector (geometry -> centroids, q/r)")
     output_file: Path = Field(..., description="Output NetCDF (.nc) path")
 
-    statistics: List[str] = Field(
-        default_factory=lambda: ["weighted_mean"],
-        description="Which statistic(s) from the table to include. One -> data "
-                    "vars named by variable (PM25); many -> variable_statistic.",
+    statistics: Optional[List[str]] = Field(
+        None,
+        description="Which statistic(s) from the table to include. None (default) "
+                    "includes every statistic present, so nothing is dropped "
+                    "silently. Data vars are named by variable when it has one "
+                    "statistic (PM25), variable_statistic when several "
+                    "(landcover_majority).",
     )
 
     grid_id_column: str = Field("GridID", description="Stable per-hex id column")
@@ -330,9 +339,11 @@ class GridNetCDFConfig(BaseConfig):
 
     @field_validator("statistics")
     @classmethod
-    def validate_statistics_nonempty(cls, v):
-        if not v:
-            raise ValueError("At least one statistic must be requested")
+    def validate_statistics_none_or_nonempty(cls, v):
+        if v is not None and not v:
+            raise ValueError(
+                "statistics must be None (include all) or a non-empty list"
+            )
         return v
 
 

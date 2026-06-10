@@ -200,3 +200,19 @@ class TestCombinedCube:
         ds = xr.open_dataset(out)
         assert ds["landcover"].dims == ("cell", "time")
         ds.close()
+
+    def test_default_includes_all_statistics(self, temp_dir, grid_file):
+        # statistics=None (the default) must include every statistic present --
+        # a categorical variable must not vanish because the caller didn't list
+        # its statistics explicitly.
+        rows = [(g, "PM25", pd.Timestamp("2021-01"), "weighted_mean", 5.0, "ug/m3")
+                for g in ("h0", "h1", "h2")]
+        rows += [(g, "landcover", pd.Timestamp("2019-01-01"), "majority", 50.0, None)
+                 for g in ("h0", "h1", "h2")]
+        df = pd.DataFrame(rows, columns=["GridID", "variable", "time", "statistic", "value", "units"])
+        tbl = temp_dir / "mixed.parquet"; df.to_parquet(tbl, index=False)
+        out = temp_dir / "mixed.nc"
+        build_grid_netcdf(tbl, grid_file, out, annual_variables=["landcover"])
+        ds = xr.open_dataset(out)
+        assert set(ds.data_vars) == {"PM25", "landcover"}
+        ds.close()

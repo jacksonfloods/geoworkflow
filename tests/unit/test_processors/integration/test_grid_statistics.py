@@ -69,7 +69,7 @@ class TestBasicRun:
         out = temp_dir / "stats.parquet"
         config = GridStatisticsConfig(
             grid_file=grid_file, raster_inputs=rasters, output_file=out,
-            statistics=["weighted_mean", "max"],
+            statistics=["weighted_mean", "max"], require_registry_match=False,
         )
         result = GridStatisticsProcessor(config).process()
         assert result.success, result.message
@@ -85,7 +85,8 @@ class TestBasicRun:
 
     def test_values_are_coverage_weighted(self, temp_dir, grid_file, rasters):
         out = temp_dir / "stats.parquet"
-        compute_grid_statistics(grid_file, rasters, out, statistics=["weighted_mean"])
+        compute_grid_statistics(grid_file, rasters, out, statistics=["weighted_mean"],
+                                require_registry_match=False)
         df = pd.read_parquet(out)
         wm = df[(df["variable"] == "ras1") & (df["statistic"] == "weighted_mean")]
         by_hex = dict(zip(wm["GridID"], wm["value"]))
@@ -95,7 +96,8 @@ class TestBasicRun:
     def test_non_overlapping_hex_kept_as_nan(self, temp_dir, grid_file, rasters):
         out = temp_dir / "stats.parquet"
         compute_grid_statistics(grid_file, [rasters[0]], out,
-                                statistics=["weighted_mean"])
+                                statistics=["weighted_mean"],
+                                require_registry_match=False)
         df = pd.read_parquet(out)
         far = df[df["GridID"] == "hfar"]
         assert len(far) == 1                 # row kept
@@ -113,6 +115,7 @@ class TestRegistryDriven:
         config = GridStatisticsConfig(
             grid_file=grid_file, raster_inputs=rasters, output_file=out,
             statistics=["weighted_mean"], dataset_registry=user_reg,
+            require_registry_match=False,
         )
         GridStatisticsProcessor(config).process()
         df = pd.read_parquet(out)
@@ -123,6 +126,33 @@ class TestRegistryDriven:
         assert (ras1["units"] == "u").all()
         # ras2 still falls back to its stem with no time
         assert "ras2" in set(df["variable"])
+
+
+class TestStrictRegistry:
+    def test_unmatched_file_errors_by_default(self, temp_dir, grid_file, rasters):
+        # rasters match no registry entry; the strict default must refuse to
+        # invent ad-hoc variables (the silent-junk-variables failure mode).
+        out = temp_dir / "stats.parquet"
+        result = GridStatisticsProcessor(GridStatisticsConfig(
+            grid_file=grid_file, raster_inputs=rasters, output_file=out,
+        )).process()
+        assert result.success is False
+        assert "registry" in result.message.lower()
+        assert not out.exists()
+
+    def test_forced_dataset_bypasses_matching(self, temp_dir, grid_file, rasters):
+        user_reg = temp_dir / "raster_datasets.json"
+        user_reg.write_text(json.dumps({"datasets": [
+            {"name": "anyras", "match": "zzz_never_matches.tif", "variable": "v"}
+        ]}))
+        out = temp_dir / "stats.parquet"
+        result = GridStatisticsProcessor(GridStatisticsConfig(
+            grid_file=grid_file, raster_inputs=[rasters[0]], output_file=out,
+            dataset="anyras", dataset_registry=user_reg,
+        )).process()
+        assert result.success, result.message
+        df = pd.read_parquet(out)
+        assert set(df["variable"]) == {"v"}
 
 
 class TestGuards:
