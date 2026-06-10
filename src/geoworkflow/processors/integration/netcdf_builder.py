@@ -120,8 +120,20 @@ class GridToNetCDFProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
 
         ds = self._build_dataset()
 
+        # Compress data variables (and store continuous values as float32).
+        # Cubes exist to be smaller than the rasters they summarize; uncompressed
+        # float64 was ~6-10x larger than needed (Nairobi: 98 MB -> ~10 MB).
+        encoding = None
+        if cfg.compress:
+            encoding = {}
+            for name, da in ds.data_vars.items():
+                enc: Dict[str, Any] = {"zlib": True, "complevel": 4}
+                if da.dtype == np.float64:
+                    enc["dtype"] = "float32"
+                encoding[name] = enc
+
         self.log_processing_step(f"Writing NetCDF -> {cfg.output_file}")
-        ds.to_netcdf(cfg.output_file)
+        ds.to_netcdf(cfg.output_file, encoding=encoding)
 
         result.add_output_path(cfg.output_file)
         result.processed_count = len(ds.data_vars)

@@ -308,6 +308,10 @@ class GridNetCDFConfig(BaseConfig):
     grid_id_column: str = Field("GridID", description="Stable per-hex id column")
     title: Optional[str] = Field(None, description="Dataset title attribute (e.g. agglomeration)")
     skip_existing: bool = Field(False, description="Skip if output_file already exists")
+    compress: bool = Field(
+        True, description="zlib-compress data variables and store floats as float32 "
+                          "(~6-10x smaller files). Disable only for debugging."
+    )
 
     annual_variables: List[str] = Field(
         default_factory=list,
