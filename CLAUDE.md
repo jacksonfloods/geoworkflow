@@ -97,6 +97,34 @@ Before using Earth Engine features, ensure authentication:
 ```bash
 earthengine authenticate
 ```
+Headless/agent use: pass `service_account_key` (the JSON in `../.keys/`) — the
+email and project id are read from the key.
+
+## Generic GEE raster downloads
+
+`GEERasterExportProcessor` (`processors/extraction/gee_raster_export.py`)
+downloads **any** EE image or collection clipped per AOI or per hex grid —
+declaratively (no new scripts per dataset). Static images or monthly/yearly
+composites, optional MODIS-style QC masking and value scaling; outputs to
+`output_dir/<ISO3>/<dataset>/` with registry-parseable names; existing files
+are skipped, so re-running resumes.
+
+```python
+from geoworkflow.processors.extraction import export_gee_rasters
+export_gee_rasters(
+    source="MODIS/061/MOD11A1", bands=["LST_Day_1km", "LST_Night_1km"],
+    band_tags={"LST_Day_1km": "day", "LST_Night_1km": "night"},
+    cadence="monthly", start="2019-01", end="2024-12",
+    qc_band="QC_Day", scale_factor=0.02,           # QC_Night auto-paired
+    grid_dir="../data/boundaries/hexagglo", output_dir="../data/city",
+    dataset="mod11a1_lst", filename_template="{city}_lst_{band_tag}_{time}.tif",
+    scale_m=1000, service_account_key="../.keys/<key>.json",
+)
+```
+
+Driver notebook: `notebooks/download_gee_to_hexgrids.ipynb`. After adding a new
+dataset, also add a `data/raster_datasets.json` entry so Pipeline 1 can parse
+the downloaded files.
 
 ## Satellite Imagery Downloader
 

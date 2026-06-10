@@ -6,7 +6,7 @@ This module defines all configuration schemas used throughout the workflow,
 providing type safety, validation, and documentation for configuration options.
 """
 
-from typing import Dict, Any, List, Optional, Union, Tuple
+from typing import Dict, Any, List, Literal, Optional, Union, Tuple
 from pathlib import Path
 from enum import Enum
 from datetime import datetime
@@ -345,6 +345,85 @@ class GridNetCDFConfig(BaseConfig):
                 "statistics must be None (include all) or a non-empty list"
             )
         return v
+
+
+# GEE raster export (declarative Earth Engine downloads, per AOI or per hex grid)
+class GEERasterExportConfig(BaseConfig):
+    """Declarative download of an Earth Engine image/collection, clipped per AOI.
+
+    One config describes a dataset: where it lives in GEE (``source``), which
+    ``bands`` to export, the temporal ``cadence`` (a static image, or monthly /
+    yearly composites of a collection), optional MODIS-style QC masking and a
+    value scale factor. Targets are either one vector ``aoi_file`` or a
+    directory of hex grids (``grid_dir``, the ``hexagglo/<ISO3>/`` layout);
+    each target is clipped to its bounding box.
+
+    Outputs land in ``output_dir/<ISO3>/<dataset>/`` named by
+    ``filename_template`` so the dataset registry can parse them, and existing
+    files are skipped — re-running resumes an interrupted download.
+    """
+
+    # --- What to download -------------------------------------------------
+    source: str = Field(..., description="EE asset id: an Image (static) or ImageCollection")
+    bands: List[str] = Field(..., min_length=1, description="Band(s) to export; one file per band")
+    band_tags: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Short filename tag per band (e.g. {'LST_Day_1km': 'day'}). "
+                    "Default: the band name lowercased.",
+    )
+
+    # --- Time ---------------------------------------------------------------
+    cadence: Literal["static", "monthly", "yearly"] = Field(
+        "static", description="static: source is one Image. monthly/yearly: source is an "
+                              "ImageCollection composited per period.")
+    start: Optional[str] = Field(None, description="First period, e.g. '2019-01' (monthly) or '2019' (yearly)")
+    end: Optional[str] = Field(None, description="Last period (inclusive)")
+    composite: Literal["mean", "median", "min", "max", "mosaic"] = Field(
+        "mean", description="Reducer applied to each period's images")
+
+    # --- Value handling ------------------------------------------------------
+    qc_band: Optional[str] = Field(
+        None, description="QC band for per-pixel masking (keep pixels where "
+                          "qc & qc_bit_mask <= qc_max), e.g. 'QC_Day' for MOD11A1")
+    qc_bit_mask: int = Field(3, description="Bitmask applied to the QC band")
+    qc_max: int = Field(1, description="Highest acceptable masked QC value")
+    scale_factor: Optional[float] = Field(
+        None, description="Multiply pixel values (e.g. 0.02 for MOD11A1 -> Kelvin)")
+
+    # --- Targets -------------------------------------------------------------
+    aoi_file: Optional[Path] = Field(None, description="Single vector AOI (mutually exclusive with grid_dir)")
+    iso3: Optional[str] = Field(None, description="ISO3 for the single-AOI mode output folder")
+    grid_dir: Optional[Path] = Field(
+        None, description="Directory of hex grids (hexagglo layout: <ISO3>/<id>_<city>_hex.geojson)")
+    grid_pattern: str = Field("*/*_hex.geojson", description="Glob for grids under grid_dir")
+
+    # --- Output --------------------------------------------------------------
+    output_dir: Path = Field(..., description="Root output dir (files go to output_dir/<ISO3>/<dataset>/)")
+    dataset: str = Field(..., description="Dataset folder name, e.g. 'mod11a1_lst'")
+    filename_template: str = Field(
+        "{city}_{dataset}_{band_tag}_{time}.tif",
+        description="Filename fields: {city} {iso3} {dataset} {band_tag} {time}. "
+                    "{time} is YYYYMM (monthly), YYYY (yearly), or static_label.")
+    static_label: str = Field("static", description="{time} value for cadence='static'")
+    scale_m: float = Field(..., description="Export resolution in meters")
+    output_crs: str = Field("EPSG:4326", description="Export CRS")
+    skip_existing: bool = Field(True, description="Skip files that already exist (resumable)")
+    retries: int = Field(3, description="Download attempts per file")
+    timeout_s: int = Field(180, description="HTTP timeout per download")
+
+    # --- Auth ------------------------------------------------------------
+    service_account_key: Optional[Path] = Field(
+        None, description="Service-account key JSON; email/project read from it if not given")
+    service_account_email: Optional[str] = Field(None, description="Override SA email")
+    project_id: Optional[str] = Field(None, description="Override GCP project id")
+
+    @model_validator(mode="after")
+    def _check_targets_and_time(self) -> "GEERasterExportConfig":
+        if (self.aoi_file is None) == (self.grid_dir is None):
+            raise ValueError("Set exactly one of aoi_file or grid_dir")
+        if self.cadence != "static" and not (self.start and self.end):
+            raise ValueError(f"cadence='{self.cadence}' requires start and end")
+        return self
 
 
 # Statistical Enrichment Configuration
