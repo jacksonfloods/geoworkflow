@@ -15,7 +15,7 @@ Run from inside the repo:
 
 Outputs go to ../data/ per the project convention. The rasters are resolved
 through the dataset registry (geoworkflow/config/raster_datasets.json plus any
-data/raster_datasets.json). Verify a new file's parsing first with:
+data/config/raster_datasets.json). Verify a new file's parsing first with:
     geoworkflow datasets test <filename>
 """
 

@@ -10,7 +10,7 @@ GeoTIFFs -- and writes a single tidy Parquet table:
     SSA_HQ+014562_R+005142  odiac_co2  2021-08-01  weighted_mean    3.5    gC/m2/day
 
 Variable / time / CRS / units for each file are resolved from the dataset
-registry (geoworkflow/config/raster_datasets.json plus any data/raster_datasets.json
+registry (geoworkflow/config/raster_datasets.json plus any data/config/raster_datasets.json
 you add). Outputs go to ../data/ per the project convention.
 
 Run from inside the repo:
@@ -45,7 +45,7 @@ def main() -> None:
         output_file=OUTPUT_FILE,
         # Add any statistic from geoworkflow.core.statistics, or percentile_<n>.
         statistics=["weighted_mean", "max"],
-        # dataset_registry=Path("../data/raster_datasets.json"),  # optional user entries
+        # dataset_registry=Path("../data/config/raster_datasets.json"),  # optional user entries
         skip_existing=False,
     )
 

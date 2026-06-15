@@ -397,14 +397,14 @@ def _resolve_spec(
         if require_match:
             raise ValueError(
                 f"No dataset registry entry matches '{path.name}'. Either add an "
-                "entry to data/raster_datasets.json (verify with `geoworkflow "
+                "entry to data/config/raster_datasets.json (verify with `geoworkflow "
                 "datasets test <filename>`), force one with dataset=..., or pass "
                 "require_match=False to accept ad-hoc variables (variable = "
                 "filename stem, no time)."
             )
         logger.warning(
             "No dataset registry entry matched %s; using filename stem as the "
-            "variable and no time. Add an entry to data/raster_datasets.json to "
+            "variable and no time. Add an entry to data/config/raster_datasets.json to "
             "control this.", path.name,
         )
     return spec

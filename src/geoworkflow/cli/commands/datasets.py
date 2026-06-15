@@ -3,7 +3,7 @@ Dataset-registry commands for the geoworkflow CLI.
 
 These help users verify the raster dataset registry (which file-naming
 conventions are known, and what the registry would extract from a given file)
-*before* running a pipeline -- so a hand-edited ``data/raster_datasets.json``
+*before* running a pipeline -- so a hand-edited ``data/config/raster_datasets.json``
 entry can be checked without launching a big job.
 """
 
@@ -32,7 +32,7 @@ def datasets():
 @click.option(
     "--registry", "-r",
     type=click.Path(exists=True, path_type=Path),
-    help="User registry JSON (default: data/raster_datasets.json if present).",
+    help="User registry JSON (default: data/config/raster_datasets.json if present).",
 )
 def list_datasets(registry: Optional[Path]):
     """List all registered datasets (packaged defaults + user additions)."""
@@ -56,7 +56,7 @@ def list_datasets(registry: Optional[Path]):
 @click.option(
     "--registry", "-r",
     type=click.Path(exists=True, path_type=Path),
-    help="User registry JSON (default: data/raster_datasets.json if present).",
+    help="User registry JSON (default: data/config/raster_datasets.json if present).",
 )
 @click.option(
     "--dataset", "-d",
@@ -75,7 +75,7 @@ def test(file_path: str, registry: Optional[Path], dataset: Optional[str]):
         console.print(
             f"[red]no match[/red] for '{info['file']}'. "
             f"Known datasets: {reg.names()}. "
-            "Add an entry to data/raster_datasets.json or pass --dataset."
+            "Add an entry to data/config/raster_datasets.json or pass --dataset."
         )
         raise SystemExit(1)
 

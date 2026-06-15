@@ -24,7 +24,7 @@ Each entry is a *named recipe*::
   for a dataset with no temporal dimension.
 
 A default registry ships inside the package. Users keep their own additions in
-``data/raster_datasets.json``; on load the two are merged, with user entries
+``data/config/raster_datasets.json``; on load the two are merged, with user entries
 overriding package entries of the same ``name``.
 """
 
@@ -42,7 +42,7 @@ from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 # Conventional location for the user's own additions, relative to the working
 # directory (the workspace data dir per the project's output convention).
-DEFAULT_USER_REGISTRY = Path("data/raster_datasets.json")
+DEFAULT_USER_REGISTRY = Path("data/config/raster_datasets.json")
 
 # Recognized named groups in a time regex.
 _YEAR_GROUPS = ("year", "year2")
@@ -268,7 +268,7 @@ def load_dataset_registry(
 
     Args:
         user_registry: Path to a user JSON. If None, the ``GEOWORKFLOW_REGISTRY``
-            environment variable is used when set, else ``data/raster_datasets.json``
+            environment variable is used when set, else ``data/config/raster_datasets.json``
             relative to the working directory. Prefer passing an explicit path
             (or setting the env var) in scripts — the CWD-relative default only
             works when running from the workspace root.
