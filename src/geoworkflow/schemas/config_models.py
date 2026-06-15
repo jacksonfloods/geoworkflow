@@ -254,7 +254,12 @@ class HexGridConfig(BaseConfig):
         description="Keep only hexagons intersecting the AOI polygon (True), or fill the "
                     "AOI bounding box (False, closer to the unclipped morphology grids).",
     )
-    output_crs: str = Field("EPSG:4326", description="Output coordinate reference system")
+    output_crs: Optional[str] = Field(
+        None,
+        description="Storage CRS. None (default) = the native/working CRS — UTM for "
+                    "utm_local (so it coincides with the morphology grids), ESRI:102022 "
+                    "for albers_global. Set e.g. 'EPSG:4326' to force lon/lat storage.",
+    )
     grid_origin_x: float = Field(
         -3000000.0,
         description="Grid alignment origin X in meters (shared with the morphology grids; "

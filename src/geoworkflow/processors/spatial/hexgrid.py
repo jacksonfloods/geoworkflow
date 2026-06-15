@@ -212,8 +212,11 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             self.add_metric("hexagons_generated", len(hex_gdf))
             self.update_progress(1, f"Generated {len(hex_gdf)} hexagons")
 
-            self.log_processing_step(f"Reprojecting to {cfg.output_crs}")
-            hex_gdf = hex_gdf.to_crs(cfg.output_crs)
+            # Default storage CRS = the native/working CRS (so utm_local grids stay
+            # in UTM and coincide with the morphology grids); override via output_crs.
+            out_crs = cfg.output_crs or working_crs
+            self.log_processing_step(f"Reprojecting to {out_crs}")
+            hex_gdf = hex_gdf.to_crs(out_crs)
             self.update_progress(1, "Reprojected output")
 
             self.log_processing_step(f"Saving to {cfg.output_file}")
@@ -229,7 +232,7 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 "utm_epsg": epsg,
                 "side_length_m": cfg.side_length,
                 "grid_origin": [cfg.grid_origin_x, cfg.grid_origin_y],
-                "output_crs": cfg.output_crs,
+                "output_crs": str(out_crs),
                 "clip_to_aoi": cfg.clip_to_aoi,
                 "hexagon_count": len(hex_gdf),
                 "generator": "geoworkflow HexGridProcessor",

@@ -30,7 +30,7 @@ class TestHexGridConfig:
         )
         assert config.side_length == 150.0
         assert config.orientation == "flat_top"
-        assert config.output_crs == "EPSG:4326"
+        assert config.output_crs is None   # None = store in the native/working CRS
         assert config.grid_origin_x == -3000000.0
         assert config.grid_origin_y == -2000000.0
         assert config.skip_existing is False
