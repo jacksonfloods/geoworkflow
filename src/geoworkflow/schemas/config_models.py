@@ -233,18 +233,36 @@ class HexGridConfig(BaseConfig):
 
     aoi_file: Path = Field(..., description="Path to AOI GeoJSON or GeoPackage")
     output_file: Path = Field(..., description="Output path for hex grid GeoJSON")
-    side_length: float = Field(150.0, gt=0, description="Hex side length in meters")
+    side_length: float = Field(250.0, gt=0, description="Hex side length in meters")
     orientation: str = Field("flat_top", description="Hex orientation (flat_top only)")
+    crs_mode: Literal["albers_global", "utm_local"] = Field(
+        "albers_global",
+        description="Lattice CRS. 'albers_global': one continental equal-area system "
+                    "(ESRI:102022) -> seamless tiling + globally stable GridIDs (the "
+                    "backbone for cubes). 'utm_local': per-city UTM (conformal) -> best "
+                    "shape fidelity and coincides with the morphology grids; per-city "
+                    "islands (no continental lattice).",
+    )
+    utm_epsg: Optional[int] = Field(
+        None,
+        description="In utm_local mode, pin the UTM EPSG (e.g. 32628). If None, the zone "
+                    "is auto-detected with geopandas estimate_utm_crs. Pinning a recorded "
+                    "zone keeps a city stable against future AOI-boundary changes.",
+    )
+    clip_to_aoi: bool = Field(
+        True,
+        description="Keep only hexagons intersecting the AOI polygon (True), or fill the "
+                    "AOI bounding box (False, closer to the unclipped morphology grids).",
+    )
     output_crs: str = Field("EPSG:4326", description="Output coordinate reference system")
     grid_origin_x: float = Field(
         -3000000.0,
-        description="Global grid alignment origin X in meters (ESRI:102022). "
-                    "Default covers Sub-Saharan Africa."
+        description="Grid alignment origin X in meters (shared with the morphology grids; "
+                    "ESRI:102022 for albers, interpreted in the zone for utm)."
     )
     grid_origin_y: float = Field(
         -2000000.0,
-        description="Global grid alignment origin Y in meters (ESRI:102022). "
-                    "Default covers Sub-Saharan Africa."
+        description="Grid alignment origin Y in meters (shared origin)."
     )
     skip_existing: bool = Field(False, description="Skip processing if output file already exists")
 

@@ -8,6 +8,7 @@ different AOIs tile seamlessly.
 
 from typing import Dict, Any, List, Optional, Union, Tuple
 from pathlib import Path
+import json
 import logging
 import math
 
@@ -77,8 +78,14 @@ def _make_hex_polygon(center_x: float, center_y: float, side_length: float) -> P
     return Polygon(vertices)
 
 
-def _hex_id(q: int, r: int) -> str:
-    return f"SSA_HQ{q:+07d}_R{r:+07d}"
+def _hex_id(q: int, r: int, system: str = "SSA") -> str:
+    """Positional GridID: ``<system>_HQ{q}_R{r}``.
+
+    ``system`` is the lattice namespace — ``SSA`` for the global Albers lattice,
+    ``UTM<epsg>`` (e.g. ``UTM32628``) for a per-zone UTM lattice. The id is a pure
+    function of (q, r), so the same physical hexagon always gets the same id.
+    """
+    return f"{system}_HQ{q:+07d}_R{r:+07d}"
 
 
 # ---------------------------------------------------------------------------
@@ -177,36 +184,65 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 result.add_output_path(self.hexgrid_config.output_file)
                 return result
 
-            self.log_processing_step("Reprojecting AOI to working CRS")
-            aoi_projected = self.aoi_gdf.to_crs(_WORKING_CRS)
+            cfg = self.hexgrid_config
+            # Pick the lattice CRS by mode (the origin is shared in both).
+            if cfg.crs_mode == "utm_local":
+                if cfg.utm_epsg is not None:
+                    working_crs = f"EPSG:{cfg.utm_epsg}"          # pinned zone
+                else:
+                    working_crs = self.aoi_gdf.estimate_utm_crs()  # library, not DIY
+                aoi_projected = self.aoi_gdf.to_crs(working_crs)
+                epsg = aoi_projected.crs.to_epsg()
+                system = f"UTM{epsg}"
+            else:
+                working_crs = _WORKING_CRS
+                aoi_projected = self.aoi_gdf.to_crs(working_crs)
+                epsg = None
+                system = "SSA"
+            self.log_processing_step(f"Working CRS {working_crs} (GridID system {system})")
             self.update_progress(1, "AOI reprojected")
 
             self.log_processing_step("Generating hex grid")
-            hex_gdf = self._generate_hex_grid(aoi_projected)
+            hex_gdf = self._generate_hex_grid(aoi_projected, working_crs, system)
+            # True (equal-area) area per hex, computed in ESRI:102022 regardless of the
+            # storage CRS -> correct downstream densities (a 4326 grid's .area would be
+            # in square degrees).
+            hex_gdf["area_m2"] = hex_gdf.to_crs(_WORKING_CRS).geometry.area
+            hex_gdf = hex_gdf[["GridID", "q", "r", "area_m2", "geometry"]]
             self.add_metric("hexagons_generated", len(hex_gdf))
             self.update_progress(1, f"Generated {len(hex_gdf)} hexagons")
 
-            self.log_processing_step(f"Reprojecting to {self.hexgrid_config.output_crs}")
-            hex_gdf = hex_gdf.to_crs(self.hexgrid_config.output_crs)
+            self.log_processing_step(f"Reprojecting to {cfg.output_crs}")
+            hex_gdf = hex_gdf.to_crs(cfg.output_crs)
             self.update_progress(1, "Reprojected output")
 
-            self.log_processing_step(f"Saving to {self.hexgrid_config.output_file}")
-            hex_gdf.to_file(self.hexgrid_config.output_file, driver="GeoJSON")
+            self.log_processing_step(f"Saving to {cfg.output_file}")
+            hex_gdf.to_file(cfg.output_file, driver="GeoJSON")
+            # Provenance sidecar: the stored grid is in output_crs (e.g. 4326), which
+            # hides how it was built. Record the lattice spec so the two modes (and the
+            # morphology grids) can never be silently mixed or mis-joined.
+            provenance = {
+                "crs_mode": cfg.crs_mode,
+                "working_crs": str(working_crs),
+                "utm_epsg": epsg,
+                "side_length_m": cfg.side_length,
+                "grid_origin": [cfg.grid_origin_x, cfg.grid_origin_y],
+                "output_crs": cfg.output_crs,
+                "clip_to_aoi": cfg.clip_to_aoi,
+                "hexagon_count": len(hex_gdf),
+                "generator": "geoworkflow HexGridProcessor",
+            }
+            meta_path = cfg.output_file.with_suffix(cfg.output_file.suffix + ".meta.json")
+            meta_path.write_text(json.dumps(provenance, indent=2))
             self.update_progress(1, "Saved")
 
             result.processed_count = len(hex_gdf)
             result.message = (
                 f"Generated {len(hex_gdf)} hexagons "
-                f"(side_length={self.hexgrid_config.side_length}m) "
-                f"→ {self.hexgrid_config.output_file}"
+                f"(side_length={cfg.side_length}m, {system}) -> {cfg.output_file}"
             )
-            result.add_output_path(self.hexgrid_config.output_file)
-            result.metadata = {
-                "hexagon_count": len(hex_gdf),
-                "side_length_m": self.hexgrid_config.side_length,
-                "output_crs": self.hexgrid_config.output_crs,
-                "output_file": str(self.hexgrid_config.output_file),
-            }
+            result.add_output_path(cfg.output_file)
+            result.metadata = {**provenance, "output_file": str(cfg.output_file)}
 
         except Exception as exc:
             result.success = False
@@ -232,8 +268,10 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
     # Private helpers
     # ------------------------------------------------------------------
 
-    def _generate_hex_grid(self, aoi_projected: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        """Generate hexagons covering the AOI bounds, then keep those touching the AOI."""
+    def _generate_hex_grid(
+        self, aoi_projected: gpd.GeoDataFrame, working_crs, system: str
+    ) -> gpd.GeoDataFrame:
+        """Generate hexagons on the lattice; keep those intersecting the AOI (or the bbox)."""
         import numpy as np
         import shapely
 
@@ -272,23 +310,27 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
                 candidates.append((q, r))
                 polygons.append(_make_hex_polygon(cx, cy, sl))
 
-        # One vectorized intersects pass with the AOI as the *prepared subject*.
-        # GEOS only uses a prepared geometry's spatial index when it is the
-        # subject of the predicate; per-candidate `poly.intersects(aoi_union)`
-        # re-scans every AOI vertex each time (Nairobi, 304k vertices x 95k
-        # candidates: ~245 s). Prepared + vectorized: <1 s for the same input.
-        shapely.prepare(aoi_union)
-        mask = shapely.intersects(aoi_union, np.array(polygons, dtype=object))
+        if self.hexgrid_config.clip_to_aoi:
+            # One vectorized intersects pass with the AOI as the *prepared subject*.
+            # GEOS only uses a prepared geometry's spatial index when it is the
+            # subject of the predicate; per-candidate `poly.intersects(aoi_union)`
+            # re-scans every AOI vertex each time (Nairobi, 304k vertices x 95k
+            # candidates: ~245 s). Prepared + vectorized: <1 s for the same input.
+            shapely.prepare(aoi_union)
+            mask = shapely.intersects(aoi_union, np.array(polygons, dtype=object))
+        else:
+            # Fill the bounding box (no AOI clip) — closer to the unclipped grids.
+            mask = np.ones(len(polygons), dtype=bool)
 
         records = [
-            {"GridID": _hex_id(q, r), "q": q, "r": r, "geometry": poly}
+            {"GridID": _hex_id(q, r, system), "q": q, "r": r, "geometry": poly}
             for (q, r), poly, keep in zip(candidates, polygons, mask)
             if keep
         ]
         if not records:
             raise ProcessingError("No hexagons generated — check AOI bounds and side_length")
 
-        return gpd.GeoDataFrame(records, crs=_WORKING_CRS)
+        return gpd.GeoDataFrame(records, crs=working_crs)
 
 
 # ---------------------------------------------------------------------------
