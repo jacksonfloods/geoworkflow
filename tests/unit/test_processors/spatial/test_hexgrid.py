@@ -251,3 +251,19 @@ class TestDualMode:
         HexGridProcessor(HexGridConfig(aoi_file=aoi, output_file=unclipped,
                                        side_length=250.0, clip_to_aoi=False)).process()
         assert len(gpd.read_file(unclipped)) > len(gpd.read_file(clipped))
+
+    def test_gpkg_output_preserves_crs_and_columns(self, temp_dir, sample_aoi_small):
+        # The driver is inferred from the extension; .gpkg must round-trip the UTM
+        # CRS and the columns cleanly (the canonical format for the all-city run).
+        from geoworkflow.processors.spatial import HexGridProcessor
+        out = temp_dir / "hex_utm.gpkg"
+        res = HexGridProcessor(HexGridConfig(
+            aoi_file=sample_aoi_small, output_file=out,
+            side_length=250.0, crs_mode="utm_local",
+        )).process()
+        assert res.success, res.message
+        assert out.exists()
+        g = gpd.read_file(out)
+        assert g.crs.to_epsg() and g.crs.to_epsg() != 4326   # native UTM preserved
+        assert set(["GridID", "q", "r", "area_m2"]).issubset(g.columns)
+        assert all(g["GridID"].str.startswith("UTM"))

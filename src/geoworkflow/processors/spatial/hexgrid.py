@@ -217,7 +217,9 @@ class HexGridProcessor(TemplateMethodProcessor, GeospatialProcessorMixin):
             self.update_progress(1, "Reprojected output")
 
             self.log_processing_step(f"Saving to {cfg.output_file}")
-            hex_gdf.to_file(cfg.output_file, driver="GeoJSON")
+            driver = {".gpkg": "GPKG", ".geojson": "GeoJSON", ".json": "GeoJSON",
+                      ".shp": "ESRI Shapefile"}.get(cfg.output_file.suffix.lower(), "GeoJSON")
+            hex_gdf.to_file(cfg.output_file, driver=driver)
             # Provenance sidecar: the stored grid is in output_crs (e.g. 4326), which
             # hides how it was built. Record the lattice spec so the two modes (and the
             # morphology grids) can never be silently mixed or mis-joined.
