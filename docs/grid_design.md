@@ -99,3 +99,14 @@ the morphology grids vs ours) can never be silently mixed.
 
 The lab's current 7-city cube set is built in **`utm_local`** so the cubes join
 the morphology grids directly.
+
+## Status (2026-06-15)
+
+7-city cube set regenerated at UTM 250 m, zones pinned in the manifest:
+Abidjan (32630), Kinshasa (32733), Luanda (32733), Addis Ababa (32637),
+Cape Town (32734), Dar es Salaam (32737), Nairobi (32737).
+
+**Coincidence verified** — our UTM lattice reproduces the morphology grids exactly
+(0.0000 m centroid residual, IoU 1.0) on Dakar (32628), Voi/Kenya (32737), and
+Hogoro/Tanzania (32737). The all-agglomeration generator
+(`notebooks/generate_agglomeration_hexgrids.ipynb`) is ready for the full run.
