@@ -64,6 +64,7 @@ Downloading new GEE data is a config call, not a script — see
 |---|---|
 | Agent / contributor guide (conventions, pipelines, dependency rules) | [CLAUDE.md](CLAUDE.md) (= [AGENTS.md](AGENTS.md)) |
 | Test guide + quarantined-legacy-tests list | [tests/TESTING.md](tests/TESTING.md) |
+| Hex grid design & rationale (CRS modes, MAUP, change-of-support) | [docs/grid_design.md](docs/grid_design.md) |
 | Data tree documentation (datasets, naming, layout) | `../data/DATA_CATALOG.md` |
 | How to read the NetCDF cubes (for collaborators, no geoworkflow needed) | `../data/HOW_TO_USE_CUBES.md` |
 | Sphinx docs | `docs/` |
