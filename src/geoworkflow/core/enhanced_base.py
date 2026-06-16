@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, List, Union, Iterator
 from pathlib import Path
 import logging
+import os
 from datetime import datetime
 import time
 
@@ -239,12 +240,17 @@ class TemplateMethodProcessor(BaseProcessor):
                 setup_info["temp_directories_created"].append(str(temp_dir))
                 self.logger.debug(f"Created temporary directory: {temp_dir}")
             
-            # Set up progress tracking
+            # Set up progress tracking. Honor GEOWORKFLOW_QUIET_PROGRESS=1 to
+            # suppress the Rich bar — set it when many processors run inside a
+            # pool or headless (nbconvert), where per-processor bars are noise
+            # and, under fork-in-a-kernel, would try to emit from a child.
             total_items = self._estimate_total_items()
+            quiet_progress = os.environ.get("GEOWORKFLOW_QUIET_PROGRESS") == "1"
             if total_items > 0:
                 self.progress_tracker = ProgressTracker(
                     total=total_items,
-                    description=f"{self.__class__.__name__} Processing"
+                    description=f"{self.__class__.__name__} Processing",
+                    disable=quiet_progress,
                 )
                 setup_info["progress_tracker_initialized"] = True
                 setup_info["estimated_items"] = total_items

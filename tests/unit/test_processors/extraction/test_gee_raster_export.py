@@ -100,3 +100,54 @@ class TestConfigAndDiscovery:
         proc = GEERasterExportProcessor(cfg)
         assert proc._filename("nairobi", "KEN", "discrete_classification", None) == \
             "nairobi_lc100_2019.tif"
+
+
+class TestBatchSlicing:
+    """The batched path: one multi-band download split into the same per-file
+    outputs. The slicing is pure rasterio — no Earth Engine — so it's unit-tested
+    directly to guarantee byte-equivalence with the per-request product."""
+
+    def _proc(self, temp_dir):
+        cfg = GEERasterExportConfig(
+            source="X", bands=["b"], cadence="static",
+            grid_dir=temp_dir, output_dir=temp_dir, dataset="d", scale_m=100)
+        return GEERasterExportProcessor(cfg)
+
+    def _multiband_bytes(self, n_bands):
+        import numpy as np
+        rasterio = pytest.importorskip("rasterio")
+        from rasterio.io import MemoryFile
+        from rasterio.transform import from_origin
+        from rasterio.crs import CRS
+        data = np.stack([np.full((4, 5), i + 1, dtype="float32") for i in range(n_bands)])
+        transform = from_origin(36.0, -1.0, 0.01, 0.01)
+        with MemoryFile() as mem:
+            with mem.open(driver="GTiff", height=4, width=5, count=n_bands,
+                          dtype="float32", crs=CRS.from_epsg(4326),
+                          transform=transform) as dst:
+                dst.write(data)
+            return mem.read(), transform
+
+    def test_batch_size_defaults_to_none(self, temp_dir):
+        assert self._proc(temp_dir).gee_config.batch_size is None
+
+    def test_slice_splits_bands_preserving_grid(self, temp_dir):
+        import numpy as np
+        rasterio = pytest.importorskip("rasterio")
+        content, transform = self._multiband_bytes(3)
+        outs = [temp_dir / f"band_{i}.tif" for i in range(3)]
+        self._proc(temp_dir)._slice_to_files(content, outs)
+        for i, op in enumerate(outs):
+            assert op.exists()
+            with rasterio.open(op) as src:
+                assert src.count == 1                       # split to single-band
+                assert src.crs.to_epsg() == 4326            # CRS preserved
+                assert src.transform == transform           # georeferencing preserved
+                assert np.allclose(src.read(1), i + 1)      # band i -> out_paths[i]
+
+    def test_slice_band_count_mismatch_raises(self, temp_dir):
+        from geoworkflow.core.exceptions import ProcessingError
+        content, _ = self._multiband_bytes(2)
+        outs = [temp_dir / f"band_{i}.tif" for i in range(3)]   # 3 paths, 2 bands
+        with pytest.raises(ProcessingError, match="expected 3 bands"):
+            self._proc(temp_dir)._slice_to_files(content, outs)

@@ -219,6 +219,10 @@ class GEERasterExportProcessor(TemplateMethodProcessor, GeospatialProcessorMixin
         for iso3, city, vector_path in self.targets:
             region = self._region_of(vector_path)
             out_base = cfg.output_dir / iso3 / cfg.dataset
+
+            # Collect this city's still-needed (image, out_path) layers; everything
+            # already on disk is counted as skipped (resumable at file granularity).
+            specs: List[Tuple["ee.Image", Path]] = []
             for time_label, ee_start, ee_end in periods:
                 for band in cfg.bands:
                     out_path = out_base / self._filename(city, iso3, band, time_label)
@@ -226,15 +230,21 @@ class GEERasterExportProcessor(TemplateMethodProcessor, GeospatialProcessorMixin
                         result.skipped_count += 1
                         self.update_progress(1, f"{city} (skip)")
                         continue
-                    try:
-                        image = self._build_image(band, ee_start, ee_end)
-                        self._download(image, region, out_path)
-                        result.processed_count += 1
-                    except Exception as exc:  # noqa: BLE001 - collect, keep going
-                        failures.append((out_path.name, str(exc)[:200]))
-                        result.failed_count += 1
-                        self.logger.warning("FAILED %s: %s", out_path.name, exc)
-                    self.update_progress(1, f"{city} {time_label or ''}")
+                    specs.append((self._build_image(band, ee_start, ee_end), out_path))
+            if not specs:
+                continue
+
+            # One multi-band request per chunk (batch_size=None -> whole city at
+            # once), then slice locally into the per-file outputs.
+            chunk = cfg.batch_size or len(specs)
+            for k in range(0, len(specs), chunk):
+                written, chunk_failures = self._download_batch(specs[k:k + chunk], region)
+                result.processed_count += len(written)
+                result.failed_count += len(chunk_failures)
+                for name, err in chunk_failures:
+                    failures.append((name, err))
+                    self.logger.warning("FAILED %s: %s", name, err)
+                self.update_progress(min(chunk, len(specs) - k), f"{city} {cfg.dataset}")
 
         result.message = (
             f"{cfg.dataset}: downloaded {result.processed_count}, "
@@ -263,6 +273,10 @@ class GEERasterExportProcessor(TemplateMethodProcessor, GeospatialProcessorMixin
         from geoworkflow.utils.earth_engine_utils import EarthEngineAuth
 
         cfg = self.gee_config
+        if cfg.skip_auth:
+            # Caller initialized Earth Engine already (e.g. once before a thread
+            # pool of per-city downloads); reuse that process-global session.
+            return
         email = cfg.service_account_email
         project = cfg.project_id
         # The SA key JSON already carries the email and project; read them so
@@ -281,7 +295,8 @@ class GEERasterExportProcessor(TemplateMethodProcessor, GeospatialProcessorMixin
         cfg = self.gee_config
         if cfg.aoi_file is not None:
             iso3 = cfg.iso3 or "AOI"
-            return [(iso3, city_slug(cfg.aoi_file), cfg.aoi_file)]
+            city = cfg.aoi_city or city_slug(cfg.aoi_file)
+            return [(iso3, city, cfg.aoi_file)]
         grids = sorted(cfg.grid_dir.glob(cfg.grid_pattern))
         return [(p.parent.name, city_slug(p), p) for p in grids]
 
@@ -318,7 +333,12 @@ class GEERasterExportProcessor(TemplateMethodProcessor, GeospatialProcessorMixin
             image = image.multiply(cfg.scale_factor)
         return image
 
-    def _download(self, image: "ee.Image", region: "ee.Geometry", out_path: Path) -> None:
+    def _fetch_geotiff(self, image: "ee.Image", region: "ee.Geometry") -> bytes:
+        """getDownloadURL + GET one image as GeoTIFF bytes, with retry/backoff.
+
+        Validates the GeoTIFF magic so an EE error payload (HTML/JSON) is raised,
+        not silently written. Returns the raw bytes (single- or multi-band).
+        """
         cfg = self.gee_config
         last_error: Optional[Exception] = None
         for attempt in range(cfg.retries):
@@ -333,14 +353,69 @@ class GEERasterExportProcessor(TemplateMethodProcessor, GeospatialProcessorMixin
                 resp.raise_for_status()
                 if resp.content[:2] not in _TIFF_MAGIC:
                     raise ValueError("response is not a GeoTIFF (EE error payload?)")
-                out_path.parent.mkdir(parents=True, exist_ok=True)
-                out_path.write_bytes(resp.content)
-                return
+                return resp.content
             except Exception as exc:  # noqa: BLE001 - retry with backoff
                 last_error = exc
                 if attempt < cfg.retries - 1:
                     _time.sleep(3 * (attempt + 1))
         raise ProcessingError(f"download failed after {cfg.retries} attempts: {last_error}")
+
+    def _download(self, image: "ee.Image", region: "ee.Geometry", out_path: Path) -> None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_bytes(self._fetch_geotiff(image, region))
+
+    def _download_batch(
+        self, specs: List[Tuple["ee.Image", Path]], region: "ee.Geometry",
+    ) -> Tuple[List[Path], List[Tuple[str, str]]]:
+        """Download many single-band layers as ONE multi-band GeoTIFF, then split
+        it into the individual per-file outputs — one HTTP request instead of N.
+
+        Bands are renamed to a positional ``b{i}`` so names never collide, and EE
+        preserves band order, so output band *i* maps to ``specs[i]``'s path. If a
+        multi-band request fails (e.g. exceeds EE's request-size limit) the batch
+        is bisected and retried, down to single layers — so an oversized city
+        degrades to more requests rather than failing. Returns
+        ``(written_paths, [(filename, error), ...])``.
+        """
+        written: List[Path] = []
+        failures: List[Tuple[str, str]] = []
+        self._download_batch_rec(specs, region, written, failures)
+        return written, failures
+
+    def _download_batch_rec(self, specs, region, written, failures) -> None:
+        if not specs:
+            return
+        images = [img.rename(f"b{i}") for i, (img, _) in enumerate(specs)]
+        out_paths = [op for _, op in specs]
+        combined = ee.Image.cat(images) if len(images) > 1 else images[0]
+        try:
+            self._slice_to_files(self._fetch_geotiff(combined, region), out_paths)
+            written.extend(out_paths)
+        except Exception as exc:  # noqa: BLE001
+            if len(specs) == 1:
+                failures.append((out_paths[0].name, str(exc)[:200]))
+                return
+            mid = len(specs) // 2  # bisect on failure (handles size-limit errors)
+            self._download_batch_rec(specs[:mid], region, written, failures)
+            self._download_batch_rec(specs[mid:], region, written, failures)
+
+    def _slice_to_files(self, content: bytes, out_paths: List[Path]) -> None:
+        """Write each band of a multi-band GeoTIFF (in ``content``) to its own
+        single-band file, preserving CRS/transform/dtype — same on-disk product
+        as the per-request path, so the registry and Pipeline 1 are unaffected."""
+        import rasterio
+        from rasterio.io import MemoryFile
+
+        with MemoryFile(content) as mem, mem.open() as src:
+            if src.count != len(out_paths):
+                raise ProcessingError(
+                    f"expected {len(out_paths)} bands, got {src.count}")
+            profile = src.profile.copy()
+            profile.update(count=1)
+            for i, out_path in enumerate(out_paths, start=1):
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+                with rasterio.open(out_path, "w", **profile) as dst:
+                    dst.write(src.read(i), 1)
 
 
 def export_gee_rasters(**kwargs: Any) -> ProcessingResult:

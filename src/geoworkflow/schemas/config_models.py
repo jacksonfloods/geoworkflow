@@ -416,6 +416,12 @@ class GEERasterExportConfig(BaseConfig):
     # --- Targets -------------------------------------------------------------
     aoi_file: Optional[Path] = Field(None, description="Single vector AOI (mutually exclusive with grid_dir)")
     iso3: Optional[str] = Field(None, description="ISO3 for the single-AOI mode output folder")
+    aoi_city: Optional[str] = Field(
+        None,
+        description="City identifier for the {city} filename field in single-AOI "
+                    "mode. Defaults to the slug parsed from aoi_file. Pass the "
+                    "grid stem '<id>_<name>' so outputs are keyed by the unique "
+                    "Agglomeration_ID (avoids name collisions across cities).")
     grid_dir: Optional[Path] = Field(
         None, description="Directory of hex grids (hexagglo layout: <ISO3>/<id>_<city>_hex.geojson)")
     grid_pattern: str = Field("*/*_hex.geojson", description="Glob for grids under grid_dir")
@@ -433,12 +439,25 @@ class GEERasterExportConfig(BaseConfig):
     skip_existing: bool = Field(True, description="Skip files that already exist (resumable)")
     retries: int = Field(3, description="Download attempts per file")
     timeout_s: int = Field(180, description="HTTP timeout per download")
+    batch_size: Optional[int] = Field(
+        None,
+        description="Bundle this many (period x band) layers into ONE multi-band "
+                    "getDownloadURL request per city, then split locally into the "
+                    "same per-file outputs. None = all of a city's layers in one "
+                    "request (fewest requests); 1 = one request per file (legacy). "
+                    "Oversized requests auto-split, so None is usually safe.")
 
     # --- Auth ------------------------------------------------------------
     service_account_key: Optional[Path] = Field(
         None, description="Service-account key JSON; email/project read from it if not given")
     service_account_email: Optional[str] = Field(None, description="Override SA email")
     project_id: Optional[str] = Field(None, description="Override GCP project id")
+    skip_auth: bool = Field(
+        False,
+        description="Assume Earth Engine is already initialized and skip "
+                    "authentication. Set when driving many per-city downloads "
+                    "from one process (e.g. a thread pool): authenticate once in "
+                    "the parent, then have workers reuse that session.")
 
     @model_validator(mode="after")
     def _check_targets_and_time(self) -> "GEERasterExportConfig":
