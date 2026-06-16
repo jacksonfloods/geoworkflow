@@ -59,8 +59,28 @@ __all__ = [
     # Configuration models
     'AOIConfig',
     'ExtractionConfig',
-    'ClippingConfig', 
+    'ClippingConfig',
     'AlignmentConfig',
     'VisualizationConfig',
     'WorkflowConfig',
+
+    # Hex database (the primary interface) — lazily resolved (see __getattr__)
+    'open_hexdb',
+    'GeoHexDB',
+    'HexDBConfig',
+    'HexDBRecipe',
 ]
+
+
+# The hex database is geoworkflow's headline interface, exposed at the top level as
+# `from geoworkflow import open_hexdb`. Imported lazily (PEP 562) so a plain
+# `import geoworkflow` doesn't pull DuckDB/GeoPandas until the store is used.
+_STORE_EXPORTS = {"open_hexdb", "GeoHexDB", "HexDBConfig", "HexDBRecipe"}
+
+
+def __getattr__(name):
+    if name in _STORE_EXPORTS:
+        import importlib
+        store = importlib.import_module("geoworkflow.store")
+        return getattr(store, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -468,6 +468,181 @@ class GEERasterExportConfig(BaseConfig):
         return self
 
 
+# =====================================================================
+# Hex database (geoworkflow.store) — query config + reproducible recipe
+# =====================================================================
+
+class HexDBConfig(BaseConfig):
+    """Where the hex database and its inputs live (used to open/query the DB).
+
+    Separate from :class:`HexDBRecipe` (which is *how* to build it): this model is
+    pure locations + query defaults, so opening the DB never needs a build spec.
+    """
+
+    warehouse_dir: Path = Field(
+        Path("../data/hexdb"), description="Hive-partitioned Parquet warehouse root")
+    hexagglo_dir: Path = Field(
+        Path("../data/boundaries/hexagglo"),
+        description="Per-city hex-grid GeoPackages (own UTM; geometry source of truth)")
+    global_dir: Path = Field(
+        Path("../data/global"), description="Global rasters (PM25, odiac)")
+    city_dir: Path = Field(
+        Path("../data/city"), description="Per-city rasters (LST, landcover)")
+    manifest_csv: Path = Field(
+        Path("../data/config/grid_zone_manifest.csv"),
+        description="Grid zone manifest (Agglomeration_ID -> ISO3,name,utm_epsg)")
+    complexity_csv: Optional[Path] = Field(
+        Path("../data/boundaries/agglomerations_complexity.csv"),
+        description="Optional agglomeration metadata (adds n_nodes)")
+    raster_registry: Optional[Path] = Field(
+        Path("../data/config/raster_datasets.json"),
+        description="User dataset registry (merged over packaged defaults)")
+    plot_crs: str = Field(
+        "EPSG:4326", description="Common CRS for multi-city plots (cities are per-UTM)")
+
+
+class GridSpec(BaseConfig):
+    """Shared hex-grid parameters for a whole database build.
+
+    The per-city :class:`HexGridConfig` carries city-specific ``aoi_file`` /
+    ``output_file``; this model holds only the parameters common to every city
+    (the ones that determine GridIDs), so it can live in a recipe. The builder
+    expands it into a per-city ``HexGridConfig``. These fields are the build
+    *invariants*: changing any of them changes GridIDs and needs a full rebuild.
+    """
+
+    side_length: float = Field(250.0, gt=0, description="Hex side length in meters")
+    crs_mode: Literal["albers_global", "utm_local"] = Field(
+        "utm_local", description="Lattice CRS mode (see HexGridConfig)")
+    clip_to_aoi: bool = Field(True, description="Keep only hexagons intersecting the AOI")
+    grid_origin_x: float = Field(-3000000.0, description="Grid alignment origin X (m)")
+    grid_origin_y: float = Field(-2000000.0, description="Grid alignment origin Y (m)")
+    output_crs: Optional[str] = Field(
+        None, description="Storage CRS (None = native: UTM for utm_local)")
+
+
+class TimeRange(BaseConfig):
+    """Inclusive temporal extent of the database (ISO 'YYYY-MM' or 'YYYY')."""
+
+    start: str = Field("2019-01", description="First period, e.g. '2019-01'")
+    end: str = Field("2024-12", description="Last period (inclusive), e.g. '2024-12'")
+
+
+class MetricSource(BaseConfig):
+    """Path-free description of where a metric's raster comes from in Earth Engine.
+
+    Records *what* to download (the EE asset, bands, cadence, scaling) without any
+    machine-specific paths or targets — those come from :class:`HexDBConfig` at
+    fetch time. Keeps the recipe portable/reproducible while fully documenting
+    provenance. The builder combines this with config paths + a target into a
+    :class:`GEERasterExportConfig` to actually fetch.
+    """
+
+    ee_asset: str = Field(..., description="Earth Engine asset id (Image or ImageCollection)")
+    bands: List[str] = Field(..., min_length=1, description="Band(s) to export")
+    band_tags: Dict[str, str] = Field(default_factory=dict, description="Short tag per band")
+    cadence: Literal["static", "monthly", "yearly"] = Field("monthly")
+    composite: Literal["mean", "median", "min", "max", "mosaic"] = Field("mean")
+    qc_band: Optional[str] = Field(None, description="QC band for masking")
+    qc_bit_mask: int = Field(3)
+    qc_max: int = Field(1)
+    scale_factor: Optional[float] = Field(None, description="Value scale (e.g. 0.02)")
+    scale_m: float = Field(..., description="Export resolution (m)")
+    output_crs: str = Field("EPSG:4326")
+    static_label: str = Field("static", description="{time} value for static cadence")
+    filename_template: str = Field(
+        "{city}_{dataset}_{band_tag}_{time}.tif",
+        description="Output filename template (registry-parseable)")
+
+
+class MetricSpec(BaseConfig):
+    """One raster dataset sampled into the database (a 'metric' group).
+
+    A dataset folder yields one or more *variables* via the dataset registry
+    (e.g. the LST folder yields ``lst_day`` and ``lst_night``); ``statistics`` is
+    applied to all of them. ``source`` records how to (re)fetch the raster, so the
+    recipe is a complete, self-describing provenance of what the DB contains.
+    """
+
+    name: str = Field(..., description="Dataset label, e.g. 'mod11a1_lst' or 'PM25'")
+    statistics: List[str] = Field(
+        default_factory=lambda: ["weighted_mean"],
+        description="Statistics applied to this dataset's variables")
+    scope: Literal["global", "city"] = Field(
+        "city", description="'global': under global_dir; 'city': under city_dir/<ISO3>")
+    path: Optional[str] = Field(
+        None, description="Subfolder under the scope dir; defaults to name")
+    annual: bool = Field(
+        False, description="Place these variables on the annual axis (e.g. landcover)")
+    source: Optional[MetricSource] = Field(
+        None, description="How to fetch the raster (declared provenance; drives fetch phase). "
+                          "None for pre-existing inputs not fetched via Earth Engine.")
+
+    @field_validator("statistics")
+    @classmethod
+    def _stats_nonempty(cls, v):
+        if not v:
+            raise ValueError("each metric needs at least one statistic")
+        return list(dict.fromkeys(v))
+
+    def folder(self) -> str:
+        """Subfolder name for this dataset's rasters (``path`` or ``name``)."""
+        return self.path or self.name
+
+
+class CitySelector(BaseConfig):
+    """Which cities a build/op targets. Exactly one selector kind must be set."""
+
+    all: bool = Field(False, description="All agglomerations in the manifest")
+    iso3: Optional[List[str]] = Field(None, description="Whole countries by ISO3")
+    aggid: Optional[List[int]] = Field(None, description="Specific Agglomeration_IDs")
+    name: Optional[List[str]] = Field(None, description="City names (resolved via catalog)")
+
+    @model_validator(mode="after")
+    def _exactly_one(self) -> "CitySelector":
+        set_kinds = [self.all, self.iso3 is not None,
+                     self.aggid is not None, self.name is not None]
+        if sum(bool(x) for x in set_kinds) != 1:
+            raise ValueError("set exactly one of: all=True, iso3, aggid, name")
+        return self
+
+
+class HexDBRecipe(BaseConfig):
+    """Reproducible build spec for the whole hex database.
+
+    The single source of truth for `geoworkflow hexdb build`: hex grid params,
+    city set, time range, and the metrics (with their data sources). Persisted in
+    the warehouse as living provenance and read by add-city/add-metric so new
+    pieces are built identically. ``grid`` + ``time`` are the build invariants.
+    """
+
+    grid: GridSpec = Field(default_factory=GridSpec)
+    cities: CitySelector = Field(default_factory=lambda: CitySelector(all=True))
+    time: TimeRange = Field(default_factory=TimeRange)
+    metrics: List[MetricSpec] = Field(..., min_length=1)
+    overwrite: bool = Field(False, description="Rebuild partitions even if present")
+
+    def to_yaml(self, path: Union[str, Path]) -> Path:
+        """Write the recipe to a YAML file (round-trips with :meth:`from_yaml`)."""
+        import yaml
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(yaml.safe_dump(self.model_dump(mode="json"), sort_keys=False))
+        return path
+
+    @classmethod
+    def from_yaml(cls, path: Union[str, Path]) -> "HexDBRecipe":
+        """Load and validate a recipe from a YAML file."""
+        import yaml
+        data = yaml.safe_load(Path(path).read_text())
+        return cls.model_validate(data)
+
+    def invariants(self) -> Dict[str, Any]:
+        """The fields that must match across the warehouse (build identity)."""
+        return {"grid": self.grid.model_dump(mode="json"),
+                "time": self.time.model_dump(mode="json")}
+
+
 # Statistical Enrichment Configuration
 class StatisticalEnrichmentConfig(BaseConfig):
     """Configuration for statistical enrichment operations."""

@@ -1,13 +1,32 @@
 # geoworkflow
 
-Geospatial workflows for African urban analysis: download rasters (Google Earth
-Engine and elsewhere), resample heterogeneous raster data onto **hexagonal
-grids** as coverage-weighted statistics, and pack the results into compact,
-self-describing **NetCDF cubes** — one per agglomeration.
+Geospatial workflows for African urban analysis. The primary interface is a
+single **queryable hex database** over all ~9,000 African agglomerations, keyed
+by hexagon — `geoworkflow.store`:
+
+```python
+from geoworkflow import open_hexdb
+db = open_hexdb()
+db["KEN"]["Nairobi"]["lst_day"].climatology(month=6).plot()    # avg of all Junes
+db["KEN"]["Nairobi"]["lst_day"].sel("2020-06").to_geodataframe()
+db.hexagon("UTM32737_HQ-008188_R+031618")                      # one hexagon, any city
+```
+
+Under the hood it's a DuckDB + Parquet warehouse (`data/hexdb/`), built
+**reproducibly from a YAML recipe** and self-describing via a living
+`_recipe.yaml` + `_provenance.jsonl`. Build/extend it with `geoworkflow hexdb`
+(`build` / `query` / `plot` / `add-city` / `add-metric` / `provenance`). Time
+selection follows pandas/xarray conventions (`.sel("2020-06")` selects, reducers
+aggregate, `.groupby_month()`/`.climatology()` for climatologies).
+
+Data gets *into* the database via the pipelines below: download rasters (Google
+Earth Engine and elsewhere) and resample heterogeneous raster data onto
+**hexagonal grids** as coverage-weighted statistics, written straight into the
+warehouse (no intermediate cubes).
 
 ```
-AOI ──HexGridProcessor──▶ hex grid ──GridStatisticsProcessor──▶ tidy Parquet ──GridToNetCDFProcessor──▶ (cell, time) .nc
-         (150 m hexes)        ▲      (exactextract, coverage-weighted)              (zlib, CF metadata)
+AOI ──HexGridProcessor──▶ hex grid ──GridStatisticsProcessor──▶ data/hexdb/ (DuckDB+Parquet)
+       (250 m UTM hexes)      ▲      (exactextract, coverage-weighted)   ──▶ open_hexdb()
                               │
    GEERasterExportProcessor ──┘  (declarative GEE downloads, clipped per grid)
 ```

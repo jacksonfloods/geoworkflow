@@ -110,7 +110,7 @@ def main():
     """Main entry point for the CLI."""
     try:
         # Import subcommands (this registers them with the main CLI group)
-        from geoworkflow.cli.commands import aoi, extract, process, pipeline, visualize, datasets
+        from geoworkflow.cli.commands import aoi, extract, process, pipeline, visualize, datasets, hexdb
 
         # Add subcommands to main group
         cli.add_command(aoi.aoi)
@@ -119,6 +119,7 @@ def main():
         cli.add_command(pipeline.pipeline)
         cli.add_command(visualize.visualize)
         cli.add_command(datasets.datasets)
+        cli.add_command(hexdb.hexdb)
         
         # Run CLI
         cli()

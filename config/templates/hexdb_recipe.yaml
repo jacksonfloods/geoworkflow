@@ -1,0 +1,77 @@
+grid:
+  side_length: 250.0
+  crs_mode: utm_local
+  clip_to_aoi: true
+  grid_origin_x: -3000000.0
+  grid_origin_y: -2000000.0
+  output_crs: null
+cities:
+  all: true
+  iso3: null
+  aggid: null
+  name: null
+time:
+  start: 2019-01
+  end: 2024-12
+metrics:
+- name: PM25
+  statistics:
+  - weighted_mean
+  scope: global
+  path: null
+  annual: false
+  source: null
+- name: odiac
+  statistics:
+  - weighted_mean
+  scope: global
+  path: null
+  annual: false
+  source: null
+- name: mod11a1_lst
+  statistics:
+  - weighted_mean
+  scope: city
+  path: null
+  annual: false
+  source:
+    ee_asset: MODIS/061/MOD11A1
+    bands:
+    - LST_Day_1km
+    - LST_Night_1km
+    band_tags:
+      LST_Day_1km: day
+      LST_Night_1km: night
+    cadence: monthly
+    composite: mean
+    qc_band: QC_Day
+    qc_bit_mask: 3
+    qc_max: 1
+    scale_factor: 0.02
+    scale_m: 1000.0
+    output_crs: EPSG:4326
+    static_label: static
+    filename_template: '{city}_lst_{band_tag}_{time}.tif'
+- name: copernicus_lc100
+  statistics:
+  - majority
+  - variety
+  scope: city
+  path: null
+  annual: true
+  source:
+    ee_asset: COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019
+    bands:
+    - discrete_classification
+    band_tags: {}
+    cadence: static
+    composite: mean
+    qc_band: null
+    qc_bit_mask: 3
+    qc_max: 1
+    scale_factor: null
+    scale_m: 100.0
+    output_crs: EPSG:4326
+    static_label: '2019'
+    filename_template: '{city}_lc100_{time}.tif'
+overwrite: false
