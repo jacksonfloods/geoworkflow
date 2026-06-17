@@ -86,7 +86,12 @@ dependencies:
       # wheel — vendors its own libs, links none of conda's GDAL/GEOS/PROJ/HDF5
       # (ldd-audited clean), so it is safe under the pip-vs-conda policy above.
       - duckdb>=1.5.0
-      
+
+      # Browser UI for the hex database CSV exporter (../hexdb_app). Pure-Python
+      # web framework; its wheels link none of conda's native geo libs
+      # (ldd-audited clean), so it is safe under the pip-vs-conda policy above.
+      - streamlit>=1.50
+
       # Development tools (not available or newer versions in conda)
       - black>=23.0.0
       - flake8>=6.0.0

@@ -3,19 +3,30 @@
 Guidance for AI coding agents (Claude Code reads this as `CLAUDE.md`; Codex and
 others read `AGENTS.md`, which is a symlink to this file) **and** for human
 contributors. Start with [README.md](README.md) for the package overview;
-this file holds the working conventions.
+this file holds the working conventions. This package is one part of the
+**Africa Cities project** — see the project-level guide at
+[../CLAUDE.md](../CLAUDE.md).
+
+The package's **primary interface is the hex database** (`geoworkflow.store` /
+`from geoworkflow import open_hexdb`): a queryable store over ~9,000 cities backed
+by `../data/hexdb/` (DuckDB + Parquet), built reproducibly from a recipe. The
+grid/stats/GEE pipelines below are "how data gets *into* it." A point-and-click
+Streamlit app over the database lives in the sibling [../hexdb_app/](../hexdb_app).
 
 ## Project Structure
 
 ```
-AfricaProject/
+africa_cities/            # project root (this repo's parent; see ../CLAUDE.md)
 ├── geoworkflow/          # This repo - Python package for geospatial workflows
-├── data/                 # All outputs go here (NOT inside geoworkflow/)
-│   ├── 00_source/        # Source data files
-│   ├── 01_extracted/     # Extracted/processed outputs
-│   ├── emissions/        # Emissions data (ODIAC, etc.)
-│   └── satellite/        # Satellite imagery outputs
-└── ...
+├── data/                 # All data/outputs go here (NOT inside geoworkflow/)
+│   ├── hexdb/                 # THE hex database (DuckDB + Parquet) — geoworkflow.store
+│   ├── boundaries/hexagglo/   # per-city hex-grid GeoPackages (geometry, native UTM)
+│   ├── config/                # grid_zone_manifest.csv, hexdb_recipe.yaml, raster_datasets.json
+│   ├── global/  city/         # source rasters (PM25/odiac; LST/landcover) — build inputs
+│   └── grid_stats/  country/  # legacy / intermediate products
+├── hexdb_app/            # Streamlit app over the database (query / export / plot)
+├── notebooks/            # database_uses/ guides (01-05) + pipeline notebooks
+└── outputs/              # generated figures/exports - outputs/<figures|exports>/<date>/
 ```
 
 ## Important: Output Directory Convention
@@ -37,7 +48,7 @@ output_dir = Path("../data/satellite")
 
 Two composable pipelines summarize rasters onto hexagonal grids and pack the
 result into a per-agglomeration NetCDF cube. They run separately or in tandem
-(see `examples/full_pipeline_example.py`).
+.
 
 ```
 AOI ─HexGridProcessor─▶ hex grid ─GridStatisticsProcessor─▶ tidy Parquet ─GridToNetCDFProcessor─▶ (cell, time) .nc

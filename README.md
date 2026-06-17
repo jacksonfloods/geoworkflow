@@ -46,8 +46,7 @@ pip install -e .
 python -m pytest tests/ -q            # should be green (see tests/TESTING.md)
 ```
 
-End-to-end on one city (see `examples/full_pipeline_example.py` for the same
-flow with processor classes):
+End-to-end on one city:
 
 ```python
 from geoworkflow.processors.spatial.hexgrid import HexGridProcessor
@@ -81,12 +80,13 @@ Downloading new GEE data is a config call, not a script — see
 
 | | |
 |---|---|
+| Project overview + folder layout (the parent project) | `../README.md`, `../CLAUDE.md` |
+| No-code app: query → CSV/GeoPackage → map | `../hexdb_app/` (see its README) |
 | Agent / contributor guide (conventions, pipelines, dependency rules) | [CLAUDE.md](CLAUDE.md) (= [AGENTS.md](AGENTS.md)) |
 | Test guide + quarantined-legacy-tests list | [tests/TESTING.md](tests/TESTING.md) |
 | Hex grid design & rationale (CRS modes, MAUP, change-of-support) | [docs/grid_design.md](docs/grid_design.md) |
 | Data tree documentation (datasets, naming, layout) | `../data/DATA_CATALOG.md` |
 | How to read the NetCDF cubes (for collaborators, no geoworkflow needed) | `../data/HOW_TO_USE_CUBES.md` |
-| Sphinx docs | `docs/` |
 
 ## Key design points
 

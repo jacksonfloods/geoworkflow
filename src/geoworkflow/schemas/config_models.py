@@ -500,6 +500,32 @@ class HexDBConfig(BaseConfig):
     plot_crs: str = Field(
         "EPSG:4326", description="Common CRS for multi-city plots (cities are per-UTM)")
 
+    @classmethod
+    def from_root(cls, root, **overrides) -> "HexDBConfig":
+        """Build a config from a project root that contains ``data/``.
+
+        Lets a caller outside the project (e.g. a sibling directory) open the DB
+        without juggling paths::
+
+            open_hexdb(HexDBConfig.from_root("/abs/path/to/africa_cities"))
+
+        ``root`` is the folder holding ``data/`` (i.e. the ``africa_cities``
+        directory). ``open_hexdb`` uses this automatically when ``HEXDB_ROOT`` is
+        set in the environment.
+        """
+        root = Path(root)
+        paths = dict(
+            warehouse_dir=root / "data" / "hexdb",
+            hexagglo_dir=root / "data" / "boundaries" / "hexagglo",
+            global_dir=root / "data" / "global",
+            city_dir=root / "data" / "city",
+            manifest_csv=root / "data" / "config" / "grid_zone_manifest.csv",
+            complexity_csv=root / "data" / "boundaries" / "agglomerations_complexity.csv",
+            raster_registry=root / "data" / "config" / "raster_datasets.json",
+        )
+        paths.update(overrides)
+        return cls(**paths)
+
 
 class GridSpec(BaseConfig):
     """Shared hex-grid parameters for a whole database build.

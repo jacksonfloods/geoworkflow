@@ -16,7 +16,7 @@ from geoworkflow.schemas.config_models import HexDBConfig
 from geoworkflow.store import builder
 from geoworkflow.store.recipe import default_recipe
 
-ROOT = Path("/home/sjs96_file_share")
+ROOT = Path(__file__).resolve().parents[2]   # …/africa_cities (geoworkflow/notebooks/ -> up 2)
 WORKERS = int(os.environ.get("GEE_MAX_WORKERS", "16"))
 
 cfg = HexDBConfig(

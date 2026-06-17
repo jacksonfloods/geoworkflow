@@ -12,6 +12,7 @@ a DuckDB + Parquet warehouse and built reproducibly from a YAML recipe.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -40,12 +41,18 @@ def open_hexdb(config: Optional[HexDBConfig] = None, **overrides) -> GeoHexDB:
     """Open the hex database for querying.
 
     Args:
-        config: a :class:`HexDBConfig`; if omitted, defaults are used.
+        config: a :class:`HexDBConfig`; if omitted, defaults are used (relative to
+            the current working directory). To call from *another directory* (e.g.
+            a sibling project), either pass ``HexDBConfig.from_root("/path/to/
+            africa_cities")`` or set the ``HEXDB_ROOT`` environment variable to that
+            folder — then a bare ``open_hexdb()`` resolves the warehouse from it.
         **overrides: field overrides applied on top of ``config`` (or defaults),
             e.g. ``open_hexdb(warehouse_dir="/abs/data/hexdb")``.
     """
     if config is None:
-        config = HexDBConfig(**overrides)
+        root = os.environ.get("HEXDB_ROOT")
+        config = (HexDBConfig.from_root(root, **overrides) if root
+                  else HexDBConfig(**overrides))
     elif overrides:
         config = config.model_copy(update=overrides)
 

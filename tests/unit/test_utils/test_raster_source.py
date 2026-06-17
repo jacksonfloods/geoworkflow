@@ -203,9 +203,9 @@ class TestIntegration:
 # Real-data memory-safety smoke test (skipped if the file is absent)
 # --------------------------------------------------------------------------
 
-_PM25 = (
-    "/home/sjs96_file_share/data/global/PM25/2019/"
-    "V6GL02.04.CNNPM25.GL.201901-201901.nc"
+_PM25 = str(
+    __import__("pathlib").Path(__file__).resolve().parents[4]
+    / "data/global/PM25/2019/V6GL02.04.CNNPM25.GL.201901-201901.nc"
 )
 
 
